@@ -1,0 +1,13 @@
+<section class="phx-hero">
+  <h1><%= gettext "I'm a %{name} from the DB!", name: "Test" %></h1>
+</section>
+
+<section class="row">
+  <article class="column">
+    <h2>Rows live from the DB!</h2>
+     <%= for row <- @rows do %>
+       <%= row.play %>, <%= row.character %>, <%= row.firstline %>, <%= row.location %>
+      <br><br>
+     <% end %>
+  </article>
+</section>
