@@ -1,0 +1,378 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html itemscope itemtype="https://schema.org/CollectionPage">
+<head>
+<title>Shakespeare's Monologues</title>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<!-- BASE href="//www.shakespeare-monologues.org" target="_top" -->
+
+<script src="/javascripts/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+    jQuery.noConflict()
+  </script>
+
+<!-- Mobile OS add to homescreen and web app goodies -->
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" href="favicon.ico" />
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="icon" sizes="196x196" href="/img/icon-196x196.png">
+<link rel="apple-touch-icon" sizes="196x196" href="/img/icon-196x196.png">
+<link rel="shortcut icon" sizes="196x196" href="/img/icon-196x196.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="ShakesMonos">
+<meta name="msapplication-tap-highlight" content="no">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" sizes="144x144" href="/img/icon-144x144.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/img/icon-120x120.png">
+<link rel="apple-touch-icon" sizes="114x114" href="/img/icon-114x114.png">
+<link rel="apple-touch-icon" sizes="76x76" href="/img/icon-76x76.png">
+<link rel="apple-touch-icon" sizes="72x72" href="/img/icon-72x72.png">
+
+    <!-- iPhone Splash Screen-->
+    <link href="/img/apple-touch-startup-image-320x460.png" media="(device-width: 320px)" rel="apple-touch-startup-image">
+    <!-- iPhone (Retina) Splash Screen-->
+    <link href="/img/apple-touch-startup-image-640x920.png" media="(device-width: 320px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
+    <!-- iPhone (5) Splash Screen-->
+    <link href="/img/Default-568h@2x.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" sizes="640x1096">
+    <!-- iPad (portrait) Splash Screen-->
+    <link href="/img/apple-touch-startup-image-768x1004.png" media="(device-width: 768px) and (orientation: portrait)" rel="apple-touch-startup-image">
+    <!-- iPad (landscape) Splash Screen-->
+    <link href="/img/apple-touch-startup-image-1024x1024.png" media="(device-width: 768px) and (orientation: landscape)" rel="apple-touch-startup-image">
+    <!-- iPad (Retina, portrait) Splash Screen-->
+    <link href="/img/apple-touch-startup-image-1536x2008.png" media="(device-width: 1536px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
+    <!-- iPad (Retina, landscape) Splash Screen-->
+    <link href="/img/apple-touch-startup-image-2048x1496.png" media="(device-width: 1536px)  and (orientation: landscape) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
+<link rel="apple-touch-icon-precomposed" href="/img/icon-152x152.png">
+<!-- add to homescreen -->
+<link rel="stylesheet" type="text/css" href="/stylesheets/addtohomescreen.css">
+<script src="/javascripts/addtohomescreen.js"></script>
+<script>
+  addToHomescreen({
+     maxDisplayCount: 3,
+     lifespan: 20,
+     });
+  </script>
+<link rel="icon" sizes="196x196" href="/img/icon-196x196.png">
+<link rel="apple-touch-icon" sizes="196x196" href="/img/icon-196x196.png">
+<link rel="shortcut icon" sizes="196x196" href="/img/icon-196x196.png">
+<!-- end Mobile OS add to homescreen and web app goodies -->
+<!-- iOS - keep internal links in web app, don't break out to safari -->
+<script>(function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^(a|html)$/i;a.
+addEventListener("click",function(a){d=a.target;while(!f.test(d.nodeName))d=d.
+parentNode;"href"in d&&(d.href.indexOf("http")||~d.href.indexOf(e.host))&&(a.
+preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone")</script>
+<!-- end iOS - keep internal links in web app, don't break out to safari -->
+<!-- clickjacking defense from https://www.codemagi.com/blog/post/194 -->
+<style id="antiClickjack">body{display:none !important;}</style>
+<script type="text/javascript">
+    if (self === top) {
+        var antiClickjack = document.getElementById("antiClickjack");
+        antiClickjack.parentNode.removeChild(antiClickjack);
+    } else {
+        top.location = self.location;
+    }
+</script>
+<!-- end clickjacking defense -->
+
+  <meta name="description" content="Making it easier to Find monologues since
+1997. A complete database of Shakespeare's Monologues. The monologues are
+organized by play, then categorized by comedy, history and tragedy. You can browse
+and/or search so you can find a monologue whether you know which one you want, or
+you're looking for monologue ideas. Each monologue entry includes the character's
+name, the first line of the speech, whether it is verse or prose, and shows the
+act, scene & line number. Each entry provides a link to the full text of the
+scene. You can download each monologue for printing, already double-spaced for
+scansion and transcription.">
+  <meta name="author" content="Steven Shults">
+  <link rel="icon" href="/favicon.ico">
+  <title>Shakespeare's Monologues</title>
+  <link rel="stylesheet" href={ Routes.static_path(@conn, "/css/app.css")}>
+  <link rel="stylesheet" href={ Routes.static_path(@conn, "/css/shakespeare.css")}>
+  <link rel="stylesheet" href={ Routes.static_path(@conn, "/css/addtohomescreen.css")}>
+  <script src={ Routes.static_path(@conn, "/js/app.js")}></script>
+  <script src={ Routes.static_path(@conn, "/js/addtohomescreen.js")}></script>
+  <script>
+    addToHomescreen({
+       maxDisplayCount: 3,
+       lifespan: 20,
+       });
+    </script>
+  <link rel="icon" sizes="196x196" href="/img/icon-196x196.png">
+  <link rel="apple-touch-icon" sizes="196x196" href="/img/icon-196x196.png">
+  <link rel="shortcut icon" sizes="196x196" href="/img/icon-196x196.png">
+  <!-- end Mobile OS add to homescreen and web app goodies -->
+  <!-- iOS - keep internal links in web app, don't break out to safari -->
+  <script>(function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^(a|html)$/i;a.
+  addEventListener("click",function(a){d=a.target;while(!f.test(d.nodeName))d=d.
+  parentNode;"href"in d&&(d.href.indexOf("http")||~d.href.indexOf(e.host))&&(a.
+  preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone")</  script>
+  <!-- end iOS - keep internal links in web app, don't break out to safari -->
+  <!-- clickjacking defense from https://www.codemagi.com/blog/post/194 -->
+  <style id="antiClickjack">body{display:none !important;}</style>
+  <script type="text/javascript">
+      if (self === top) {
+          var antiClickjack = document.getElementById("antiClickjack");
+          antiClickjack.parentNode.removeChild(antiClickjack);
+      } else {
+          top.location = self.location;
+      }
+  </script>
+  <!-- end clickjacking defense -->
+  <meta itemprop="description" NAME="Description" CONTENT="Making it easier to Find
+  monologues since 1997. A complete database of Shakespeare's Monologues. The
+  monologues are organized by play, then categorized by comedy, history and tragedy.
+  You can browse and/or search so you can find a monologue whether you know which
+  one you want, or you're looking for monologue ideas. Each monologue entry includes
+  the character's name, the first line of the speech, whether it is verse or prose,
+  and shows the act, scene & line number. Each entry provides a link to the full
+  text of the scene. You can download each monologue for printing, already
+  double-spaced for scansion and transcription.">
+  <meta name="KEYWORDS" content="William Shakespeare, shakespeare, monologues,
+  shakespeare monologues, shakespeare's monologues, shakespearean, monologue,
+  speech, speeches, soliloquy, soliloquies, database, find, search, browse, index,
+  quotes, quotations, Comedies, Histories, Tragedies, A Midsummer Night's Dream,
+  All's Well That Ends Well, As You Like It, Cymbeline, Love's Labour's Lost,
+  Measure for Measure, Merry Wives of Windsor, Much Ado About Nothing, Pericles,
+  Prince of Tyre, The Comedy of Errors, The Merchant of Venice, The Taming of the
+  Shrew, The Tempest, The Winter's Tale, Troilus and Cressida, Twelfth Night Or What
+  You Will, 12th Night, TWelfth Night, Two Gentlemen of Verona, Henry IV i, Henry IV
+  ii, Henry V, Henry VI i, Henry VI ii, Henry VI iii, Henry VIII, King John, Richard
+  II, Richard III, Antony & Cleopatra, Coriolanus, Hamlet, Julius Caesar, King Lear,
+  Macbeth, Othello, Romeo and Juliet, Timon of Athens, Titus Andronicus">
+  <meta name="verify-v1"
+  content="43Tfyc84pBq4LxJ6S3NHue3NJt2M+oKCcoiN41SEKB8=">
+  <!-- start FB graph stuff -->
+  <style fprolloverstyle="">A:hover {color: #5E2612; text-decoration: underline;
+  font-weight: bold}
+  </style>
+  <style>A {text-decoration: none; color: #696969; font-style: italic  }
+  </style>
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="//www.shakespeare-monologues.org/home/" />
+  <meta property="og:title" content="Shakespeare's Monologues" />
+  <meta property="og:description" content="Making it easier to find monologues
+  since 1997.
+  Built for actors. Used by everyone." />
+  <meta property="og:image" content="//www.shakespeare-monologues.org/img/OGicon.
+  png" />
+  <meta property="og:image:width" content="512" />
+  <meta property="og:image:height" content="303" />
+  <meta property="fb:admins" content="814268031"/><!-- end fb graph stuff -->
+  <!-- Start Twitter Summary Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@ShakesMonos" />
+  <meta name="twitter:title" content="Shakespeare's Monologues" />
+  <meta name="twitter:description" content="Each entry includes the full speech,
+  is marked as verse or prose, and has a link to the full text of the scene.
+  Download a PDF of each monologue, double-spaced." />
+  <meta name="twitter:image" content="//www.shakespeare-monologues.org/img/OGicon.
+  png" />
+  <meta name="twitter:image:alt" content="Portrait of Shakespeare, from the cover
+  of The First Folio of 1623." />
+  <!-- End Twitter Summary Card -->
+
+  <!-- Start Twitter App Card -->
+<meta name="twitter:card" content="app">
+<meta name="twitter:site" content="@ShakesMonos">
+<meta name="twitter:description" content="Each entry includes the full speech, is
+marked as verse or prose, and has a link to the full text of the scene. Download a
+PDF of each monologue, double-spaced. Free.">
+<meta name="twitter:app:country" content="US">
+<meta name="twitter:app:name:googleplay" content="Shakespeare's Monologues">
+<meta name="twitter:app:id:googleplay" content="com.ShakespearesMonologues.app">
+<!-- Start Twitter App Card -->
+<!-- start google analytics stuff -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-600620-1']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.
+async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://
+www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore
+(ga, s);
+  })();
+</script>
+<!-- end google analytics stuff -->
+<link rel="search" type="application/opensearchdescription+xml" title="Search
+Shakespare's Monologues" href="https://www.shakespeare-monologues.org/opensearch.
+xml" />
+<meta name="flattr:id" content="o6x2wd">
+<!-- begin google adsense page-level mobile ads -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-5236095389905910",
+    enable_page_level_ads: true
+  });
+</script>
+<!-- begin google adsense page-level mobile ads -->
+<!-- when the rest of the page has loaded, load the social.
+js-one-script-to-rule-them-all -->
+     <script>
+     (function($) {
+       $(window).bind("load", function() {
+       $.getScript('javascripts/social.js', function() {});
+       });
+     })(jQuery);
+     </script>
+<!-- Begin cookie consent -->
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/
+cookieconsent2/3.1.0/cookieconsent.min.css" />
+<script src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.
+min.js"></script>
+<script>
+window.addEventListener("load", function(){
+window.cookieconsent.initialise({
+  "palette": {
+    "popup": {
+      "background": "#d5ca9d"
+    },
+    "button": {
+      "background": "#4b81e8"
+    }
+  },
+  "content": {
+    "message": "This site uses cookies for site functionality.  We use third-party
+tools for ads, social media integration, link-sharing, donations, and site
+analytics. Each of these third party tools also use cookies. By using this
+site, you agree to the use of these cookies.",
+    "dismiss": "Understood",
+    "link": "Click here for details.",
+    "href": "https://www.shakespeare-monologues.org/privacy"
+  }
+})});
+</script>
+<!-- End cookie consent -->
+</head>
+<body BGCOLOR="#F9F9DF" background="/images/parchment.jpg">
+<table align="center" width="100%">
+<tr>
+<td align="center" width="100%">
+<table align="center" valign="top" cellpadding="0" cellspacing="0" width="">
+<tr>
+            <td colspan="2" cellpadding="0" cellspacing="0" align="center"
+valign="top" width="500">
+    <br><font face="verdana" size="+3" itemprop="name">Shakespeare's Monologues</font><br><br>
+         <font face="verdana" size="-1"><i>Making it easier to find monologues
+since 1997</i>
+    </font>
+<br><br>
+<font face="arial" size="6px">
+<a href="https://www.shakespeare-monologues.org/men/" font style="text-decoration:
+none;">The Men</a><br>
+<a href="https://www.shakespeare-monologues.org/women/" font
+style="text-decoration: none;">The Women</a></font><br><br>
+                  <center><a href="https://www.shakespeare-monologues.org/plays/
+"><img itemprop="image" src="//www.shakespeare-monologues.org/
+images/foliocover.gif" width="304" height="371" border="0"
+title="Portrait from cover of First Folio" alt="Portrait from
+cover of First Folio" /></a></center>
+<br>                                      <br>
+         <font face="verdana" size="+1">Built for actors. <br> Used by
+everyone. </font>
+<br><br>
+<br><br></td>
+</tr>
+<tr><td width="530">
+<font color="#F9F9DF">The links above lead to a complete list of Shakespeare's
+Monologues.<br> The monologues are organized by play, then categorized by comedy,
+history and tragedy. You can browse and/or search so you can find a monologue
+whether you know which one you want, or if you're looking for monologue ideas.
+Each monologue entry includes the character's name, the first line of the speech,
+whether it is verse or prose, and shows the act, scene & line number.  Each entry
+provides a link to the full text of the scene. You can download each monologue for
+printing, already double-spaced for scansion and transcription. These PDFs are
+provided courtesy of Tee Quillin.</font>
+</td></tr>
+</table>
+
+<table align="center" valign="bottom" width="80%">
+<tr>
+<td align="center" valign="bottom" height="50" width="100%">
+<font face="verdana" size="2px">
+<a href="women/">[Women's Monologues]</a>
+<a href="men/">[Men's Monologues]</a>
+<a href="links">[Links]</a>
+<a href="/quiz">[Quiz]</a>
+<a href="//twitter.com/ShakesMonos/" target="_blank">[Twitter]</a>
+<a href="//www.facebook.com/ShakespearesMonologues" target="_blank">[FB]</a>
+<a href="/faqs">[FAQ]</a>
+<a href="/aboutus">[About]</a>
+<a href="/privacy">[Privacy]</a>
+<a href="http://shults.org/shakes/contact.php">[Contact]</a>
+</font>
+<br><br>
+</td></tr>
+<tr><td align="center" valign="top" width="100%">
+<font face="verdana" size="1px">
+<!-- begin donation button -->
+<div id="everbutton-anchor-container"><a id="everbutton-693-1469672781-59"
+class="everbutton everbutton-693-1469672781-59 everbutton-blue" href="https://www.
+everbutton.com/pay/693" style="height:20px;width:49px;min-width:45px;padding:0px;
+">Tip Jar</a></div>
+<div><script type="text/javascript">
+var EB = EB || {};
+EB.button_stack = EB.button_stack || [];
+EB.button_stack.push({
+	anchor_id: "everbutton-693-1469672781-59",
+	button_id: 693,
+	host: "https://www.everbutton.com"
+});
+if (!EB.script) {
+	EB.script = document.createElement('script');
+	EB.script.type = 'text/javascript';
+	EB.script.async = true;
+	EB.script.src = 'https://www.everbutton.com/assets/everbutton.v1.js?
+button_id=693';
+	var s = document.getElementsByTagName('script')[0];
+	s.parentNode.insertBefore(EB.script, s);
+} else if (EB.load_buttons) {
+	EB.load_buttons();
+}
+</script></div>
+<!-- end donation button -->
+<br/>
+<!-- begin social media buttons -->
+     <!-- begin facebook button -->
+     <div id="fb-root"></div>
+     <div class="fb-like" data-href="//www.shakespeare-monologues.org/"
+data-layout="button_count" data-action="like" data-show-faces="true"
+data-share="false"></div>
+     <!-- end facebook button -->
+     <!-- begin twitter follow button -->
+     <a href="//twitter.com/ShakesMonos" class="twitter-follow-button"
+data-show-count="false">Follow @ShakesMonos</a>
+     <!-- end twitter follow button -->
+<!-- end social media buttons -->
+</font></td></tr></table>
+<div align="right">
+<table align="right">
+<tr>
+<td align="left" valign="bottom" width="250">
+<br>
+<font style="font-size:60%">
+&copy; 1997<script>new Date().getFullYear()>2010&&document.write("-"+new Date().
+getFullYear());</script> Steven Shults & Brandon Faloona
+<br/>
+<!-- Creative Commons Info -->
+This site is licensed under a <a rel="license"
+href="//creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons License</a>.
+<br>
+<a href="//creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="Creative Commons
+License" src="/images/somerights20.gif" border="0"></a><br>
+The texts of Shakespeare's plays is public domain.<br>
+Contact linked sites regarding intellectual property rights of those sites.</font><br>
+<br>
+</td>
+</tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</body></html>

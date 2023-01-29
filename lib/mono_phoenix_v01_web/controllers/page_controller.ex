@@ -4,14 +4,25 @@ defmodule MonoPhoenixV01Web.PageController do
 
   @spec index(Plug.Conn.t(), any) :: Plug.Conn.t()
   def index(conn, _params) do
-    query = from p in "plays",
-      join: m in "monologues",
-      on: m.play_id == p.id,
-      group_by: [p.title, m.character, m.first_line, m.location],
-      select: %{play: p.title, character: m.character, firstline: m.first_line, location: m.location}
+    query =
+      from(p in "plays",
+        join: m in "monologues",
+        on: m.play_id == p.id,
+        group_by: [p.title, m.character, m.first_line, m.location],
+        select: %{
+          play: p.title,
+          character: m.character,
+          firstline: m.first_line,
+          location: m.location
+        }
+      )
 
-      rows = MonoPhoenixV01.Repo.all(query)
+    rows = MonoPhoenixV01.Repo.all(query)
 
-      render(conn, "index.html", rows: rows)
+    render(conn, "index.html", rows: rows)
+  end
+
+  def hello(conn, _params) do
+    html(conn, "hello, world!")
   end
 end
