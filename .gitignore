@@ -32,6 +32,9 @@ mono_phoenix_v01-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# Visual Studio Code Elixir LS build artifacts
+.elixir_ls/
+
 # my misc backup habits
 *.bak
 *.2023*
