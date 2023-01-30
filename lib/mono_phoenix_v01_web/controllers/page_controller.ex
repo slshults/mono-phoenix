@@ -22,6 +22,10 @@ defmodule MonoPhoenixV01Web.PageController do
     render(conn, "index.html", rows: rows)
   end
 
+  def sandbox(conn, _params) do
+    render(conn, "sandbox.html")
+  end
+
   def hello(conn, _params) do
     html(conn, "hello, world!")
   end

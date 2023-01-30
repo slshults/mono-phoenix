@@ -1,43 +1,3 @@
-<!DOCTYPE html>
-<html itemscope itemtype="https://schema.org/CollectionPage">
-<head>
-
-<!-- when the rest of the page has loaded, load the social.js-one-script-to-rule-them-all -->
-     <script>
-     (function($) {
-       $(window).bind("load", function() {
-       $.getScript('{ Routes.static_path(@conn, "/js/social.js")}', function() {});
-       });
-     })(jQuery);
-     </script>
-<!-- rouse the rabble to call the FCC to keep net neutrality. 2-23-2019: disabled until there's a new president and senate marjority. we're getting nowhere until then. -->
-     <!-- script src="https://widget.battleforthenet.com/widget.js" async></script -->
-     <!-- Begin cookie consent -->
-     <link rel="stylesheet" type="text/css" href={ Routes.static_path(@conn, "/css/cookieconsent.min.css")} />
-     <script src={ Routes.static_path(@conn, "/js/cookieconsent.min.js")}></script>
-     <script>
-     window.addEventListener("load", function(){
-     window.cookieconsent.initialise({
-       "palette": {
-         "popup": {
-           "background": "#d5ca9d"
-         },
-         "button": {
-           "background": "#4b81e8"
-         }
-       },
-       "content": {
-         "message": "This site uses cookies for site functionality.  We use third-party tools for ads, social media integration, link-sharing, donations, and site analytics. Each of these third party tools also use cookies. By using this site, you agree to the use of these cookies.",
-         "dismiss": "Understood",
-         "link": "Click here for details.",
-         "href": "https://www.shakespeare-monologues.org/privacy"
-       }
-     })});
-     </script>
-     <!-- End cookie consent -->
-</head>
-<body bgcolor="#f9f9df"> <!-- too bright for test and dev-- background={ Routes.static_path(@conn, "/images/parchment.jpg")}> -->
-
 
 <table align="center" width="100%">
 <tr>
@@ -52,7 +12,7 @@
          <font face="verdana" size="-1"><i>Making it easier to find monologues since 1997</i>
     </font>              <br><br>
 
-                   <center><a href="plays"><img itemprop="image" src={ Routes.static_path(@conn, "/images/foliocover.gif")} border="0"></a></center>
+    <center><a href="plays"><img itemprop="image" src={ Routes.static_path(@conn, "/images/foliocover.gif")} border="0"></a></center>
 
 </td>
 </tr>
@@ -97,5 +57,3 @@ Feedback, suggestions, corrections and questions encouraged.  <a href="http://sh
 </tr>
 </table>
 
-
-</body></html>
