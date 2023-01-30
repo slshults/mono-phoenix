@@ -18,13 +18,14 @@ defmodule MonoPhoenixV01Web.Router do
     pipe_through(:browser)
 
     get("/", PageController, :index)
-    get("/hello", PageController, :hello)
     get("/aboutus", StaticPageController, :aboutus)
     get("/faq", StaticPageController, :faq)
     get("/home", StaticPageController, :home)
     get("/links", StaticPageController, :links)
     get("/privacy", StaticPageController, :privacy)
     get("/maintenance", StaticPageController, :maintenance)
+    get("/hello", PageController, :hello)
+    get("/sandbox", PageController, :sandbox)
   end
 
   # Other scopes may use custom stacks.

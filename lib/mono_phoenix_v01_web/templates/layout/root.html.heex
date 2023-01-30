@@ -143,7 +143,7 @@
 
 
   </head>
-  <body>
+  <body bgcolor="#F9F9DF" background="/images/parchment.jpg">
     <header>
       <section class="container">
         <nav>
@@ -155,7 +155,12 @@
         </nav>
       </section>
     </header>
+
+<!-- begin dynamic inner content -->
+
     <%= @inner_content %>
+
+<!-- end dynamic inner content -->
 
 <!-- begin footer goodies copied from an old static page after migration -->
 
@@ -177,9 +182,11 @@
 
     <a href="https://www.facebook.com/ShakespearesMonologues" target="_blank">[FB]</a>
 
-    <a href={ Routes.static_path(@conn, "/faqs")}>[FAQ]</a>
+    <a href={ Routes.static_path(@conn, "/faq")}>[FAQ]</a>
 
     <a href={ Routes.static_path(@conn, "/privacy")}>[Privacy]</a>
+
+    <a href={ Routes.static_path(@conn, "/aboutus")}>[About Us]</a>
 
     <a href="http://shults.org/shakes/contact.php">[Contact]</a> </font>
     <br><br>
@@ -220,8 +227,8 @@
     </tr>
     </table>
   </td></tr></table>
-<!-- end header goodies copied from an old static page after migration -->
-
-
+<!-- end footer goodies copied from an old static page after migration -->
+  
+  
   </body>
 </html>
