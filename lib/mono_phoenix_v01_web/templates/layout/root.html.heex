@@ -8,12 +8,12 @@
     <meta name="csrf-token" content={csrf_token_value()}>
     <link rel="icon" href={Routes.static_path(@conn, "/favicon.ico")}>
     <%= live_title_tag assigns[:page_title] || "MonoPhoenixV01", suffix: " · Shakespeare's Monologues" %>
-    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/css/app.css")}/>
-    <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/js/app.js")}></script>
+    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")}/>
+    <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/app.js")}></script>
 
 <!-- begin header goodies copied from an old static page after migration -->
 
-  <script src={ Routes.static_path(@conn, "/assets/js/jquery.min.js")}> type="text/javascript"></script>
+  <script src={ Routes.static_path(@conn, "/assets/js/jquery.min.js")}></script>
   <script type="text/javascript">
     jQuery.noConflict()
   </script>
@@ -110,14 +110,14 @@
         <script>
         (function($) {
           $(window).bind("load", function() {
-          $.getScript('{ Routes.static_path(@conn, "/js/social.js")}', function() {});
+          $.getScript('/assets/js/social.js', function() {});
           });
         })(jQuery);
         </script>
 
      <!-- Begin cookie consent -->
-      <link rel="stylesheet" type="text/css" href={ Routes.static_path(@conn, "/css/cookieconsent.min.css")} />
-      <script src={ Routes.static_path(@conn, "/js/cookieconsent.min.js")}></script>
+      <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.css" />
+      <script src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.js"></script>
       <script>
       window.addEventListener("load", function(){
       window.cookieconsent.initialise({
@@ -178,7 +178,7 @@
 
     <a href="//www.shakespeare-monologues.org/quiz.html">[Quiz]</a>
 
-    <a href="//twitter.com/ShakesMonos/" target="_blank">[Twitter]</a>
+    <!-- Add M@stodon here -->
 
     <a href="https://www.facebook.com/ShakespearesMonologues" target="_blank">[FB]</a>
 
@@ -200,9 +200,8 @@
         <div id="fb-root"></div>
         <div class="fb-like" data-href="//www.shakespeare-monologues.org/" data-layout="button_count" data-action="like" data-show-faces="true" data-share="false"></div>
         <!-- end facebook button -->
-        <!-- begin twitter follow button -->
-        <a href="//twitter.com/ShakesMonos" class="twitter-follow-button" data-show-count="false">Follow @ShakesMonos</a>
-        <!-- end twitter follow button -->
+        <!-- add M@stodon follow button here -->
+
     <!-- end social media buttons -->
 
     <table align="right" style="padding-right: 25px;">
