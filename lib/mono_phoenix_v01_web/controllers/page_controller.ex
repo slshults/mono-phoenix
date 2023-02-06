@@ -2,6 +2,7 @@ defmodule MonoPhoenixV01Web.PageController do
   use MonoPhoenixV01Web, :controller
   import Ecto.Query, only: [from: 2]
 
+  # This is the test query that displays on the default index page in test and dev
   @spec index(Plug.Conn.t(), any) :: Plug.Conn.t()
   def index(conn, _params) do
     query =
@@ -20,6 +21,30 @@ defmodule MonoPhoenixV01Web.PageController do
     rows = MonoPhoenixV01.Repo.all(query)
 
     render(conn, "index.html", rows: rows)
+  end
+
+  # Show all the monologues in the database
+  @spec monologues(Plug.Conn.t(), any) :: Plug.Conn.t()
+  def monologues(conn, _params) do
+    query =
+      from(m in "monologues",
+        join: p in "plays",
+        on: m.play_id == p.id,
+        group_by: [p.title, m.character, m.first_line, m.location],
+        select: %{
+          play: p.title,
+          character: m.character,
+          firstline: m.first_line,
+          location: m.location,
+          body: m.body
+        }
+      )
+
+    rows = MonoPhoenixV01.Repo.all(query)
+
+    rows = MonoPhoenixV01.Repo.all(query)
+
+    render(conn, "monologues.html", rows: rows)
   end
 
   def sandbox(conn, _params) do

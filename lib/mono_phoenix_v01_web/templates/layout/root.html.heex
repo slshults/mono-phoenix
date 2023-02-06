@@ -149,7 +149,7 @@
         <nav>
           <ul>
             <%= if function_exported?(Routes, :live_dashboard_path, 2) do %>
-              <li><%= link "LiveDashboard", to: Routes.live_dashboard_path(@conn, :home) %></li>
+              <li><%= link "LiveDashboard", to: Routes.live_dashboard_path(@conn, :home) %><%= link "Home", to: Routes.static_path(@conn, "/home") %></li>
             <% end %>
           </ul>
         </nav>
@@ -168,7 +168,7 @@
     <tr>
     <td align="center" valign="bottom" height="90" width="100%">
     <font face="verdana" size="2px"><br>
-    <a href={ Routes.static_path(@conn, "/")}>[Home]</a>
+    <a href={ Routes.static_path(@conn, "/home")}>[Home]</a>
 
     <a href={ Routes.static_path(@conn, "/women/")}>[Women's Monologues]</a>
 
