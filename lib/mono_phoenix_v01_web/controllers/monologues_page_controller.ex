@@ -1,9 +1,9 @@
-defmodule MonoPhoenixV01Web.PageController do
+defmodule MonoPhoenixV01Web.MonologuesPageController do
   use MonoPhoenixV01Web, :controller
   import Ecto.Query, only: [from: 2]
 
   # Constant
-  @display_limit 100
+  # @display_limit 100
 
   # Show all the monologues in the database
   @spec monologues(Plug.Conn.t(), any) :: Plug.Conn.t()
@@ -12,7 +12,7 @@ defmodule MonoPhoenixV01Web.PageController do
       from(m in "monologues",
         join: p in "plays",
         on: m.play_id == p.id,
-        group_by: [p.title, m.character, m.first_line, m.location],
+        group_by: [p.title, m.character, m.first_line, m.location, m.body],
         select: %{
           play: p.title,
           character: m.character,
@@ -23,6 +23,7 @@ defmodule MonoPhoenixV01Web.PageController do
       )
 
     rows = MonoPhoenixV01.Repo.all(query)
+
     render(conn, "monologues.html", rows: rows)
   end
 end

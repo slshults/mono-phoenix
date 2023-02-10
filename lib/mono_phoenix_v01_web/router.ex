@@ -1,5 +1,5 @@
 defmodule MonoPhoenixV01Web.Router do
-  alias MonoPhoenixV01Web.PageController
+  # alias MonoPhoenixV01Web.PageController
   use MonoPhoenixV01Web, :router
 
   pipeline :browser do
@@ -19,13 +19,13 @@ defmodule MonoPhoenixV01Web.Router do
     pipe_through(:browser)
 
     get("/", PageController, :index)
-    get("/allplays", PageController, :plays)
-    get("/allmonologues", PageController, :monologues)
-    get("/play", PageController, :play)
-    get("/men", PageController, :men)
-    get("/women", PageController, :women)
-    get("/both", PageController, :both)
-    get("/search", PageController, :search)
+    get("/plays", PlaysPageController, :plays)
+    get("/monologues", MonologuesPageController, :monologues)
+    # get("/play", PlayPageController, :play)
+    # get("/men", MenPageController, :men)
+    # get("/women", WomenPageController, :women)
+    # get("/both", BothPageController, :both)
+    # get("/search", SearchPageController, :search)
     get("/aboutus", StaticPageController, :aboutus)
     get("/faq", StaticPageController, :faq)
     get("/home", StaticPageController, :home)
