@@ -1,0 +1,14 @@
+<section class="body">
+  <h1><%= gettext "Monologues from that play you clicked on", name: "Monologues from that play you clicked on" %></h1>
+</section>
+
+<section class="row">
+  <article class="monologue_preview">
+     <%= for row <- @rows do %>
+       <br><br>
+       <%= row.play %>, <%= row.character %>, <%= row.firstline %>, <%= row.location %>
+      <br>
+       <%= raw(row.body) %>
+     <% end %>
+  </article>
+</section>
