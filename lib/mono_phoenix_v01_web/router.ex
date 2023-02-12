@@ -21,7 +21,7 @@ defmodule MonoPhoenixV01Web.Router do
     get("/", PageController, :index)
     get("/plays", PlaysPageController, :plays)
     get("/monologues", MonologuesPageController, :monologues)
-    # get("/play", PlayPageController, :play)
+    get("/play/:playid", PlayPageController, :play)
     # get("/men", MenPageController, :men)
     # get("/women", WomenPageController, :women)
     # get("/both", BothPageController, :both)

@@ -1,0 +1,89 @@
+<div class="jquery-search-replace">
+  <!-- Contents of this div replaced by key up triggered jquery ajax call -->
+  <?php } ?>
+  <div class="monologue-controls">
+    &nbsp;
+    <?php if (@play) { ?>
+      <span class="play-control accent-font">
+        <a class="remove-play" href="#" title="Remove play filter">
+          <span class="huge-font">&#124;</span>
+        </a>
+        <span class="filter-play"><?=@play.title?></span>
+      </span>
+      <span class="huge-font">&#124;</span>
+    <?php } ?>
+    <span class="gender-control accent-font">
+      <a class="filter-gender" href="#" data-action="w">Women</a>
+      <span class="huge-font">&#124;</span>
+      <a class="filter-gender" href="#" data-action="m">Men</a>
+      <span class="huge-font">&#124;</span>
+      <a class="filter-gender" href="#" data-action="a">All</a>
+    </span>
+  </div>
+</div>
+<span class="huge-font">&#124;</span>
+<span class="toggle-control big-font accent-font">
+  <a class="toggle-mono mono-expand display-hide" href="#" data_action="expand">
+    <img alt="expand text" title="expand text" src={ Routes.static_path(@conn, "/images/ExpandAll.png")}>
+  </a>
+  <a class="toggle-mono mono-collapse display-hide" href="#" data_action="collapse">
+    <img alt="collapse text" title="collapse text" src={ Routes.static_path(@conn, "/images/CollapseAll.png")}>
+  </a>
+</span>
+
+<!-- If monologues are empty -->
+<div class="empty-table-message accent-font">
+  Alas, we didn't find a monologue containing exactly what you typed.
+</div>
+
+<!-- If monologues are not empty -->
+<table class="monologue-list">
+  <thead class="accent-font">
+    <tr>
+      <th class="header">Details</th>
+      <th class="header">First Line</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Iterate through each monologue -->
+    <%= for(monologue, index) <- @monologues do %>
+      <tr class="{ (index.even? ? 'even' : 'odd') }">
+        <td>
+          <span class="monologue-character"><%= monologue.character %></span>-
+          <a class="location" href="{ ( monologue.body_link ) }" target="_blank">
+            <%= monologue.location %>
+          </a>
+          <div class="monologue-detail">
+            <%= monologue.style + monologue.intercut_label %>
+            <div class="monologue-playname">
+              <%= gendered_play_link(monologue.play) %>
+            </div>
+          </div>
+        </td>
+        <td class="monologue-firstline-table">
+          <%= link_to(monologue.first_line, url(:monologues, :show, id: monologue.id)) %>
+          <%= if defined?(toggle) && (toggle == 'expand') do %>
+            <div class="monologue-body-inline">
+              <%= monologue.body %>
+              <a href="{  monologue.pdf_link ) }" target="_blank">
+                <img src={ Routes.static_path(@conn, "/images/pdf_file_icon_16x16.png")}>
+              </a>
+            </div>
+          <% else %>
+            <div class="monologue-body-inline display-hide">
+              <%= monologue.body %>
+              <a href="{ ( monologue.pdf_link ) }" target="_blank">
+                <img src={ Routes.static_path(@conn, "/images/pdf_file_icon_16x16.png")}>
+              </a>
+            </div>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<script>
+  <%= js_set_global_params %>
+  registerControls();
+</script>
