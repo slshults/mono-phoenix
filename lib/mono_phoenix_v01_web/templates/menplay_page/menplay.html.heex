@@ -1,0 +1,17 @@
+<%= live_title_tag assigns[:page_title] || "Men's Monologues Index", suffix: " · Shakespeare's Monologues" %>
+<section class="title">
+  <article class="show_title">
+  <h1>Men's Monologues in <%= hd(@rows).play %></h1>
+  </article>
+</section>
+
+<section class="row">
+  <article class="monologue_preview">
+     <%= for row <- @rows do %>
+       <br><br>
+       <%= row.play %>, <%= row.character %>, <%= row.firstline %>, <%= row.location %>
+      <br>
+       <%= raw(row.body) %>
+     <% end %>
+  </article>
+</section>

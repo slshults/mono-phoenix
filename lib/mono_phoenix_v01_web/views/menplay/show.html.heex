@@ -1,0 +1,30 @@
+<div class="center-column-header"></div>
+
+<div class="center-column-list">
+
+  <div class="col-md-2 monologue-show">
+
+    &nbsp;
+    <h3>{{@monologue.character}}</h3>
+    <div class="monologue-actscene">
+      <a href="{{@monologue.body_link}}" target="_blank">
+        {{@monologue.location}}
+    </div>
+    <div class="monologue-detail">
+      {{@monologue.style}} {{@monologue.intercut_label}}
+    </div>
+    <div class="monologue-playname">
+      {{link_to(@monologue.play.title, url_for(:plays, :show, id: @monologue.play.id))}}
+    </div>
+
+    &nbsp;
+  </div>
+  <!-- second column -->
+  <div class="col-md-10">
+    <br><br>
+    &nbsp;
+    <div class="monologue-body">
+      {{@monologue.body}}
+      <a href="{{@monologue.pdf_link}}" target="_blank">
+        <img src="{{Routes.static_path(@conn, "/images/pdf_file_icon_16x16.png")}}" border="0">
+    </div>

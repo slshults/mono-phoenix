@@ -1,0 +1,120 @@
+<%= live_title_tag assigns[:page_title] || "Men's Monologues Index", suffix: " · Shakespeare's Monologues" %>
+<section class="body">
+ <h1>Browse men's monologues by play</h1>
+</section>
+
+      <div class="center-column col-md-7 col-xs-12">
+        <!-- Page views should contain .center-column-header and .center-column-list -->
+        <div class="center-column-header">
+        </div>
+        <div class="center-column-list">
+          <div class="jquery-search-replace">
+            <!-- Contents of this div replaced by key up triggered jquery ajax call -->
+            <table class="categories-list">
+              <tr></tr>
+              <thead class="accent-font">
+                <th>Comedies</th>
+                <th>Histories</th>
+                <th>Tragedies</th>
+              </thead>
+              <tr>
+                <td data-label="Comedies" style="vertical-align:top">
+                <%= link "A Midsummer Night's Dream", to: "/men/13" %>
+                <br>
+                <%= link "All's Well That Ends Well", to: "/men/9" %>
+                <br>
+                <%= link "As You Like It", to: "/men/1" %>
+                <br>
+                <%= link "Cymbeline", to: "/men/3" %>
+                <br>
+                <%= link "Love's Labour's Lost", to: "/men/4" %>
+                <br>
+                <%= link "Measure for Measure", to: "/men/10" %>
+                <br>
+                <%= link "Merry Wives of Windsor", to: "/men/11" %>
+                <br>
+                <%= link "Much Ado About Nothing", to: "/men/6" %>
+                <br>
+                <%= link "Pericles, Prince of Tyre", to: "/men/18" %>
+                <br>
+                <%= link "The Comedy of Errors", to: "/men/2" %>
+                <br>
+                <%= link "The Merchant of Venice", to: "/men/5" %>
+                <br>
+                <%= link "The Taming of the Shrew", to: "/men/7" %>
+                <br>
+                <%= link "The Tempest", to: "/men/14" %>
+                <br>
+                <%= link "The Winter's Tale", to: "/men/17" %>
+                <br>
+                <%= link "Troilus and Cressida", to: "/men/15" %>
+                <br>
+                <%= link "Twelfth Night, Or What You Will", to: "/men/8" %>
+                <br>
+                <%= link "Two Gentlemen of Verona", to: "/men/16" %>
+                <br>
+                </td>
+                <td data-label="Histories" style="vertical-align:top">
+                <%= link "Henry IV i", to: "/men/19" %>
+                <br>
+                <%= link "Henry IV ii", to: "/men/20" %>
+                <br>
+                <%= link "Henry V", to: "/men/21" %>
+                <br>
+                <%= link "Henry VI i", to: "/men/22" %>
+                <br>
+                <%= link "Henry VI ii", to: "/men/23" %>
+                <br>
+                <%= link "Henry VI iii", to: "/men/24" %>
+                <br>
+                <%= link "Henry VIII", to: "/men/25" %>
+                <br>
+                <%= link "King John", to: "/men/26" %>
+                <br>
+                <%= link "Richard II", to: "/men/27" %>
+                <br>
+                <%= link "Richard III", to: "/men/28" %>
+                <br>
+                </td>
+                <td data-label="Tragedies" style="vertical-align:top">
+                <%= link "Antony & Cleopatra", to: "/men/29" %>
+                <br>
+                <%= link "Coriolanus", to: "/men/30" %>
+                <br>
+                <%= link "Hamlet", to: "/men/31" %>
+                <br>
+                <%= link "Julius Caesar", to: "/men/38" %>
+                <br>
+                <%= link "King Lear", to: "/men/32" %>
+                <br>
+                <%= link "Macbeth", to: "/men/33" %>
+                <br>
+                <%= link "Othello", to: "/men/34" %>
+                <br>
+                <%= link "Romeo and Juliet", to: "/men/35" %>
+                <br>
+                <%= link "Timon of Athens", to: "/men/36" %>
+                <br>
+                <%= link "Titus Andronicus", to: "/men/37" %>
+                <br>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+<!-- ## begin original test template 
+	<section class="body">
+	  <h1><%= gettext "The Plays", name: "The Plays" %></h1>
+	</section>
+
+	<section class="row">
+	  <article class="row">
+		<h2>The Plays</h2>
+		 <%= for row <- @rows do %>
+		   <br><br>
+		   <%= row.title %>
+		 <% end %>
+	  </article>
+	</section>
+## end original test template -->	

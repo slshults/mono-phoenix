@@ -1,0 +1,51 @@
+<div class="center-column-header">
+  <!-- Render the shared/search_box_controls with no layout, and locals monologue_controls set to false -->
+  <!-- Paths should be updated using routes
+  {Routes.static_path(@conn, "/js/addtohomescreen.js")}
+  {Routes.static_path(@conn, "/css/shakespeare.css")}
+  {Routes.static_path(@conn, "/css/addtohomescreen.css")}  -->
+</div>
+
+<div class="center-column-list">
+  <div class="jquery-search-replace">
+    <!-- Contents of this div replaced by key up triggered jquery ajax call -->
+    <table class="categories-list">
+      <tr>
+        <thead class="accent-font">
+          <th>Comedies</th>
+          <th>Histories</th>
+          <th>Tragedies</th>
+        </thead>
+      </tr>
+      <tr>
+        <td data-label="Comedies">
+          <!-- Sort the comedies, then loop through each one -->
+          {@comedies.sort{|a,b| a.title <=> b.title }.each do |comedy|}
+            <!-- Render the gendered_play_link using routes -->
+            {Routes.static_path(@conn, "/images/foliocover.gif")}
+            {gendered_play_link(comedy)}
+            <br><br>
+          {end}
+        </td>
+        <td data-label="Histories">
+          <!-- Sort the histories, then loop through each one -->
+          {@histories.sort{|a,b| a.title <=> b.title }.each do |history|}
+            <!-- Render the gendered_play_link using routes -->
+            {Routes.static_path(@conn, "/images/foliocover.gif")}
+            {gendered_play_link(history)}
+            <br><br>
+          {end}
+        </td>
+        <td data-label="Tragedies">
+          <!-- Sort the tragedies, then loop through each one -->
+          {@tragedies.sort{|a,b| a.title <=> b.title }.each do |tragedy|}
+            <!-- Render the gendered_play_link using routes -->
+            {Routes.static_path(@conn, "/images/foliocover.gif")}
+            {gendered_play_link(tragedy)}
+            <br><br>
+          {end}
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

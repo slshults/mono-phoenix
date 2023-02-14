@@ -1,0 +1,11 @@
+<div class="center-column-header">
+    <h3>{@title}</h3>
+</div>
+
+<div class="center-column-list">
+    {partial('monologues/list', locals: {show_play_title: false, play_name: @play&.name})}
+    <script>
+        {js_set_global_params}
+        updateDom();
+    </script>
+</div>
