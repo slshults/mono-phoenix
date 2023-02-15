@@ -18,7 +18,7 @@ defmodule MonoPhoenixV01Web.Router do
   scope "/", MonoPhoenixV01Web do
     pipe_through(:browser)
 
-    get("/", PageController, :index)
+    get("/", StaticPageController, :home)
     get("/plays", PlaysPageController, :plays)
     get("/play/:playid", PlayPageController, :play)
     get("/mens", MensPageController, :mens)

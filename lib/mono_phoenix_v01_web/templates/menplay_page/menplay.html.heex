@@ -1,17 +1,27 @@
-<%= live_title_tag assigns[:page_title] || "Men's Monologues Index", suffix: " · Shakespeare's Monologues" %>
-<section class="title">
-  <article class="show_title">
-  <h1>Men's Monologues in <%= hd(@rows).play %></h1>
-  </article>
-</section>
+<%= live_title_tag assigns[:page_title] || "#{hd(@rows).play} · Shakespeare's Monologues", prefix: "Men's Monologues from " %>
 
-<section class="row">
-  <article class="monologue_preview">
-     <%= for row <- @rows do %>
-       <br><br>
-       <%= row.play %>, <%= row.character %>, <%= row.firstline %>, <%= row.location %>
-      <br>
-       <%= raw(row.body) %>
-     <% end %>
-  </article>
-</section>
+<div class="show_title">
+  <h1>Men's monologues from <%= hd(@rows).play %></h1>
+  </div>
+<div>
+  <table class="monologue-show">
+    <tbody>
+    <section class="monologue">
+      <article class="monologue">
+    <%= for row <- @rows do %>
+        <tr class="monologue_listing">
+          <td class="{ (index.even? ? 'even' : 'odd') }">  
+            <span class="monologue-playname"><%= row.play %></span> · <span class="monologue-actscene"><%= row.location %></span> · <span class="monologue-character"><%= row.character %></span><br>
+            1st line: <span class="monologue-firstline-table"><%= row.firstline %></span>
+            <br><br>
+            <span class="monologue-show"><%= raw(row.body) %>  <%= link to: raw(row.pdf), method: :get, target: "_blank" do %><img src={Routes.static_path(@conn, "/images/pdf_file_icon_16x16.png")} alt="Get a double-spaced pdf of this monologue"/><% end %>
+            </span>
+            <br><br>
+          </td>   
+        </tr>
+    <% end %>
+      </article>
+    </section>
+    </tbody>
+  </table>   
+</div>

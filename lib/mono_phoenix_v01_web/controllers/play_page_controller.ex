@@ -12,13 +12,14 @@ defmodule MonoPhoenixV01Web.PlayPageController do
         join: p in "plays",
         on: m.play_id == p.id,
         where: p.id == ^playid,
-        group_by: [p.id, p.title, m.character, m.first_line, m.location, m.body],
+        group_by: [p.id, p.title, m.character, m.first_line, m.location, m.body, m.pdf_link],
         select: %{
           play: p.title,
           character: m.character,
           firstline: m.first_line,
           location: m.location,
-          body: m.body
+          body: m.body,
+          pdf: m.pdf_link
         }
       )
 
