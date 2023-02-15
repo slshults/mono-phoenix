@@ -14,13 +14,23 @@ defmodule MonoPhoenixV01Web.MenplayPageController do
         join: g in "genders",
         on: g.id == m.gender_id,
         where: p.id == ^playid and (g.name == "Men" or g.name == "Both"),
-        group_by: [p.id, g.name, p.title, m.character, m.first_line, m.location, m.body],
+        group_by: [
+          p.id,
+          g.name,
+          p.title,
+          m.character,
+          m.first_line,
+          m.location,
+          m.body,
+          m.pdf_link
+        ],
         select: %{
           play: p.title,
           character: m.character,
           firstline: m.first_line,
           location: m.location,
-          body: m.body
+          body: m.body,
+          pdf: m.pdf_link
         }
       )
 
