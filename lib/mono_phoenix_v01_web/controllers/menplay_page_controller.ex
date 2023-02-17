@@ -16,19 +16,20 @@ defmodule MonoPhoenixV01Web.MenplayPageController do
         where: p.id == ^playid and (g.name == "Men" or g.name == "Both"),
         group_by: [
           p.id,
-          g.name,
           p.title,
+          m.location,
           m.character,
           m.first_line,
-          m.location,
+          m.style,
           m.body,
           m.pdf_link
         ],
         select: %{
           play: p.title,
+          location: m.location,
+          style: m.style,
           character: m.character,
           firstline: m.first_line,
-          location: m.location,
           body: m.body,
           pdf: m.pdf_link
         }
