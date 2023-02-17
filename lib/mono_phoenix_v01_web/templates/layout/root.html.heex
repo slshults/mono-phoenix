@@ -6,22 +6,37 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link rel="icon" href={Routes.static_path(@conn, "/favicon.ico")}>
+
+    <link rel="icon" href={Routes.static_path(@conn, "/favicon.ico")}>
+
     <link phx-track-static rel="stylesheet" href={ Routes.static_path(@conn, "/assets/css/normalize.css")}> 
-  <!--  <link phx-track-static rel="stylesheet" href={ Routes.static_path(@conn, "/assets/css/bootstrap.min.css")}> -->
-    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/css/application.css")}/>
-    <link phx-track-static rel="stylesheet" href={ Routes.static_path(@conn, "/assets/css/application.withmobile.css")}>
-        <script defer phx-track-static type="text/javascript"  src={ Routes.static_path(@conn, "/assets/js/jquery.min.js")}></script>
-    <script defer phx-track-static type="text/javascript"  src={ Routes.static_path(@conn, "/assets/js/jquery-ujs.js")}></script>
-    <script defer phx-track-static type="text/javascript"  src={ Routes.static_path(@conn, "/assets/js/bootstrap.min.js")}></script>
-    <script defer phx-track-static type="text/javascript"  src={ Routes.static_path(@conn, "/assets/js/application.js")}></script>
+  
+    <link phx-track-static rel="stylesheet" href={ Routes.static_path(@conn, "/assets/css/bootstrap.css.map")}>
+
+    <!-- link phx-track-static rel="stylesheet" href={ Routes.static_path(@conn, "/assets/css/bootstrap.min.css")} -->
+
+    <link phx-track-static rel="stylesheet" href={ Routes.static_path(@conn, "/assets/css/bootstrap-theme.min.css")}>
+
+        <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")}>
+  
+    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/css/application.css")}>
+
+    <!-- link phx-track-static rel="stylesheet" href={ Routes.static_path(@conn, "/assets/css/application.withmobile.css")} -->
+
+    <!--script defer phx-track-static type="text/javascript"  src={ Routes.static_path(@conn, "/assets/js/jquery.min.js")}></script -->
+
+    <!--script defer phx-track-static type="text/javascript"  src={ Routes.static_path(@conn, "/assets/js/bootstrap.min.js")}></script -->
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=IM+Fell+English" type="text/css" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=IM+Fell+DW+Pica:400,400italic" type="text/css" rel="stylesheet">
 
-    <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/app.js")}></script>
 
 <!-- begin header goodies copied from an old static page after migration -->
 
-  <script src={ Routes.static_path(@conn, "/assets/js/jquery.min.js")}></script>
   <script type="text/javascript">
     jQuery.noConflict()
   </script>
@@ -152,8 +167,9 @@
 
   </head>
   <body bgcolor="#F9F9DF" background="/images/parchment.jpg">
+
     <header>
-      <section class="container">
+      <section class="">
         <nav>
           <ul>
             <%= if function_exported?(Routes, :live_dashboard_path, 2) do %>
@@ -163,12 +179,59 @@
         </nav>
       </section>
     </header>
-
+<div class="container">
 <!-- begin dynamic inner content -->
 
     <%= @inner_content %>
 
 <!-- end dynamic inner content -->
+</div>
 
   </body>
+   <script>
+    <?php echo $js_set_global_params; ?>
+    $("#search-box")[0].placeholder = createPlaceholderText();
+  </script>
+
+  <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script> -->
+  <script>
+      $(function () { 
+      // check to see if search is invoked in the URL first
+      if ( document.location.href.indexOf('/?search=') > -1 )
+        //grab the entire query string
+        var query = document.location.search.replace('?', '');
+
+        //extract each field/value pair
+        query = query.split('&');
+
+        //run through each pair
+        for (var i = 0; i < query.length; i++) { 
+
+          //split up the field/value pair into an array
+          var field = query[i].split("=");
+
+          //decode it, target the field and assign its value
+          var dec = decodeURIComponent(field[1]).replace( /\+/g, ' ' );
+                    $("input[name='" + field[0] + "'], select[name='" + field[0] + "']").val(dec);
+      	  queryChanged()
+    			doSearch(gParams);
+         }
+       });
+  </script>
+    <script>
+<!--
+	var adblock = true;
+//-->
+  </script>
+  <script src={ Routes.static_path(@conn, "/assets/js/ad/adframe.js")} type="text/javascript"></script>
+  <script type="text/javascript">
+    if(adblock) { 
+      document.getElementById("a1").innerHTML = '<center><img src="/images/scrollthing.gif" width="57" height="150" align="center" /><br><a id="everbutton-693-1398040059-85" class="everbutton everbutton-693-1398040059-85 everbutton-blue" href="https://www.everbutton.com/donate/693" style="height:20px;width:49px;min-width:45px;padding:0px;">Tip Jar</a><br><a href="//www.zazzle.com/shakesmonosstuff*" rel="nofollow" target="_blank"><img border="0" width="95" height="20" src="/images/zazzlebutton.png"</a></center>';
+
+      document.getElementById("a2").innerHTML = '<center><img src="/images/scrollthing.gif" width="57" height="150" align="center" /><br><a id="everbutton-693-1398040059-85" class="everbutton everbutton-693-1398040059-85 everbutton-blue" href="https://www.everbutton.com/donate/693" style="height:20px;width:49px;min-width:45px;padding:0px;">Tip Jar</a><br><a href="//www.zazzle.com/shakesmonosstuff*" rel="nofollow" target="_blank"><img border="0" width="95" height="20" src="/images/zazzlebutton.png"></a></center>';
+     }
+
+// https://detect-ad-blocking-software.webconrad.com/
+//-->
+</script>
 </html>

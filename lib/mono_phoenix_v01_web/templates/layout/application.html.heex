@@ -1,337 +1,139 @@
-<!DOCTYPE html>
-<html itemscope itemtype="https://schema.org/CollectionPage" lang="en">
-  <head>
-    <meta content="text/html; charset=utf-8" http-equiv="Content-type" />
-    <title>
-          <%= live_title_tag assigns[:page_title] || "MonoPhoenixV01", suffix: " · Shakespeare's Monologues" %>
-    </title>
-    <script src={ Routes.static_path(@conn, "/js/jquery.min.js")}></script>
-    <script src={ Routes.static_path(@conn, "/js/jquery-ujs.js")}></script>
-    <script src={ Routes.static_path(@conn, "/js/bootstrap.min.js")}></script>
-    <script src={ Routes.static_path(@conn, "/js/application.js")}></script>
-    <link rel="stylesheet" href={ Routes.static_path(@conn, "/css/normalize.css")}>
-    <link rel="stylesheet" href={ Routes.static_path(@conn, "/css/bootstrap.min.css")}>
-    <link rel="stylesheet" href={ Routes.static_path(@conn, "/css/application.css")}>
-    <link rel="stylesheet" href={ Routes.static_path(@conn, "/css/application.withmobile.css")}>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=IM+Fell+English" type="text/css" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=IM+Fell+DW+Pica:400,400italic" type="text/css" rel="stylesheet">
-    <script>
-      (function(a,b,c){ if(c in b&&b[c]){ var d,e=a.location,f=/^(a|html)$/i;a.addEventListener("click",function(a){ d=a.target;while(!f.test(d.nodeName))d=d.parentNode;"href"in d&&(d.href.indexOf("http")||~d.href.indexOf(e.host))&&(a.preventDefault(),e.href=d.href) },!1) } })(document,window.navigator,"standalone")
-    </script>
-        <!-- Mobile OS add to homescreen and web app goodies -->
-    <meta content="width=device-width, initial-scale=1" name="viewport" />
-    <meta content="yes" name="mobile-web-app-capable" />
-    <link href="/favicon.ico" rel="icon" />
-    <link href="/favicon.ico" rel="shortcut icon" />
-    <link href={ Routes.static_path(@conn, "/images/icon-196x196.png")} rel="icon" sizes="196x196" />
-    <link href={ Routes.static_path(@conn, "/images/icon-196x196.png")} rel="apple-touch-icon" sizes="196x196" />
-    <link href={ Routes.static_path(@conn, "/images/icon-196x196.png")} rel="shortcut icon" sizes="196x196" />
-    <meta content="yes" name="apple-mobile-web-app-capable" />
-    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
-    <meta content="ShakesMonos" name="apple-mobile-web-app-title" />
-    <meta content="no" name="msapplication-tap-highlight" />
-    <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style" />
-    <link href={ Routes.static_path(@conn, "/images/icon-144x144.png")} rel="apple-touch-icon" sizes="144x144" />
-        <link href="/images/icon-120x120.png" rel="apple-touch-icon" sizes="120x120" />
-    <link href="/images/icon-114x114.png" rel="apple-touch-icon" sizes="114x114" />
-    <link href="/images/icon-76x76.png" rel="apple-touch-icon" sizes="76x76" />
-    <link href="/images/icon-72x72.png" rel="apple-touch-icon" sizes="72x72" />
-    <!-- for the landscape tip -->
-    <link href="/images/landscape-icon-196x157.png" rel="apple-touched-icon" sizes="152x152" />
-    <link href="/images/landscape-icon-196x157.png" rel="landscape icon" sizes="152x152" />
-    <!-- iPhone Splash Screen -->
-    <link href="/images/apple-touch-startup-image-320x460.png" media="(device-width: 320px)" rel="apple-touch-startup-image" />
-    <!-- iPhone (Retina) Splash Screen -->
-    <link href="/images/apple-touch-startup-image-640x920.png" media="(device-width: 320px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-    <!-- iPhone (5) Splash Screen -->
-    <link href="/images/Default-568h@2x.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" sizes="640x1096" />
-    <!-- iPad (portrait) Splash Screen -->
-    <link href="/images/apple-touch-startup-image-768x1004.png" media="(device-width: 768px) and (orientation: portrait)" rel="apple-touch-startup-image" />
-    <!-- iPad (landscape) Splash Screen -->
-    <link href="/images/apple-touch-startup-image-1024x1024.png" media="(device-width: 768px) and (orientation: landscape)" rel="apple-touch-startup-image" />
-    <!-- iPad (Retina, portrait) Splash Screen -->
-    <link href="/images/apple-touch-startup-image-1536x2008.png" media="(device-width: 1536px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-    <!-- iPad (Retina, landscape) Splash Screen -->
-    <link href="/images/apple-touch-startup-image-2048x1496.png" media="(device-width: 1536px)  and (orientation: landscape) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-    <link href="/images/icon-152x152.png" rel="apple-touch-icon-precomposed" />
-        <script>
-      addToHomescreen({ 
-         maxDisplayCount: 2,
-         lifespan: 15,
-          });
-    </script>
-    <link href={ Routes.static_path(@conn, "/css/addtohomescreen.css")} rel="stylesheet" type="text/css" />
-    <script src={ Routes.static_path(@conn, "/js/addtohomescreen.js")}></script>
-    <script>
-      addToHomescreen({ 
-         maxDisplayCount: 3,
-         lifespan: 20,
-          });
-    </script>
-    <link href={ Routes.static_path(@conn, "/images/icon-196x196.png")} rel="icon" sizes="196x196" />
-    <link href={ Routes.static_path(@conn, "/images/icon-196x196.png")} rel="apple-touch-icon" sizes="196x196" />
-    <link href={ Routes.static_path(@conn, "/images/icon-196x196.png")} rel="shortcut icon" sizes="196x196" />
-    <style id="antiClickjack">
-      body{ display:none !important; }
-    </style>
-    <script>
-      if (self === top) { 
-          var antiClickjack = document.getElementById("antiClickjack");
-          antiClickjack.parentNode.removeChild(antiClickjack);
-       } else { 
-          top.location = self.location;
-       }
-    </script>
-    <meta content="Making it easier to find monologues since 1997. A complete database of Shakespeare's Monologues. The monologues are organized by play, then categorized by comedy, history and tragedy. You can browse and/or search so you can find a monologue whether you know which one you want, or you're looking for monologue ideas. Each monologue entry includes the character's name, the first line of the speech, whether it is verse or prose, and shows the act, scene & line number. Each entry provides a link to the full text of the scene. You can download each monologue for printing, already double-spaced for scansion and transcription." itemprop="description" name="Description" />
-    <meta content="43Tfyc84pBq4LxJ6S3NHue3NJt2M+oKCcoiN41SEKB8=" name="verify-v1" />
-    <meta content="William Shakespeare, shakespeare, monologues, shakespeare monologues, shakespeare's monologues, shakespearean, monologue, speech, speeches, soliloquy, soliloquies, database, find, search, browse, index, quotes, quotations, Comedies, Histories, Tragedies, A Midsummer Night's Dream, All's Well That Ends Well, As You Like It, Cymbeline, Love's Labour's Lost, Measure for Measure, Merry Wives of Windsor, Much Ado About Nothing, Pericles, Prince of Tyre, The Comedy of Errors, The Merchant of Venice, The Taming of the Shrew, The Tempest, The Winter's Tale, Troilus and Cressida, Twelfth Night Or What You Will, 12th Night, TWelfth Night, Two Gentlemen of Verona, Henry IV i, Henry IV ii, Henry V, Henry VI i, Henry VI ii, Henry VI iii, Henry VIII, King John, Richard II, Richard III, Antony & Cleopatra, Coriolanus, Hamlet, Julius Caesar, King Lear, Macbeth, Othello, Romeo and Juliet, Timon of Athens, Titus Andronicus" name="KEYWORDS" />
-        <!-- Start flattr ID -->
-    <meta name="flattr:id" content="o6x2wd" />
-    <!-- End flattr ID -->
+<title>
+  <%= live_title_tag assigns[:page_title] || "MonoPhoenixV01", suffix: " · Shakespeare's Monologues" %>
+</title>
 
-    <!-- Start Facebook Open Graph stuff -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="//www.shakespeare-monologues.org/home/" />
-    <meta property="og:title" content="Shakespeare's Monologues" />
-    <meta property="og:description" content="Making it easier to find monologues since 1997.
-    Built for actors. Used by everyone." />
-    <meta property="og:image" content={ Routes.static_path(@conn, "/images/OGicon.png")} />
-    <meta property="og:image:width" content="512" />
-    <meta property="og:image:height" content="303" />
-    <meta property="fb:admins" content="814268031"/>
-    <!-- End Facebook Open Graph stuff -->
-    <!-- Start Google Analytics stuff -->
-<script>
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-600620-1']);
-  _gaq.push(['_trackPageview']);
-
-  (function() { 
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-   })();
-</script>
-<!-- End Google Analytics stuff -->
-<!-- enable opensearch -->
-<!-- begin google adsense page-level for mobile -->
-<link href="//www.shakespeare-monologues.org/opensearch.xml" rel="search" title="Search Shakespeare's Monologues" type="application/opensearchdescription+xml" />
-<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<script>
-  (adsbygoogle = window.adsbygoogle || []).push({ 
-    google_ad_client: "ca-pub-5236095389905910",
-    enable_page_level_ads: true
-   });
-</script>
-<!-- end google adsense page-level for mobile -->
-<!-- when the rest of the page has loaded, load the social.js-one-script-to-rule-them-all -->
-<script>
-  (function($) { 
-    $(window).bind("load", function() { 
-    $.getScript(Routes.static_path(@conn, '/js/social.js'), function() {  });
-     });
-   })(jQuery);
-</script>
-<!-- rouse the rabble to call the FCC to keep net neutrality. 2-23-2019: disabled until there's a new president and senate marjority. we're getting nowhere until then. -->
-<!-- <script async src="https://widget.battleforthenet.com/widget.js"></script> -->
-<!-- Begin cookie consent -->
-<link href="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.css" rel="stylesheet" type="text/css" />
-    <script src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.js"></script>
-  <script>
-    window.addEventListener("load", function(){ 
-    window.cookieconsent.initialise({ 
-      "palette": { 
-        "popup": { 
-          "background": "#d5ca9d"
-         },
-        "button": { 
-          "background": "#4b81e8"
-         }
-       },
-      "content": { 
-        "message": "This site uses cookies for site functionality.  We use third-party tools for ads, social media integration, link-sharing, donations, and site analytics. Each of these third party tools also use cookies. By using this site, you agree to the use of these cookies.",
-        "dismiss": "Understood",
-        "link": "Click here for details.",
-        "href": "https://www.shakespeare-monologues.org/privacy"
-       }
-     }) });
-  </script>
-</head>
-<body>
-  <div class="container">
-    <div class="left-column col-md-2 col-xs-12">
-      <br>
-      <div class="link-menu-left accent-font" style="display: inline;">
-
-  <!-- left column menu -->
-  <a href="/men">The Men</a>
-  <a href="/women">The Women</a>
-  <a href="/plays">Search All</a>
-  <br><br>
-  <a href="/links">Links</a>
-  <a href="/faq.html#Q0">How To</a>
-  <a href="/home">Home</a>
-
-
-  <!-- TODO: Revert override. was: if Padrino.env == :production -->
-  <!-- left_column_ads -->
-  <p> </p>
-  <!-- google_afmc -->
-  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-  <!-- leftcol1 -->
-  <ins class="adsbygoogle" data-ad-client="ca-pub-5236095389905910" data-ad-slot="3862062942" style="display:inline-block;width:120px;height:90px"></ins>
-  <!-- google_afmc -->
-  <script>
-    (adsbygoogle = window.adsbygoogle || []).push({  });
-  </script>
-  <!-- The "a1" div is for the adblock detection. Please don't change the div name without testing to confirm that it will work with a different div name -->
-  <div id="a1">
+<div class="">
+  <div class="col-sm-2">
+    <br>
+    <div class="link-menu-left accent-font" style="display: inline;">
+      <!-- left column menu -->
+      <a href="/men">The Men</a>
+      <a href="/women">The Women</a>
+      <a href="/plays">Search All</a>
+      <br><br>
+      <a href="/links">Links</a>
+      <a href="/faq.html#Q0">How To</a>
+      <a href="/home">Home</a>
+    </div> 
+    <!-- TODO: Revert override. was: if Padrino.env == :production -->
+    <!-- left_column_ads -->
+    <p> </p>
     <!-- google_afmc -->
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <!-- rightcolresponsiveNotMatched -->
-    <ins class="adsbygoogle" data-ad-client="ca-pub-5236095389905910" data-ad-format="auto" data-ad-slot="1417287716" style="display:block"></ins>
+    <!-- leftcol1 -->
+    <ins class="adsbygoogle" data-ad-client="ca-pub-5236095389905910" data-ad-slot="3862062942" style="display:inline-block;width:120px;height:90px"></ins>
+    <!-- google_afmc -->
     <script>
       (adsbygoogle = window.adsbygoogle || []).push({  });
     </script>
-  </div>
-</div>
+    <!-- The "a1" div is for the adblock detection. Please don't change the div name without testing to confirm that it will work with a different div name -->
+    <div id="a1">
+      <!-- google_afmc -->
+      <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+      <!-- rightcolresponsiveNotMatched -->
+      <ins class="adsbygoogle" data-ad-client="ca-pub-5236095389905910" data-ad-format="auto" data-ad-slot="1417287716" style="display:block"></ins>
+      <script>
+        (adsbygoogle = window.adsbygoogle || []).push({  });
+      </script>
     </div>
-    <div class="center-column col-md-7 col-xs-12">
-      <!-- Page views should contain .center-column-header and .center-column-list -->
-      <%= @inner_content %>
+  </div>
+
+ 
+  <!-- begin main center column content -->
+  <div class="col-sm-8">
+    <!-- hello from application.html.heex Page views should contain .center-column-header and .center-column-list -->
+
+                        <!-- begin dynamic inner content -->
+                        <%= @inner_content %>
+                        <!-- end dynamic inner content -->
       
-      <!-- Footer contains .center-column-footer -->
-      <div class="center-column-footer accent-font">
-  <div class="link-menu-bottom">
-    <a href="/men">The Men </a>
-    <a href="/women">The Women</a>
-    <a href="/plays">Search All</a>
-    <a href="/links">Links</a>
-    <a href="/quiz.html">Quiz</a>
-    <a href="//twitter.com/ShakesMonos" target="_blank">Twitter</a>
-    <a href="https://www.facebook.com/ShakespearesMonologues" target="_blank">FB</a>
-    <a href="/home">Home</a>
-    <a href="/faqs">FAQ &nbsp;</a>
-    <a href="/aboutus">About</a>
-    <a href="/privacy">Privacy</a>
-    <a href="http://shults.org/shakes/contact.php">Contact</a>
+    <!-- Footer contains .center-column-footer -->
+    <div class="center-column-footer accent-font">
+          <div class="link-menu-bottom">
+            <a href="/men">The Men </a>
+            <a href="/women">The Women</a>
+            <a href="/plays">Search All</a>
+            <a href="/links">Links</a>
+            <a href="/quiz.html">Quiz</a>
+            <a href="//twitter.com/ShakesMonos" target="_blank">Twitter</a>
+            <a href="https://www.facebook.com/ShakespearesMonologues" target="_blank">FB</a>
+            <a href="/home">Home</a>
+            <a href="/faqs">FAQ &nbsp;</a>
+            <a href="/aboutus">About</a>
+            <a href="/privacy">Privacy</a>
+            <a href="http://shults.org/shakes/contact.php">Contact</a>
+          </div>
+
+          <div class="googleadsensefooter">
+            <script async="" src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <ins class="adsbygoogle" data-ad-client="ca-pub-5236095389905910" data-ad-format="autorelaxed" data-ad-slot="9674616910" style="display:block"></ins>
+            <script>
+              (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+          </div>
+
+          <div id="fb-root"></div>
+          <div class="fb-like" data-action="like" data-href="//www.shakespeare-monologues.org/" data-layout="button_count" data-share="false" data-show-faces="true"></div>
+
+            <!-- M@stodon stuff goes here -->
+            <br><br>
+
+            <gcse:search></gcse:search>
+    </div>
   </div>
+  <!-- end main center column content -->
 
-  <div class="googleadsensefooter">
-    <script async="" src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <ins class="adsbygoogle" data-ad-client="ca-pub-5236095389905910" data-ad-format="autorelaxed" data-ad-slot="9674616910" style="display:block"></ins>
-    <script>
-      (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
-  </div>
+  <!-- begin right column content -->
 
-  <div id="fb-root"></div>
-  <div class="fb-like" data-action="like" data-href="//www.shakespeare-monologues.org/" data-layout="button_count" data-share="false" data-show-faces="true"></div>
- <!-- M@stodon stuff goes here -->
+      <div class="col-sm-2">">
 
-  <br><br>
-  <gcse:search></gcse:search>
+          <!-- Render shared/tip_jar, layout: false -->
+          <br><br>
 
-  <div class="center-column-copyright">
+          <!-- begin rightcol google graphic ad -->
+          <div id="google_afmc">
+            <script async src="/js/adsbygoogle.js"></script>
+            <!-- rightcolgraphic -->
+            <ins class="adsbygoogle" data-ad-client="ca-pub-5236095389905910" data-ad-slot="1016396307" style="display:inline-block;width:300px;height:250px"></ins>
+            <script>
+              (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+          </div>
+          <!-- end rightcol google graphic ad -->
+          <br>
+
+          <!-- begin rightcol unmatched responsive -->
+          <div id="google_afmc_2">
+            <script async src="/js/adsbygoogle.js"></script>
+            <ins class="adsbygoogle" data-ad-client="ca-pub-5236095389905910" data-ad-format="vertical" data-ad-slot="1114850054" display="block"></ins>
+            <script>
+              (adsbygoogle =
+            window.adsbygoogle || []).push({});
+            </script>
+          </div>
+                <!-- end rightcol unmatched responsive -->
+                <!-- end right column -->
+    </div>
+
+      <!-- begin copyright block --> 
+      <div class="center-column-copyright">
         <table align="right" style="padding-right: 25px;">
-    <tr>
-    <td  align="right" valign="bottom" height="200" width="200">
-    <font style="font-size:60%">The texts of Shakespeare's plays is public domain.</font><br>
-    <font style="font-size:60%">This site is licensed under
-    a <a rel="license"
-    href="//creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank">Creative
-    Commons License</a>.<br>
-    <!-- Creative Commons License -->
-    <a rel="license"
-    href="//creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank"><img
-    alt="Creative Commons License" src={ Routes.static_path(@conn, "/images/somerights20.gif")}
-    border="0"></a><br>
-    <!-- /Creative Commons License -->
-    &copy; 1997<script>new Date().getFullYear()>2010&&document.write("-"+new Date().getFullYear());</script> Steven Shults & Brandon Faloona
-    <br>Contact linked sites regarding their copyrights.
-    </font><br>
-
-    </td>
-    </tr>
-    </table>
-  </div>
+          <tr>
+            <td align="right" valign="bottom" height="200" width="200">
+              <font style="font-size:60%">The texts of Shakespeare's plays is public domain.</font><br>
+              <font style="font-size:60%">This site is licensed under a <a rel="license" href="//creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank">Creative Commons License</a>.<br>
+                <!-- Creative Commons License -->
+                <a rel="license" href="//creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank">
+                  <img alt="Creative Commons License" src={ Routes.static_path(@conn, "/images/somerights20.gif")} border="0">
+                </a><br>
+                <!-- /Creative Commons License -->
+                &copy; 1997<script>new Date().getFullYear()>2010&&document.write("-"+new Date().getFullYear());</script> Steven Shults & Brandon Faloona<br>
+                Contact linked sites regarding their copyrights.
+              </font>
+              <br>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <!-- end copyright block --> 
 </div>
-    </div>
-    <div class="right-column col-md-3 col-xs-12">
-      <!-- begin right column -->
-<div class="right_column" align="center">
-  <!-- Render shared/tip_jar, layout: false -->
-  <br><br>
-  <!-- begin rightcol google graphic ad -->
-  <div id="google_afmc">
-    <script async src="/js/adsbygoogle.js"></script>
-    <!-- rightcolgraphic -->
-    <ins class="adsbygoogle" data-ad-client="ca-pub-5236095389905910" data-ad-slot="1016396307" style="display:inline-block;width:300px;height:250px"></ins>
-    <script>
-      (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
-  </div>
-  <!-- end rightcol google graphic ad -->
-  <br>
-  <!-- begin rightcol unmatched responsive -->
-  <div id="google_afmc_2">
-    <script async src="/js/adsbygoogle.js"></script>
-    <ins class="adsbygoogle" data-ad-client="ca-pub-5236095389905910" data-ad-format="vertical" data-ad-slot="1114850054" display="block"></ins>
-    <script>
-      (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
-  </div>
-  <!-- end rightcol unmatched responsive -->
-</div> 
-  <!-- end right column -->
-    </div>
-  </div>
-</body>
-
-  <script>
-    <?php echo $js_set_global_params; ?>
-    $("#search-box")[0].placeholder = createPlaceholderText();
-  </script>
-
-  <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script> -->
-  <script>
-      $(function () { 
-      // check to see if search is invoked in the URL first
-      if ( document.location.href.indexOf('/?search=') > -1 )
-        //grab the entire query string
-        var query = document.location.search.replace('?', '');
-
-        //extract each field/value pair
-        query = query.split('&');
-
-        //run through each pair
-        for (var i = 0; i < query.length; i++) { 
-
-          //split up the field/value pair into an array
-          var field = query[i].split("=");
-
-          //decode it, target the field and assign its value
-          var dec = decodeURIComponent(field[1]).replace( /\+/g, ' ' );
-                    $("input[name='" + field[0] + "'], select[name='" + field[0] + "']").val(dec);
-      	  queryChanged()
-    			doSearch(gParams);
-         }
-       });
-  </script>
-    <script>
-<!--
-	var adblock = true;
-//-->
-  </script>
-  <script src={ Routes.static_path(@conn, "/js/ad/adframe.js")} type="text/javascript"></script>
-  <script type="text/javascript">
-    if(adblock) { 
-      document.getElementById("a1").innerHTML = '<center><img src="/images/scrollthing.gif" width="135" height="210" align="center" /><br><br><a id="everbutton-693-1398040059-85" class="everbutton everbutton-693-1398040059-85 everbutton-blue" href="https://www.everbutton.com/donate/693" style="height:20px;width:49px;min-width:45px;padding:0px;">Tip Jar</a><br><br><a href="https://flattr.com/submit/auto?fid=o6x2wd&url=http%3A%2F%2Fwww.shakespeare-monologues.org%2F" target="_blank"><img src="//button.flattr.com/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0"></a><br><br><a href="//www.zazzle.com/shakesmonosstuff*" rel="nofollow" target="_blank"><img border="0" width="95" height="20" src="/img/zazzlebutton.png" /></a></center>';
-
-      document.getElementById("a2").innerHTML = '<center><img src="/images/scrollthing.gif" width="135" height="210" align="center" /><br><br><a id="everbutton-693-1398040059-85" class="everbutton everbutton-693-1398040059-85 everbutton-blue" href="https://www.everbutton.com/donate/693" style="height:20px;width:49px;min-width:45px;padding:0px;">Tip Jar</a><br><br><a href="https://flattr.com/submit/auto?fid=o6x2wd&url=http%3A%2F%2Fwww.shakespeare-monologues.org%2F" target="_blank"><img src="//button.flattr.com/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0"></a><br><br><a href="//www.zazzle.com/shakesmonosstuff*" rel="nofollow" target="_blank"><img border="0" width="95" height="20" src="/img/zazzlebutton.png" /></a></center>';
-     }
-
-// https://detect-ad-blocking-software.webconrad.com/
-//-->
-</script>
-</html>
