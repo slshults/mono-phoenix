@@ -1,13 +1,5 @@
-<main class="flash">
-
-  <%= if get_flash(@conn, :info) do %>
-    <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
-  <% end %>
-  <%= if get_flash(@conn, :error) do %>
-    <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
-  <% end %>
   <!-- begin left column -->
-  <div class="col-sm-2">
+  <div class="left-column col-md-2 col-xs-12">
     <br>
     <div class="link-menu-left accent-font" style="display: inline;">
       <!-- left column menu -->
@@ -20,7 +12,8 @@
       <a href="/home">Home</a>
     </div> 
         <!-- left_column_ads -->
-        <p> </p>
+      <div id="left_column_ads">
+          <br><br>
         <!-- google_afmc -->
         <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
         <!-- leftcol1 -->
@@ -39,11 +32,12 @@
               (adsbygoogle = window.adsbygoogle || []).push({  });
             </script>
           </div>
+      </div>
   </div>
   <!-- end left column -->
   <!-- begin center column -->
 
-       <div class="col-sm-7">
+       <div class="center-column col-md-7 col-xs-12">
                 <!-- begin dynamic inner inner content -->
                     <%= @inner_content %>
                 <!-- end dynamic inner inner content -->
@@ -62,6 +56,7 @@
               <a href="/privacy">Privacy</a>&nbsp; · 
               <a href="http://shults.org/shakes/contact.php">Contact</a>
             </div>
+            
                 <!-- Everbutton Tip Jar Button BEGIN -->
                 <div class="tip_jar">
                       <!-- begin donation button -->
@@ -91,17 +86,43 @@
                 </script>
               </div>
                      <gcse:search></gcse:search>
+
+
+            <br><br>
+                <!-- begin copyright -->
+          <div class="center-column-copyright"></div>
+            <table align="right" style="padding-right: 25px;">
+              <tr>
+                <td  align="right" valign="bottom" height="200" width="300">
+                  <font style="font-size:70%">The texts of Shakespeare's plays is public domain.</font><br>
+                  <font style="font-size:75%">This site is licensed under
+                  a<br><a rel="license"
+                  href="//creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank">Creative
+                  Commons License</a>.<br>
+                  <!-- Creative Commons License -->
+                  <a rel="license"
+                  href="//creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank"><img
+                  alt="Creative Commons License" src={ Routes.static_path(@conn, "/images/somerights20.gif")}
+                  border="0"></a><br>
+                  <!-- /Creative Commons License -->
+                  &copy; 1997<script>new Date().getFullYear()>2010&&document.write("-"+new Date().getFullYear());</script> Steven Shults &amp; Brandon Faloona
+                  <br>Contact linked sites regarding their copyrights.
+                  </font><br><br>
+                </td>
+              </tr>
+            </table>
           </div>    
       </div>
-                <!--end center column --> 
-            <br><br>
+        <!-- end copyright -->
+                    <!--end center column --> 
                 <!-- begin right column -->
 
-      <div class="col-sm-3">
-        <div class="right_column" align="center">
-              <!-- begin donation button -->
+      <div class="right-column col-md-3 col-xs-12" align="center">
+      <!-- /.link-menu-right -->
+        
+              <!-- begin tip jar button -->
             <a id="everbutton-693-1398040059-85" class="everbutton everbutton-693-1398040059-85 everbutton-blue" href="https://www.everbutton.com/donate/693" style="height:20px;width:49px;min-width:45px;padding:0px;">Tip Jar</a>
-            <!-- end donation button -->
+            <!-- end tip jar button -->
           <br><br>
             <!-- Zazzle Button BEGIN -->
               <a href="https://www.zazzle.com/shakesmonosstuff*" rel="nofollow" target="_blank">
@@ -150,31 +171,7 @@
                 </div>
                 <!-- end rightcol unmatched responsive -->
                     <!-- end right column -->
-        </div>        
+              
       </div>
-        <!-- begin copyright -->
-            <table align="right" style="padding-right: 25px;">
-              <tr>
-                <td  align="right" valign="bottom" height="200" width="300">
-                  <font style="font-size:70%">The texts of Shakespeare's plays is public domain.</font><br>
-                  <font style="font-size:75%">This site is licensed under
-                  a<br><a rel="license"
-                  href="//creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank">Creative
-                  Commons License</a>.<br>
-                  <!-- Creative Commons License -->
-                  <a rel="license"
-                  href="//creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank"><img
-                  alt="Creative Commons License" src={ Routes.static_path(@conn, "/images/somerights20.gif")}
-                  border="0"></a><br>
-                  <!-- /Creative Commons License -->
-                  &copy; 1997<script>new Date().getFullYear()>2010&&document.write("-"+new Date().getFullYear());</script> Steven Shults &amp; Brandon Faloona
-                  <br>Contact linked sites regarding their copyrights.
-                  </font><br><br>
-                </td>
-              </tr>
-            </table>
-        <!-- end copyright -->
-  
 
-</main>
 

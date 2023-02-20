@@ -1,9 +1,16 @@
 <%= live_title_tag assigns[:page_title] || "The Plays", suffix: " · Shakespeare's Monologues" %>
-
+      <!-- Page views should contain .center-column-header and .center-column-list -->
+        <div class="center-column-header">
+          <!-- form class="navbar-form" id="search-form" role="">
+            <div class="input-group accent-font">
+              <input action="#" autocomplete="off" class="form-control" id="search-box" name="search" tabindex="1" type="text">
+              <i class="glyphicon glyphicon-refresh glyphicon-refresh-animate searching"></i>
+            </div>
+          </form -->
+        </div>
         <div class="center-column-list">
-          <div class="jquery-search-replace">
-            <!-- Contents of this div replaced by key up triggered jquery ajax call -->
-          </div> 
+          <!-- div class="jquery-search-replace">
+             Contents of this div to be replaced with search results by key up triggered jquery ajax call --> 
             <table class="categories-list">
               <tr></tr>
               <thead class="accent-font">
@@ -94,20 +101,5 @@
                 </td>
               </tr>
             </table>
+            
           </div>
-        
-<!-- ## begin original test template 
-	<section class="body">
-	  <h1><%= gettext "The Plays", name: "The Plays" %></h1>
-	</section>
-
-	<section class="row">
-	  <article class="row">
-		<h2>The Plays</h2>
-		 <%= for row <- @rows do %>
-		   <br><br>
-		   <%= row.title %>
-		 <% end %>
-	  </article>
-	</section>
-## end original test template -->	
