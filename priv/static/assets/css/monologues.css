@@ -1,0 +1,282 @@
+A {
+  text-decoration: none;
+  color: #696969;
+  font-style: italic
+}
+
+img {
+    border: 0;
+}
+
+table#layout {
+    margin-left: 22px;
+}
+
+td#left_column {
+    vertical-align: top;
+    margin-top: 0px;
+    width: 140px;
+    line-height: 10px;
+}
+
+div#login_banner {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+div#menu_top_left {
+    font-size: 14px;
+    vertical-align: top;
+    margin-top: 0px;
+    white-space: nowrap;
+}
+
+div#left_column_ads {
+}
+
+td#center_column {
+    /* content + center footer */
+    vertical-align: top;
+}
+
+div#center_column_content {
+    /* content from rails */
+}
+
+input#search {
+    font-size: 140%;
+}
+
+div .search_links {
+    padding-left: 45px;
+    margin-top: -10px;
+    padding-bottom: 5px;
+    font-size: 105%;
+}
+
+table #categories_list {
+    width: 768px;
+    border-collapse:collapse;
+    border: 1px solid black;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+table #categories_list th {
+    font-weight: bold;
+    font-size: 120%;
+    text-align: left;
+    padding-left: 25px;
+    border: 1px solid black;
+}
+
+table #categories_list td {
+    padding-left: 25px;
+    line-height: 130%;
+    font-size: 130%;
+    text-align: left;
+    border: 1px solid black;
+    white-space: nowrap;
+    vertical-align: top;
+
+}
+
+table #monologue_list {
+    width: 768px;
+        margin-left: auto;
+    margin-right: auto;
+    }
+
+table #monologue_list th {
+    padding-left: 5px;
+    text-align: left;
+    white-space: nowrap;
+    font-size: 110%;
+}
+
+tr .monologue_listing {
+    vertical-align: top;
+}
+
+div .monologue_character {
+    font-size: 125%;
+    font-weight: bold;
+    width: 100px;
+    border-collapse:collapse;
+}
+
+div .monologue_detail {
+    font-size: 115%;
+    width: 110px;
+    border-collapse:collapse;
+}
+
+td .monologue_firstline {
+    padding-left: 0px;
+    align: left;
+    text-align: left;
+    font-size: 110%;
+    line-height: 20px;
+    width: 455px;
+    border-collapse:collapse;
+}
+
+.monologue_firstline A {
+    color: #555;
+}
+
+div .monologue_preview {
+    padding: 10px;
+    font-size: 100%;
+    line-height: 1.25;
+    width: 455px;
+    margin-top: 5px;
+    margin-left: -5px;
+    border: solid gray;
+    border-width: 1px;
+    /* background-image: url('/images/white.png'); */
+    background-repeat: repeat;
+    overflow: visible;
+    /* z-index: 0; */
+}
+
+.monologue_preview {
+    padding: 10px;
+    font-size: 100%;
+    line-height: 1.25;
+    width: 455px;
+    margin-top: 5px;
+    margin-left: -5px;
+    border: solid gray;
+    border-width: 1px;
+    /* background-image: url('/images/white.png'); */
+    background-repeat: repeat;
+    overflow: visible;
+    /* z-index: 0; */
+}
+
+td .monologue_actscene {
+    font-size: 100%;
+    white-space: nowrap;
+}
+
+td .monologue_pdflink {}
+
+div#center_column_footer {
+    text-align: center;
+}
+
+div#menu_bottom_center {
+    text-align: center;
+    padding-top: 10px;
+}
+
+div#google_sitesearch {
+    padding-top: 15px;
+}
+
+div#google_sitesearch img {
+    vertical-align: bottom;
+}
+
+input#googlesearch {
+    font-size: 115%;
+}
+
+td#right_column {
+    vertical-align: top;
+    text-align: center;
+    line-height: 1;
+    padding: 5px;
+}
+
+/*NOT IN USE*/
+iframe#tip_jar {
+    border: none;
+    overflow: hidden;
+    width: 54px;
+    height: 21px;
+    vertical-align: bottom;    
+}
+
+body#main {
+    background-color: #F9F9DF;
+    background-image: url("/images/parchment.jpg");
+}
+
+body, p, ol, ul, td {
+    /* font-family: verdana, arial, helvetica, sans-serif; */
+    font-size:   13px;
+    line-height: 13px;
+}
+
+pre {
+    background-color: #eee;
+    padding: 10px;
+    font-size: 11px;
+}
+
+td {
+    padding: 6px 6px;
+}
+a {
+    text-decoration: none;
+    color: #696969; 
+    font-style: italic;
+}
+a:visited { color: #666; }
+a:hover {
+    color: #5E2612;
+    text-decoration: underline; 
+    font-weight: bold
+}
+no-link {
+    color: #696969;
+    font-style: italic;
+}
+.small {
+    font-family: verdana;
+    font-size: 10px;
+}
+.fieldWithErrors {
+    padding: 2px;
+    background-color: red;
+    display: table;
+}
+
+#errorExplanation {
+    width: 400px;
+    border: 2px solid red;
+    padding: 7px;
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+    background-color: #f0f0f0;
+}
+
+#errorExplanation h2 {
+    text-align: left;
+    font-weight: bold;
+    padding: 5px 5px 5px 15px;
+    font-size: 12px;
+    margin: -7px;
+    background-color: #c00;
+    color: #fff;
+}
+
+#errorExplanation p {
+    color: #333;
+    margin-bottom: 0;
+    padding: 5px;
+}
+
+#errorExplanation ul li {
+    font-size: 12px;
+    list-style: square;
+}
+
+#odd-row {
+    background-color: #F9F9DF;
+}
+#even-row {
+    background-color: #F9F9D1;
+}

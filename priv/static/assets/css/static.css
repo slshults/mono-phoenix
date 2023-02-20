@@ -1,0 +1,572 @@
+/*
+ * Globals
+ */
+
+/* Links */
+a {
+    text-decoration: none;
+    color: #111;
+}
+
+a,
+a:focus {}
+
+a:hover {
+    color: #5E2612;
+    text-decoration: underline;
+}
+
+a:visited {
+    color: #666;
+}
+
+
+img {
+    border: 0;
+}
+
+pre {
+    background-color: #eee;
+    padding: 10px;
+    font-size: 11px;
+}
+
+/*
+ * Base structure
+ */
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
+}
+
+html,
+body {
+    background-color: #F9F9DF;
+    background-image: url("/images/parchment.jpg");
+}
+
+body {
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 13px;
+    line-height: 13px;
+}
+
+body .accent-font {
+    font-family: 'IM Fell DW Pica', serif;
+    font-weight: 400;
+}
+
+.container {
+    max-width: none !important;
+    width: 1280px;
+}
+
+h3 {
+    padding-left: 7px;
+}
+
+.center-column-header {}
+
+.center-column-list {
+    min-height: 300px;
+    padding-bottom: 40px;
+}
+
+.link-menu-left,
+.link-menu-right {
+    text-align: center;
+    vertical-align: top;
+    margin-top: 0;
+    white-space: nowrap;
+    padding-top: 10px;
+    padding-bottom: 8px;
+}
+
+.link-menu-bottom {
+    font-size: 150%;
+    text-align: center;
+    padding-top: 20px;
+    padding-bottom: 10px;
+}
+
+/* Add a bit of space before each text link */
+.link-menu-left a {
+    margin-left: 0.4em;
+}
+
+.link-menu-right a {
+    margin-left: 0.4em;
+}
+
+.link-menu-bottom a {
+    margin-left: 0.4em;
+}
+
+.center-column-footer {
+    bottom: 0;
+    width: 100%;
+    /* Set the fixed height of the footer here */
+    height: 60px;
+    padding: 10px;
+    font-size: 10px;
+    text-align: center;
+}
+
+.center-column-copyright {
+    bottom: 0;
+    width: 100%;
+    padding: 5px;
+    text-align: center;
+}
+
+.tip_jar {
+    padding-top: 60px;
+}
+
+
+div.wrapper_for_addthis {
+    padding-left: 20px;
+    width: 125px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+div.login-banner {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+
+input#search-box {
+    font-size: 175%;
+    width: 670px;
+    margin-left: -10px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+div.search-links {
+    padding-left: 45px;
+    margin-top: -10px;
+    padding-bottom: 5px;
+    font-size: 105%;
+}
+
+table.categories-list {
+    width: 768px;
+    border-collapse: collapse;
+    border: 1px solid black;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+table.categories-list th {
+    /*width: 100%;*/
+    font-size: 150%;
+    line-height: 110%;
+    font-weight: bold;
+    text-align: left;
+    padding-left: 15px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    border: 1px solid black;
+}
+
+
+table.categories-list td {
+    padding-left: 20px;
+    padding-right: 10px;
+    padding-bottom: 5px;
+    line-height: 150%;
+    font-size: 135%;
+    font-style: italic;
+    text-align: left;
+    white-space: nowrap;
+    vertical-align: top;
+    border: 1px solid black;
+}
+
+.empty-table-message {
+    font-size: 150%;
+    /*font-style: italic;*/
+    text-align: left;
+    padding-top: 60px;
+    padding-left: 20px;
+    vertical-align: top;
+}
+
+table.categories-list th {
+    width: 300px;
+}
+
+table.categories-list th {
+    width: 135px;
+}
+
+table.categories-list th {
+    width: 333px;
+}
+
+table.monologue-list {
+    /*width: 100%;*/
+    width: 768px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+table.monologue-list th {
+    font-size: 110%;
+    text-align: left;
+    white-space: nowrap;
+    padding-left: 6px;
+    padding-right: 8px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    border-bottom: solid 1px;
+    color: #333;
+    font-weight: normal;
+}
+
+
+table.monologue-list tr {
+    vertical-align: top;
+}
+
+table.monologue-list td {
+    padding: 6px;
+}
+
+tr.odd {
+    background-color: #F9F9D1;
+}
+
+tr.even {
+    background-color: #F9F9DF;
+}
+
+
+h1.monologue-firstline-heading {
+    font-size: 200%;
+    padding-top: 10px;
+    vertical-align: top;
+    line-height: 150%;
+}
+
+h1.monologue-firstline-heading::first-letter {
+    font-size: 300%;
+    color: #777;
+}
+
+.monologue-firstline-table {
+    padding-left: 0;
+    align: left;
+    text-align: left;
+    font-size: 125%;
+    font-style: italic;
+    line-height: 20px;
+    width: 455px;
+    border-collapse: collapse;
+}
+
+.monologue-firstline-table A {
+    color: #555;
+}
+
+.monologue-playname {
+    font-size: 115%;
+    text-decoration: underline;
+}
+
+.monologue-character {
+    font-size: 125%;
+    font-weight: bold;
+    width: 100px;
+    white-space: nowrap;
+}
+
+.monologue-detail {
+    font-size: 100%;
+    padding-top: 3px;
+}
+
+.monologue-preview {
+    padding: 10px;
+    font-size: 100%;
+    line-height: 1.25;
+    width: 455px;
+    margin-top: 5px;
+    margin-left: -5px;
+    border: solid gray;
+    border-width: 1px;
+    /* background-image: url('/images/white.png'); */
+    background-repeat: repeat;
+    overflow: visible;
+    /* z-index: 0; */
+}
+
+.monologue-actscene {
+    font-size: 100%;
+    white-space: nowrap;
+}
+
+
+/*
+    Monologues show view modifies above classes
+*/
+
+.monologue-show {
+    margin-top: 0;
+    padding-bottom: 60px;
+    line-height: 150%;
+    font-size: 100%;
+}
+
+.monologue-body {
+    font-size: 120%;
+    line-height: 125%;
+    padding: 10px;
+    width: 455px;
+    margin-bottom: 60px;
+}
+
+.monologue-body-inline {
+    padding: 10px;
+    font-size: 100%;
+    font-style: normal;
+    line-height: 1.25;
+    width: 455px;
+    border: #333 solid;
+    border-width: 1px;
+    margin-bottom: 20px;
+    min-height: 300px;
+}
+
+.display-hide {
+    display: none;
+}
+
+.monologue-body-loading {
+    height: 32px;
+    width: 32px;
+}
+
+
+
+/*
+    Google search
+*/
+
+
+div.google-sitesearch {
+    padding-top: 15px;
+}
+
+div.google-sitesearch img {
+    vertical-align: bottom;
+}
+
+input.googlesearch {
+    font-size: 115%;
+}
+
+
+.small {
+    font-family: verdana;
+    font-size: 10px;
+}
+
+.fieldWithErrors {
+    padding: 2px;
+    background-color: red;
+    display: table;
+}
+
+#errorExplanation {
+    width: 400px;
+    border: 2px solid red;
+    padding: 7px;
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+    background-color: #f0f0f0;
+}
+
+#errorExplanation h2 {
+    text-align: left;
+    font-weight: bold;
+    padding: 5px 5px 5px 15px;
+    font-size: 12px;
+    margin: -7px;
+    background-color: #c00;
+    color: #fff;
+}
+
+#errorExplanation p {
+    color: #333;
+    margin-bottom: 0;
+    padding: 5px;
+}
+
+#errorExplanation ul li {
+    font-size: 12px;
+    list-style: square;
+}
+
+#odd-row {
+    background-color: #F9F9DF;
+}
+
+#even-row {
+    background-color: #F9F9D1;
+}
+
+
+/*
+a#everbutton-693-1398040059-85.everbutton.everbutton-693-1398040059-85.everbutton-blue {
+    height: 25px;
+    width: 49px;
+    padding: 0;
+}
+*/
+
+
+a.tip-jar {
+    background: #3498db;
+    background-image: -webkit-linear-gradient(top, #3498db, #2980b9);
+    background-image: -moz-linear-gradient(top, #3498db, #2980b9);
+    background-image: -ms-linear-gradient(top, #3498db, #2980b9);
+    background-image: -o-linear-gradient(top, #3498db, #2980b9);
+    background-image: linear-gradient(to bottom, #3498db, #2980b9);
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    font-family: Verdana;
+    color: #ffffff;
+    font-size: 12px;
+    padding: 6px 12px 8px 12px;
+    margin-left: 8px;
+    margin-bottom: 20px;
+    text-decoration: none;
+}
+
+a.tip-jar:hover {
+    background: #3cb0fd;
+    background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+    text-decoration: none;
+}
+
+th.th-pad-right {
+    padding-right: 50px;
+}
+
+/* Search box has too much bootstrap bling */
+.form-control:focus {
+    border-color: unset;
+    -webkit-box-shadow: none;
+    outline: -webkit-focus-ring-color auto 0px;
+}
+
+.monologue-controls {
+    margin-top: -5px;
+    margin-bottom: 10px;
+    display: inline-block;
+    line-height: 200%;
+    padding: 2px;
+    width: 700px;
+}
+
+.big-font {
+    font-size: 140%;
+    font-weight: 400;
+}
+
+.huge-font {
+    font-size: 250%;
+    font-style: italic;
+    font-weight: 600;
+    padding-right: 4px;
+    padding-left: 4px;
+    color: gray;
+}
+
+a.filter-gender {
+    padding-right: 8px;
+    padding-left: 8px;
+    font-size: 140%;
+    font-weight: 400;
+}
+
+a.remove-play span.huge-font {
+    color: black;
+}
+
+.filter-play {
+    margin-right: 18px;
+    padding-left: 6px;
+    font-size: 150%;
+    font-weight: 600;
+    border-bottom: 1px solid;
+}
+
+a.control-active {
+    font-size: 150%;
+    font-weight: 900;
+    border-bottom: 1px solid;
+}
+
+span.toggle-control>a.toggle-mono>img {
+    width: 34px;
+    height: 34px;
+    margin-left: 12px;
+    padding-bottom: 6px;
+}
+
+.glyphicon-refresh.searching {
+    /*display: none;*/
+    color: gray;
+    padding: 5px;
+    animation: spin 1s infinite linear;
+    -webkit-animation: spin2 1s infinite linear;
+    font-size: 130%;
+}
+
+@keyframes spin {
+    from {
+        transform: scale(1) rotate(0deg);
+    }
+
+    to {
+        transform: scale(1) rotate(360deg);
+    }
+}
+
+@-webkit-keyframes spin2 {
+    from {
+        -webkit-transform: rotate(0deg);
+    }
+
+    to {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+.debug-text {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    font-size: 90%;
+    background-color: orange;
+    color: inherit;
+    padding: 5px;
+    font-family: Arial;
+    z-index: 0;
+}
