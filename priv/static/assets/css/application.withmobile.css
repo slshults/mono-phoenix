@@ -34,7 +34,17 @@ pre {
 /*
  * Base structure
  */
+ html, body {
+  height: 100%;
+}
 
+html {
+  display: table;
+  margin: 0 auto;
+}
+body {
+  margin-top: 20px; 
+}
 
  @media screen and (max-width:980px) {
   body {
@@ -44,6 +54,12 @@ pre {
     font-family: Georgia, "Times New Roman", Times, serif;
     font-size: 13px;
     line-height: 13px;
+    display: table-cell;
+    vertical-align: middle;
+    position:absolute;
+    transform: translate(-50%);
+    margin:0;
+    overflow-x:hidden;
   }
 }
 
@@ -52,10 +68,11 @@ pre {
 .container {
   max-width: 960px !important;
   position: relative;
-  width: 100%;
   margin: 1px;
   padding: 1px;
-  margin: auto;
+  margin: 0 auto;
+  width: 100%;
+  text-align: center;
 }
 
 
