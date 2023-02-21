@@ -17,11 +17,11 @@
 
     <link phx-track-static rel="stylesheet" href={ Routes.static_path(@conn, "/assets/css/bootstrap-theme.min.css")}>
 
-        <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")}>
+        <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/css/static.css")}>
   
-    <!--link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/css/application.css")} -->
+    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/css/application.css")}>
 
-    <link phx-track-static rel="stylesheet" href={ Routes.static_path(@conn, "/assets/css/application.withmobile.css")}>
+    <!-- link phx-track-static rel="stylesheet" href={ Routes.static_path(@conn, "/assets/css/application.withmobile.css")} -->
 
     <!--script defer phx-track-static type="text/javascript"  src={ Routes.static_path(@conn, "/assets/js/jquery.min.js")}></script -->
 
@@ -166,19 +166,18 @@
 
 
   </head>
-  <div class="body">
   <body bgcolor="#F9F9DF" background="/images/parchment.jpg">
 
-  
-              <div class="container">
+      
+              <div class="container" style="padding-left: 0px; padding-right: 50px;" >
               <!-- begin dynamic inner content -->
 
                   <%= @inner_content %>
 
               <!-- end dynamic inner content -->
               </div>
+      
   </body>
- </div>  
           <div class="center-column-footer accent-font">
             <div class="link-menu-bottom">
               <a href="/mens">The Men</a>&nbsp; · 
