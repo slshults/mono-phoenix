@@ -1,6 +1,6 @@
 <%= live_title_tag assigns[:page_title] || "#{hd(@rows).play} · Shakespeare's Monologues", prefix: "Women's Monologues from " %>
 
-<div class="show_title">
+<div class="accent-font">
   <h3>Women's monologues from</h3><h2><%= hd(@rows).play %></h2>
   </div>
 <div>
@@ -14,6 +14,7 @@
             <span class="monologue-playname"><%= row.play %></span>&nbsp; · <span class="monologue-actscene"><%= row.location %></span>&nbsp; · <span class="monologue-actscene"><%= row.style %></span>
             <br>
             <span class="monologue-character"><%= row.character %></span><br>
+                1st line: <br><span class="monologue-firstline-table"><%= row.firstline %></span>
             <br><br>
             <span class="monologue-show"><%= raw(row.body) %> <%= link to: raw(row.pdf), method: :get, target: "_blank" do %><img src={Routes.static_path(@conn, "/images/pdf_file_icon_16x16.png")} alt="Get a double-spaced pdf of this monologue"/><% end %>
             </span>

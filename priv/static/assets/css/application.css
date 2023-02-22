@@ -290,10 +290,11 @@ h1.monologue-firstline-heading::first-letter {
     padding-left: 0;
     text-align: left;
     font-size: 125%;
-    font-style: italic;
+    font-style: bold;
     line-height: 20px;
     width: 455px;
     border-collapse: collapse;
+    font-family: 'IM Fell DW Pica', serif;
 }
 
 .monologue-firstline-table A {
@@ -301,14 +302,16 @@ h1.monologue-firstline-heading::first-letter {
 }
 
 .monologue-playname {
-    font-size: 115%;
-    text-decoration: underline;
+    font-size: 120%;
+    font-style: italic;
+    font-family: 'IM Fell DW Pica', serif;
 }
 
 .monologue-character {
     font-size: 125%;
     font-weight: bold;
     width: 100px;
+    font-family: 'IM Fell DW Pica', serif;
     white-space: nowrap;
 }
 
@@ -335,6 +338,7 @@ h1.monologue-firstline-heading::first-letter {
 .monologue-actscene {
     font-size: 100%;
     white-space: nowrap;
+    font-family: 'IM Fell DW Pica', serif;
 }
 
 
@@ -347,6 +351,8 @@ h1.monologue-firstline-heading::first-letter {
     padding-bottom: 60px;
     line-height: 150%;
     font-size: 100%;
+    font-size: 110%;
+    font-family: 'IM Fell DW Pica', serif;
     max-width: 550px;
 }
 
