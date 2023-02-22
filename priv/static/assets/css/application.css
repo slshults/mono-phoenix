@@ -80,7 +80,7 @@ h3 {
     padding-left: 7px;
 }
 
-.center-column-header {}
+
 
 .center-column-list {
     min-height: 300px;
@@ -100,8 +100,9 @@ h3 {
 .link-menu-bottom {
     font-size: 150%;
     text-align: center;
-    padding-top: 20px;
+    padding-top: 1px;
     padding-bottom: 10px;
+    max-width: 100%;
 }
 
 /* Add a bit of space before each text link */
@@ -113,20 +114,22 @@ h3 {
     margin-left: 0.4em;
 }
 
-.link-menu-bottom a {
-    margin-left: 0.4em;
-}
 
 .center-column-footer {
     bottom: 0;
-    width: 100%;
-    /* Set the fixed height of the footer here */
-    height: 60px;
-    padding: 10px;
+    max-width: 100%;
+    height: 50px;
+    padding: 1px;
     font-size: 10px;
     text-align: center;
-    display: block;
+    position: relative;
 }
+
+@media (min-width: 600px) {
+    .center-column-footer {
+      min-width: 600px;
+    }
+  }
 
 .center-column-copyright {
     bottom: 0;
@@ -137,7 +140,7 @@ h3 {
 }
 
 .tip_jar {
-    padding-top: 60px;
+    padding-top: 20px;
 }
 
 
@@ -235,7 +238,7 @@ table.categories-list th {
 
 table.monologue-list {
     /*width: 100%;*/
-    width: 768px;
+    max-width: 550px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -285,7 +288,6 @@ h1.monologue-firstline-heading::first-letter {
 
 .monologue-firstline-table {
     padding-left: 0;
-    align: left;
     text-align: left;
     font-size: 125%;
     font-style: italic;
@@ -345,6 +347,7 @@ h1.monologue-firstline-heading::first-letter {
     padding-bottom: 60px;
     line-height: 150%;
     font-size: 100%;
+    max-width: 550px;
 }
 
 .monologue-body {
@@ -492,6 +495,7 @@ th.th-pad-right {
 .form-control:focus {
     border-color: unset;
     -webkit-box-shadow: none;
+    box-shadow: none;
     outline: -webkit-focus-ring-color auto 0px;
 }
 
