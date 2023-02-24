@@ -245,12 +245,22 @@ div.search-links {
     padding-bottom: 5px;
     line-height: 150%;
     font-size: 135%;
-    font-style: italic;
     text-align: left;
     white-space: nowrap;
-
     border: 1px solid black;
   }
+
+  a.categories-list {
+    text-decoration: none; 
+    color: #696969; 
+    font-style: bold;
+}
+
+a.categories-list:hover {
+    color: #5E2612;
+    text-decoration: underline;
+    font-style: italic;
+}
 
   /* categories header row info was removed from here */
   td:before {

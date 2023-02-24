@@ -204,12 +204,23 @@ table.categories-list td {
     padding-bottom: 5px;
     line-height: 150%;
     font-size: 135%;
-    font-style: italic;
     text-align: left;
     white-space: nowrap;
     vertical-align: top;
     border: 1px solid black;
     width: 100%;
+}
+
+a.categories-list {
+    text-decoration: none; 
+    color: #696969; 
+    font-style: bold;
+}
+
+a.categories-list:hover {
+    color: #5E2612;
+    text-decoration: underline;
+    font-style: italic;
 }
 
 .empty-table-message {
