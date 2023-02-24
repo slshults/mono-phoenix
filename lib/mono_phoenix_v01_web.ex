@@ -108,3 +108,11 @@ defmodule MonoPhoenixV01Web do
     apply(__MODULE__, which, [])
   end
 end
+
+# Custom 404 error page : from https://tmbb.github.io/phoenix/custom_error_pages.html
+
+# This approach, handles the NoRouteErrors, but not the bad args
+
+defmodule MonoPhoenixV01Web.FileNotFoundError do
+  defexception [:message, plug_status: 404]
+end
