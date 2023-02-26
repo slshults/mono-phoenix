@@ -26,14 +26,9 @@ config(:mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
   https: [
     port: 443,
     cipher_suite: :compatible,
-    keyfile: "priv/cert/server.key",
-    certfile: "priv/cert/server.csr"
-  ],
-  ssl_opts: [verify: :verify_peer, cacertfile: 'priv/cert/server.csr'],
-  stacktrace: true,
-  show_sensitive_data_on_connection_error: true,
-  pool_size: 18,
-  force_ssl: [rewrite_on: [:x_forwarded_proto], hsts: true]
+    keyfile: "priv/cert/selfsigned_key.pem",
+    certfile: "priv/cert/selfsigned.pem"
+  ]
 )
 
 # Do not print debug messages in production
@@ -53,6 +48,6 @@ config :logger, level: :info
 # We also recommend setting `force_ssl` in your endpoint, ensuring
 # no data is ever sent via http, always redirecting to https:
 
-# config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint, force_ssl: [hsts: true]
+config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint, force_ssl: [hsts: true]
 #
 # Check `Plug.SSL` for all available options in `force_ssl`.
