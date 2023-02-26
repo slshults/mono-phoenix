@@ -21,8 +21,8 @@ config :mono_phoenix_v01, MonoPhoenixV01.Repo,
   pool_size: 18
 
 config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
-url: [scheme: "https", host: "mono-phoenix.herokuapp.com", port: 443],
-force_ssl: [rewrite_on: [:x_forwarded_proto]],
+  url: [scheme: "https", host: "mono-phoenix.herokuapp.com", port: 443],
+  force_ssl: [rewrite_on: [:x_forwarded_proto]]
 
 # config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
 # url: [host: "mono-phoenix.herokuapp.com", port: 80],
