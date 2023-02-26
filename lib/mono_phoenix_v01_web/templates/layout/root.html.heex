@@ -81,10 +81,10 @@
     <script src={ Routes.static_path(@conn, "/assets/js/addtohomescreen.js")}></script>
     <script>
     addToHomescreen.removeSession();
-      addToHomescreen({
-        maxDisplayCount: 3,
-        lifespan: 20,
-        });
+      addToHomescreen(
+        maxDisplayCount: 2,
+        lifespan: 15,
+        );
       </script>
 
     <link rel="icon" sizes="196x196" href={ Routes.static_path(@conn, "/images/icon-196x196.png")}>
