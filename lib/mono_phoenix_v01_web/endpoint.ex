@@ -7,8 +7,7 @@ defmodule MonoPhoenixV01Web.Endpoint do
   @session_options [
     store: :cookie,
     key: "_mono_phoenix_v01_key",
-    signing_salt: "s8druUxv",
-    timeout: 45_000
+    signing_salt: "s8druUxv"
   ]
 
   socket("/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]])
