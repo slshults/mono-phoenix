@@ -17,7 +17,6 @@ config :mono_phoenix_v01, MonoPhoenixV01.Repo,
   hostname: "ec2-44-196-223-128.compute-1.amazonaws.com",
   database: "d6d0qn3kc71hi0",
   port: 5432,
-  ssl_opts: [verify: :verify_none, certfile: 'priv/selfsigned.pem'],
   pool_size: 18
 
 config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
