@@ -21,21 +21,8 @@ config :mono_phoenix_v01, MonoPhoenixV01.Repo,
   pool_size: 18
 
 config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
-  http: [port: {:system, "80"}],
-  url: [host: "mono-phoenix.herokuapp.com"],
-  # cache_static_manifest: "priv/static/cache_manifest.json",
-  https: [
-    port: 443,
-    cipher_suite: :compatible,
-    otp_app: :mono_phoenix_v01,
-    keyfile: System.get_env("priv/selfsigned_key.pem"),
-    certfile: System.get_env("priv/selfsigned.pem")
-    # OPTIONAL Key for intermediate certificates:
-    # cacertfile: System.get_env("SOME_APP_SSL_CACERT_PATH")
-  ]
-
-config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
-  force_ssl: [rewrite_on: [:x_forwarded_proto]]
+url: [scheme: "https", host: "mono-phoenix.herokuapp.com", port: 443],
+force_ssl: [rewrite_on: [:x_forwarded_proto]],
 
 # config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
 # url: [host: "mono-phoenix.herokuapp.com", port: 80],
