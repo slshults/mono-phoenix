@@ -26,8 +26,8 @@ config(:mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
   https: [
     port: 443,
     cipher_suite: :compatible,
-    keyfile: "priv/cert/selfsigned_key.pem",
-    certfile: "priv/cert/selfsigned.pem"
+    keyfile: "priv/cert/server.key",
+    certfile: "priv/cert/server.csr"
   ]
 )
 
