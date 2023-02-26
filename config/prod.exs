@@ -17,14 +17,25 @@ config :mono_phoenix_v01, MonoPhoenixV01.Repo,
   hostname: "ec2-44-196-223-128.compute-1.amazonaws.com",
   database: "d6d0qn3kc71hi0",
   port: 5432,
-  ssl_opts: [verify: :verify_peer, cacertfile: 'priv/cert/selfsigned.pem'],
-  stacktrace: true,
-  show_sensitive_data_on_connection_error: true,
   pool_size: 18
 
-config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
-  url: [host: "mono-phoenix.herokuapp.com", port: 80],
-  cache_static_manifest: "priv/static/cache_manifest.json"
+config(:mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
+  cache_static_manifest: "priv/static/cache_manifest.json",
+  url: [host: "https://mono-phoenix.herokuapp.com/", port: 443],
+  https: [
+    port: 443,
+    cipher_suite: :compatible,
+    keyfile: "priv/cert/selfsigned_key.pem",
+    certfile: "priv/cert/selfsigned.pem"
+  ],
+  ssl_opts: [verify: :verify_peer, cacertfile: 'priv/cert/selfsigned.pem'],
+  stacktrace: true,
+  show_sensitive_data_on_connection_error: true
+)
+
+# config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
+# url: [host: "mono-phoenix.herokuapp.com", port: 80],
+#  cache_static_manifest: "priv/static/cache_manifest.json"
 
 # Do not print debug messages in production
 config :logger, level: :info
