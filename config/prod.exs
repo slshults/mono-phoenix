@@ -28,7 +28,10 @@ config(:mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
     cipher_suite: :compatible,
     keyfile: "priv/cert/selfsigned_key.pem",
     certfile: "priv/cert/selfsigned.pem"
-  ]
+  ],
+  ssl_opts: [verify: :verify_peer, cacertfile: 'priv/cert/selfsigned.pem'],
+  stacktrace: true,
+  show_sensitive_data_on_connection_error: true
 )
 
 # Do not print debug messages in production
