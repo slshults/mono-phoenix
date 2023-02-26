@@ -20,16 +20,17 @@ config :logger, level: :info
 # To get SSL working, you will need to add the `https` key
 # to the previous section and set your `:url` port to 443:
 #
-#     config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
-#       ...,
-#       url: [host: "example.com", port: 443],
-#       https: [
-#         ...,
-#         port: 443,
-#         cipher_suite: :strong,
-#         keyfile: System.get_env("SOME_APP_SSL_KEY_PATH"),
-#         certfile: System.get_env("SOME_APP_SSL_CERT_PATH")
-#       ]
+config(:mono_phoenix_v01, MonoPhoenixV01Web.Endpoint, ...,
+  url: [host: "https://mono-phoenix.herokuapp.com/", port: 443],
+  https: [
+    ...,
+    port: 443,
+    cipher_suite: :compatible,
+    keyfile: System.get_env("priv/cert/selfsigned_key.pem"),
+    certfile: System.get_env("priv/cert/selfsigned.pem")
+  ]
+)
+
 #
 # The `cipher_suite` is set to `:strong` to support only the
 # latest and more secure SSL ciphers. This means old browsers
@@ -43,8 +44,7 @@ config :logger, level: :info
 #
 # We also recommend setting `force_ssl` in your endpoint, ensuring
 # no data is ever sent via http, always redirecting to https:
-#
-#     config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
-#       force_ssl: [hsts: true]
+
+config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint, force_ssl: [hsts: true]
 #
 # Check `Plug.SSL` for all available options in `force_ssl`.
