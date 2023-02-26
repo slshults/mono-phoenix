@@ -29,7 +29,7 @@ config(:mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
     keyfile: "priv/cert/server.key",
     certfile: "priv/cert/server.csr"
   ],
-  force_ssl: [rewrite_on: [:x_forwarded_proto] hsts: true],
+  force_ssl: [rewrite_on: [:x_forwarded_proto], hsts: true]
 )
 
 # Do not print debug messages in production
