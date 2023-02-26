@@ -9,7 +9,7 @@ config :mono_phoenix_v01, MonoPhoenixV01.Repo,
   ssl_opts: [verify: :verify_peer, cacertfile: 'priv/cert/server.csr'],
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
-  pool_size: 10
+  pool_size: 18
 
 # For development, we disable any cache and enable
 # debugging and code reloading.

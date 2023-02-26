@@ -29,6 +29,10 @@ config(:mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
     keyfile: "priv/cert/server.key",
     certfile: "priv/cert/server.csr"
   ],
+  ssl_opts: [verify: :verify_peer, cacertfile: 'priv/cert/server.csr'],
+  stacktrace: true,
+  show_sensitive_data_on_connection_error: true,
+  pool_size: 18,
   force_ssl: [rewrite_on: [:x_forwarded_proto], hsts: true]
 )
 
