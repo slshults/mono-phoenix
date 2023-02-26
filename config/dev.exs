@@ -6,7 +6,7 @@ config :mono_phoenix_v01, MonoPhoenixV01.Repo,
   password: "wRto7oD8J",
   hostname: "localhost",
   database: "copyOfProdDBforTest",
-  ssl_opts: [verify: :verify_none, cacertfile: 'priv/cert/selfsigned.pem'],
+  ssl_opts: [verify: :verify_peer, cacertfile: 'priv/cert/selfsigned.pem'],
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 18
@@ -20,7 +20,7 @@ config :mono_phoenix_v01, MonoPhoenixV01.Repo,
 config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  http: [ip: {127, 0, 0, 1}, port: 4000],
+  http: [ip: {0, 0, 0, 0}, port: 4000],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
