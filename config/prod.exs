@@ -20,19 +20,22 @@ config :mono_phoenix_v01, MonoPhoenixV01.Repo,
   ssl_opts: [verify: :verify_peer, cacertfile: 'priv/cert/selfsigned.pem'],
   pool_size: 18
 
-config(:mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
-  cache_static_manifest: "priv/static/cache_manifest.json",
-  url: [host: "https://mono-phoenix.herokuapp.com/", port: 443],
+config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
+  http: [port: {:system, "80"}],
+  url: [host: "mono-phoenix.herokuapp.com"],
+  # cache_static_manifest: "priv/static/cache_manifest.json",
   https: [
     port: 443,
     cipher_suite: :compatible,
-    keyfile: "priv/cert/selfsigned_key.pem",
-    certfile: "priv/cert/selfsigned.pem"
-  ],
-  ssl_opts: [verify: :verify_peer, cacertfile: 'priv/cert/selfsigned.pem'],
-  stacktrace: true,
-  show_sensitive_data_on_connection_error: true
-)
+    otp_app: :mono_phoenix_v01,
+    keyfile: System.get_env("priv/selfsigned_key.pem"),
+    certfile: System.get_env("priv/selfsigned.pem")
+    # OPTIONAL Key for intermediate certificates:
+    # cacertfile: System.get_env("SOME_APP_SSL_CACERT_PATH")
+  ]
+
+config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
+  force_ssl: [rewrite_on: [:x_forwarded_proto]]
 
 # config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
 # url: [host: "mono-phoenix.herokuapp.com", port: 80],
