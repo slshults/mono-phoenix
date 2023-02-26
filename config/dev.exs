@@ -6,6 +6,7 @@ config :mono_phoenix_v01, MonoPhoenixV01.Repo,
   password: "wRto7oD8J",
   hostname: "localhost",
   database: "copyOfProdDBforTest",
+  ssl_opts: [verify: :verify_peer, cacertfile: 'ca-certificate.crt'],
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
