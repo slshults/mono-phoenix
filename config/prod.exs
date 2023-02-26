@@ -24,7 +24,6 @@ config(:mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
   cache_static_manifest: "priv/static/cache_manifest.json",
   url: [host: "https://mono-phoenix.herokuapp.com/", port: 443],
   https: [
-    ...,
     port: 443,
     cipher_suite: :compatible,
     keyfile: System.get_env("priv/cert/selfsigned_key.pem"),
