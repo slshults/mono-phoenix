@@ -11,7 +11,7 @@
     <%= for row <- @rows do %>
         <tr class="monologue_list">
           <td class="{ (index.even? ? 'even' : 'odd') }">  
-            <span class="monologue-playname"><%= row.play %></span>&nbsp; · <span class="monologue-actscene"><%= row.location %></span>&nbsp; · <span class="monologue-actscene"><%= row.style %></span>
+            <span class="monologue-playname"><%= row.play %></span>&nbsp; · <span class="monologue-actscene"><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; · <span class="monologue-actscene"><%= row.style %></span>
             <br>
             <span class="monologue-character"><%= row.character %></span><br>
                 1st line: <br><span class="monologue-firstline-table"><%= row.firstline %></span>

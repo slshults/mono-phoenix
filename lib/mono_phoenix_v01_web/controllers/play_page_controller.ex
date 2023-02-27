@@ -20,6 +20,7 @@ defmodule MonoPhoenixV01Web.PlayPageController do
           m.first_line,
           m.style,
           m.body,
+          m.body_link,
           m.pdf_link
         ],
         select: %{
@@ -29,6 +30,7 @@ defmodule MonoPhoenixV01Web.PlayPageController do
           character: m.character,
           firstline: m.first_line,
           body: m.body,
+          scene: m.body_link,
           pdf: m.pdf_link
         }
       )
