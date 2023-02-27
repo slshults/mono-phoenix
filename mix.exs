@@ -49,6 +49,7 @@ defmodule MonoPhoenixV01.MixProject do
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
+      {:redirect, "~> 0.4.0"},
       {:html_assertion, "0.1.5", only: :test},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false}
     ]
