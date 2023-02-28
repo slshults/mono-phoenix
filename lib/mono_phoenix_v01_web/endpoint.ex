@@ -20,7 +20,7 @@ defmodule MonoPhoenixV01Web.Endpoint do
     at: "/",
     from: :mono_phoenix_v01,
     gzip: false,
-    only: ~w(assets fonts images favicon.ico robots.txt)
+    only: ~w(assets fonts images favicon.ico robots.txt ads.txt)
   )
 
   # Code reloading can be explicitly enabled under the
