@@ -118,15 +118,9 @@
 
     <link rel="search" type="application/opensearchdescription+xml" title="Search Shakespare's Monologues" href={ Routes.static_path(@conn, "/opensearch.xml")} />
 
-    <!-- begin google adsense page-level mobile ads -->
-      <script
-       async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-      <script>
-        (adsbygoogle = window.adsbygoogle || []).push({
-          google_ad_client: "ca-pub-5236095389905910",
-          enable_page_level_ads: true
-        });
-      </script>
+    <!-- begin google adsense ad code -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5236095389905910"
+     crossorigin="anonymous"></script>
     <!-- begin google adsense page-level mobile ads -->
 
     <!-- when the rest of the page has loaded, load the social.js-one-script-to-rule-them-all -->
@@ -205,8 +199,9 @@
     $("#search-box")[0].placeholder = createPlaceholderText();
   </script -->
 
-  <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script> -->
-  <script>
+  <!-- Not sure if this was google embedded search and site's own search, or both, so commenting out until reviving site search -->
+  <!-- script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script -->
+  <!-- script>
       $(function () { 
       // check to see if search is invoked in the URL first
       if ( document.location.href.indexOf('/?search=') > -1 )
@@ -229,7 +224,7 @@
     			doSearch(gParams);
          }
        });
-  </script>
+  </script -->
     <script>
 <!--
 	var adblock = true;
