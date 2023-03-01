@@ -183,8 +183,7 @@ table.categories-list {
     width: 333px;
     border-collapse: collapse;
     border: 1px solid black;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0px auto;
  
 }
 
@@ -193,7 +192,7 @@ table.categories-list th {
     font-size: 150%;
     line-height: 110%;
     font-weight: bold;
-    text-align: left;
+   
     padding-left: 15px;
     padding-top: 2px;
     padding-bottom: 2px;
@@ -255,8 +254,8 @@ table.categories-list th {
 table.monologue-list {
     /*width: 100%;*/
     max-width: 550px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0px auto;
+    text-align: left;
 }
 
 table.monologue-list th {
@@ -279,6 +278,8 @@ table.monologue-list tr {
 
 table.monologue-list td {
     padding: 6px;
+    margin: 0px auto;
+    text-align: left;
 }
 
 tr.odd {
@@ -567,6 +568,12 @@ a.control-active {
     font-size: 150%;
     font-weight: 900;
     border-bottom: 1px solid;
+}
+
+.center-this {
+    margin: auto;
+    width: 65%;
+    min-width: 350px;
 }
 
 span.toggle-control>a.toggle-mono>img {

@@ -1,12 +1,11 @@
 <%= live_title_tag assigns[:page_title] || "#{hd(@rows).play} · Shakespeare's Monologues", prefix: "Women's Monologues from " %>
-<div class="row justify-content-center">
-    <div class="col-auto">
+
 <div class="accent-font">
   <h3>Women's monologues from</h3><h2><%= hd(@rows).play %></h2>
   </div>
 <div>
-
-  <table class="monologue-list table-responsive">
+<div class="center-this">
+  <table class="monologue-list">
     <tbody>
     <section class="monologue">
       <article class="monologue">
@@ -29,5 +28,4 @@
     </tbody>
   </table>   
 </div>
-    </div>
-  </div>
+</div>

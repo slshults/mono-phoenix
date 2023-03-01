@@ -8,18 +8,18 @@
   <h3>Monologues from</h3><h2><%= hd(@rows).play %></h2>
   </div>
 <div>
-<center>
+<div class="center-this">
   <table class="monologue-list">
     <tbody>
     <section class="monologue">
       <article class="monologue">
     <%= for row <- @rows do %>
-        <tr class="monologue-list">
+        <tr class="monologue_list">
           <td class="{ (index.even? ? 'even' : 'odd') }">  
             <span class="monologue-playname"><%= row.play %></span>&nbsp; · <span class="monologue-actscene"><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; · <span class="monologue-actscene"><%= row.style %></span>
             <br>
             <span class="monologue-character"><%= row.character %></span><br>
-            1st line: <span class="monologue-firstline-table"><%= row.firstline %></span>
+            1st line:<br><span class="monologue-firstline-table"><%= row.firstline %></span>
             <br><br>
             <span class="monologue-show"><%= raw(row.body) %> <%= link to: raw(row.pdf), method: :get, target: "_blank" do %><img src={Routes.static_path(@conn, "/images/pdf_file_icon_16x16.png")} alt="Get a double-spaced PDF of this monologue"/><% end %>
            </span>
@@ -32,6 +32,6 @@
     </section>
     </tbody>
   </table>   
-</center>
+  </div>
   </div>
 </div>
