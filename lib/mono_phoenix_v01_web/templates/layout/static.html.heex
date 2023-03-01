@@ -74,16 +74,7 @@
     <link href="/img/apple-touch-startup-image-2048x1496.png" media="(device-width: 1536px)  and (orientation: landscape) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
     <link rel="apple-touch-icon-precomposed" href="/img/icon-152x152.png">
 
-    <!-- add to homescreen -->
-    <link rel="stylesheet" type="text/css" href={ Routes.static_path(@conn, "/assets/css/addtohomescreen.css")}>
-    <script src={ Routes.static_path(@conn, "/assets/js/addtohomescreen.js")}></script>
-    <script>
-    addToHomescreen.removeSession();
-      addToHomescreen({
-        maxDisplayCount: 2,
-        lifespan: 15,
-        });
-      </script>
+    
 
     <link rel="icon" sizes="196x196" href={ Routes.static_path(@conn, "/images/icon-196x196.png")}>
     <link rel="apple-touch-icon" sizes="196x196" href={ Routes.static_path(@conn, "/images/icon-196x196.png")}>
