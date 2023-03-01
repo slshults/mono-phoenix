@@ -43,7 +43,7 @@ defmodule MonoPhoenixV01Web.Router do
   # redirect from /men/plays/123 to /men/123
   # redirect from /men/plays/123 to /men/123
   redirect("/men", "/mens", :permanent, preserve_query_string: true)
-  redirect("women", "/womens", :permanent, preserve_query_string: true)
+  redirect("/women", "/womens", :permanent, preserve_query_string: true)
   redirect("/men/plays/13", "/men/13", :permanent, preserve_query_string: true)
   redirect("/men/plays/9", "/men/9", :permanent, preserve_query_string: true)
   redirect("/men/plays/1", "/men/1", :permanent, preserve_query_string: true)
