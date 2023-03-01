@@ -91,14 +91,14 @@ h3 {
 
 .link-menu-left,
 .link-menu-right {
-    text-align: left;
+    text-align: center;
     vertical-align: top;
     margin-top: 0;
     white-space: nowrap;
     padding-top: 5px;
     padding-bottom: 5px;
     padding-left: 0px;
-    padding-right: 20px;
+    padding-right: 0px;
 }
 
 .link-menu-bottom {
@@ -111,11 +111,12 @@ h3 {
 
 /* Add a bit of space before each text link */
 .link-menu-left a {
-    margin-left: 0.1em;
+    margin-left: 2px;
+    text-align: center;
 }
 
 .link-menu-right a {
-    margin-left: 0.4em;
+    margin-left: 2px;
 }
 
 
