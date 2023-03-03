@@ -5,20 +5,38 @@ defmodule MonoPhoenixV01Web.MonologuesPageController do
   # Constant
   # @display_limit 100
 
-  # Show all the monologues in the database
+  # Show a monologue from the database
   @spec monologues(Plug.Conn.t(), any) :: Plug.Conn.t()
-  def monologues(conn, _params) do
+  def monologues(conn, params) do
+    monoid = String.to_integer(params["monoid"])
+
     query =
       from(m in "monologues",
         join: p in "plays",
         on: m.play_id == p.id,
-        group_by: [p.title, m.character, m.first_line, m.location, m.body],
+        where: m.id == ^monoid,
+        group_by: [
+          p.id,
+          p.title,
+          m.id,
+          m.location,
+          m.character,
+          m.first_line,
+          m.style,
+          m.body,
+          m.body_link,
+          m.pdf_link
+        ],
         select: %{
           play: p.title,
+          monologues: m.id,
+          location: m.location,
+          style: m.style,
           character: m.character,
           firstline: m.first_line,
-          location: m.location,
-          body: m.body
+          body: m.body,
+          scene: m.body_link,
+          pdf: m.pdf_link
         }
       )
 

@@ -1,37 +1,61 @@
 <%= live_title_tag assigns[:page_title] || "#{hd(@rows).play} · Shakespeare's Monologues", prefix: "Monologues from " %>
-  <div >
+  <div>
         <!-- Page views should contain .center-column-header and .center-column-list -->
                     <div class="jquery-search-replace">
             <!-- Contents of this div replaced by key up triggered jquery ajax call -->
-          </div> 
+                    </div> 
 <div class="accent-font">
-  <h3>Monologues from</h3><h2><%= hd(@rows).play %></h2>
+  <h3>Monologues from</h3><h2>&nbsp; &nbsp; &nbsp;<%= hd(@rows).play %></h2>
+  <span font-size: 10px;>Click on the 1st line, under the character's name, to see the full monologue. &nbsp; &nbsp;
+  <a href="#" data-toggle="collapse" data-target=".multi-collapse" id="toggle-button"><img src="/images/ExpandAll.png" id="toggle-image" alt="Click to toggle text of all monologues on the page.
+  Reload the page to reset the toggle" title="Click to toggle the text of all monologues on the page.
+  Reload the page to reset the toggle."></a>
+</span>
   </div>
 <div>
 <div class="center-this">
   <table class="monologue-list">
     <tbody>
-    <section class="monologue">
-      <article class="monologue">
-    <%= for row <- @rows do %>
-        <tr class="monologue_list">
-          <td class="{ (index.even? ? 'even' : 'odd') }">  
-            <span class="monologue-playname"><%= row.play %></span>&nbsp; · <span class="monologue-actscene"><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; · <span class="monologue-actscene"><%= row.style %></span>
-            <br>
-            <span class="monologue-character"><%= row.character %></span><br>
-            1st line:<br><span class="monologue-firstline-table"><%= row.firstline %></span>
-            <br><br>
-            <span class="monologue-show"><%= raw(row.body) %> <%= link to: raw(row.pdf), method: :get, target: "_blank" do %><img src={Routes.static_path(@conn, "/images/pdf_file_icon_16x16.png")} alt="Get a double-spaced PDF of this monologue"/><% end %>
-           </span>
-
-            <br><br>
-          </td>   
-        </tr>
-    <% end %>
-      </article>
-    </section>
+<%= for row <- @rows do %>
+  <tr class="monologue_list">
+    <td class="{ (index.even? ? 'even' : 'odd') }"> 
+      <span class="monologue-playname"><%= row.play %></span>&nbsp; ·
+      <span class="monologue-actscene"><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; ·
+      <span class="monologue-actscene"><%= row.style %></span>
+      <br>
+      <span class="monologue-character"><%= row.character %></span><br>
+      <div class="monologue-firstline-table" data-toggle="collapse" data-target={"#collapse-" <> Integer.to_string(row.monologues)}>
+        <%= row.firstline %>
+      </div>
+      <div class="collapse multi-collapse monologue-show" id={"collapse-" <> to_string(row.monologues)}>
+      <br>
+        <%= raw(row.body) %>&nbsp; 
+        <%= link to: raw(row.pdf), method: :get, target: "_blank", rel: "noopener" do %>
+          <img src={Routes.static_path(@conn, "/images/pdf_file_icon_16x16.png")} alt="Click for a double-spaced PDF of this monologue" title="Click for a double-spaced PDF of this monologue"/><% end %>
+      </div>
+    </td>
+  </tr>
+<% end %>
     </tbody>
   </table>   
   </div>
   </div>
 </div>
+<script>
+  const toggleButton = document.getElementById('toggle-button');
+  const toggleImage = document.getElementById('toggle-image');
+  
+  toggleButton.addEventListener('click', () => {
+    toggleImage.classList.toggle('collapsed');
+  });
+</script>
+
+<style>
+  #toggle-image.collapsed {
+    content: url('/images/CollapseAll.png');
+  }
+  
+  #toggle-image {
+    content: url('/images/ExpandAll.png');
+  }
+</style>

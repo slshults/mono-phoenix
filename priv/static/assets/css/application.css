@@ -309,13 +309,14 @@ h1.monologue-firstline-heading::first-letter {
     font-size: 125%;
     font-style: bold;
     line-height: 20px;
-    width: 455px;
+    width: 100%;
     border-collapse: collapse;
     font-family: 'IM Fell DW Pica', serif;
 }
 
-.monologue-firstline-table A {
+.monologue-firstline-table:hover {
     color: #555;
+    font-size: 127%;
 }
 
 .monologue-playname {
@@ -365,7 +366,7 @@ h1.monologue-firstline-heading::first-letter {
 
 .monologue-show {
     margin-top: 0;
-    padding-bottom: 60px;
+    padding-bottom: 20px;
     line-height: 150%;
     font-size: 100%;
     font-size: 110%;
