@@ -1,14 +1,14 @@
-<section class="body">
-  <h1><%= gettext "All the Monologues", name: "All the Monologues" %></h1>
-</section>
+
 
 <section class="row">
   <article class="monologue_preview">
-    <h2>All the Monologues from All the Plays</h2>
      <%= for row <- @rows do %>
        <br><br>
-       <%= row.play %>, <%= row.character %>, <%= row.firstline %>, <%= row.location %>
-      <br>
+       <%= row.play %>&nbsp; · <%= row.location %>&nbsp; · <%= row.style %> 
+       <br>
+       <%= row.character %><br>
+       <%= row.firstline %>
+      <br><br>
        <%= raw(row.body) %>
      <% end %>
   </article>

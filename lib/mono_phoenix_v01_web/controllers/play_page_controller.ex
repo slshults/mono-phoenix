@@ -15,6 +15,7 @@ defmodule MonoPhoenixV01Web.PlayPageController do
         group_by: [
           p.id,
           p.title,
+          m.id,
           m.location,
           m.character,
           m.first_line,
@@ -25,6 +26,7 @@ defmodule MonoPhoenixV01Web.PlayPageController do
         ],
         select: %{
           play: p.title,
+          monologues: m.id,
           location: m.location,
           style: m.style,
           character: m.character,
