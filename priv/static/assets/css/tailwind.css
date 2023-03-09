@@ -1,0 +1,622 @@
+/*
+ * Globals
+ */
+
+/* Links */
+
+a {
+  text-decoration: none;
+  color: #111;
+}
+
+a:hover {
+  color: #5E2612;
+  text-decoration: underline;
+}
+
+a:visited {
+  color: #666;
+}
+
+img {
+  border: 0;
+}
+
+pre {
+  background-color: #eee;
+  padding: 2px;
+  font-size: 11px;
+}
+
+/*
+ * Base structure
+ */
+
+html {
+  position: relative;
+  min-height: 100%;
+  width: 100%;
+  padding: 0px;
+}
+
+body {
+  margin-top: 20px;
+}
+
+@media screen and (max-width:980px) {
+  body {
+    background-color: #F9F9DF;
+    background-image: none;
+    margin-bottom: 20px;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 13px;
+    line-height: 13px;
+  }
+}
+
+body .accent-font {
+  font-family: 'IM Fell DW Pica', serif;
+  font-weight: 400;
+}
+
+.container {
+  max-width: 960px !important;
+  position: relative;
+  width: 100%;
+  padding: 0px;
+}
+
+h3 {
+  padding-left: 2px;
+}
+
+.center-column-header {
+  margin: 1px;
+  padding: 1px;
+}
+
+.center-column-list {
+  /* min-height: 300px; */
+  padding-bottom: 20px;
+  margin: 1px;
+  padding: 1px;
+  width: 100%;
+}
+
+.link-menu-left, .link-menu-right {
+  text-align: center;
+  vertical-align: top;
+  margin-top: 0;
+  white-space: nowrap;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.link-menu-bottom {
+  font-size: 150%;
+  text-align: center;
+  padding-top: 20px;
+  padding-bottom: 10px;
+  max-width: 100%;
+}
+
+/* Add a bit of space before each text link */
+
+.link-menu-left a {
+  margin-left: 2px;
+  text-align: center;
+}
+
+.link-menu-right a {
+  margin-left: 2px;
+}
+
+.link-menu-bottom a {
+  margin-left: 0.4em;
+}
+
+.spacer {
+  height: 1%;
+}
+
+.center-column-footer {
+  bottom: 0;
+  max-width: 100%;
+  height: 60px;
+  padding: 10px;
+  font-size: 10px;
+  text-align: center;
+}
+
+@media (min-width: 600px) {
+  .center-column-footer {
+    min-width: 600px;
+  }
+}
+
+.center-column-copyright {
+  display: block;
+  padding: 5px;
+  bottom: 0;
+  /* position: relative; */
+  text-align: center;
+}
+
+div.everbutton-anchor-container {
+  display: block;
+  bottom: 0;
+}
+
+div.wrapper_for_addthis {
+  padding-left: 20px;
+  width: 125px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+div.login-banner {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+input#search-box {
+  font-size: 150%;
+  vertical-align: top;
+  left: 9px;
+  width: 334px;
+  /* margin-left: -10px; */
+  /* border-top-right-radius: 5px; */
+  /* border-bottom-right-radius: 5px; */
+}
+
+div.search-links {
+  padding-left: 25px;
+  margin-top: -10px;
+  padding-bottom: 5px;
+  font-size: 105%;
+}
+
+@media screen and (max-width:980px) {
+  #left_column_ads {
+    display: none;
+  }
+
+  .gsc-control-cse {
+    display: none;
+  }
+
+  .left-column.col-md-2.col-xs-12 {
+    top: 10;
+    margin: 0px;
+    text-align: center;
+    padding-left: 0;
+    padding-right: 20;
+  }
+
+  .center-column.col-md-8.col-xs-12 {
+    margin: 2px;
+    padding-bottom: 100px;
+    padding-left: 20px;
+  }
+
+  .right-column.col-md-2.col-xs-12 {
+    top: 10;
+    position: relative;
+    bottom: 0;
+    max-width: 250px;
+    padding-top: 80px;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin: 0 auto;
+  }
+
+  .categories-list thead {
+    display: none;
+  }
+
+  table.categories-list {
+    width: 333px;
+    border-collapse: collapse;
+    border: 1px solid black;
+  }
+
+  table.categories-list th {
+    width: 100%;
+    font-size: 150%;
+    line-height: 110%;
+    font-weight: bold;
+    text-align: left;
+    padding-left: 15px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
+
+  table.categories-list td {
+    border-collapse: collapse;
+    display: block;
+    width: 100%;
+    padding-top: 5px;
+    padding-left: 20px;
+    padding-right: 10px;
+    padding-bottom: 5px;
+    line-height: 150%;
+    font-size: 135%;
+    text-align: left;
+    white-space: nowrap;
+    border: 1px solid black;
+  }
+
+  a.categories-list {
+    text-decoration: none;
+    color: #696969;
+    font-style: bold;
+  }
+
+  a.categories-list:hover {
+    color: #5E2612;
+    text-decoration: underline;
+    font-style: italic;
+  }
+
+  /* categories header row info was removed from here */
+
+  td:before {
+    display: block;
+    white-space: pre;
+    content: attr(data-label)" \A ";
+    font-family: 'IM Fell DW Pica', serif;
+    font-weight: 400;
+    font-size: 150%;
+    line-height: 110%;
+    font-weight: bold;
+    border: 0;
+    border-collapse: collapse;
+  }
+
+  .jquery-search-replace{
+    width: 100%;
+    margin: 1px;
+    padding: 1px;
+  }
+
+  .empty-table-message {
+    font-size: 150%;
+    /*font-style: italic;*/
+    text-align: left;
+    padding-top: 60px;
+    padding-left: 20px;
+    vertical-align: top;
+    border: 0;
+  }
+}
+
+table.monologue-list {
+  /*width: 100%;*/
+  max-width: 768px;
+  margin: 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+table.monologue-list th {
+  font-size: 110%;
+  text-align: left;
+  white-space: nowrap;
+  padding-left: 6px;
+  padding-right: 8px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  border-bottom: solid 1px;
+  color: #333;
+  font-weight: normal;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table.monologue-list tr {
+  vertical-align: top;
+  width: 100%;
+}
+
+table.monologue-list td {
+  padding: 6px;
+}
+
+tr.odd {
+  background-color: #F9F9D1;
+}
+
+tr.even {
+  background-color: #F9F9DF;
+}
+
+h1.monologue-firstline-heading {
+  font-size: 200%;
+  padding-top: 10px;
+  vertical-align: top;
+  line-height: 150%;
+}
+
+h1.monologue-firstline-heading::first-letter {
+  font-size: 300%;
+  color: #777;
+}
+
+.monologue-firstline-table {
+  padding-left: 0;
+  text-align: left;
+  font-size: 125%;
+  font-style: bold;
+  line-height: 20px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.monologue-firstline-table A {
+  color: #555;
+}
+
+.monologue-playname {
+  font-size: 115%;
+  font-style: italic;
+}
+
+.monologue-character {
+  font-size: 120%;
+  font-weight: bold;
+  width: 100px;
+  line-height: 150%;
+  white-space: nowrap;
+}
+
+.monologue-detail {
+  font-size: 100%;
+  padding-top: 3px;
+}
+
+.monologue-preview {
+  padding: 10px;
+  font-size: 100%;
+  line-height: 1.25;
+  width: 100%;
+  margin-top: 5px;
+  margin-left: -5px;
+  border: solid gray;
+  border-width: 1px;
+  /* background-image: '/images/white.png'); */
+  background-repeat: repeat;
+  overflow: visible;
+  /* z-index: 0; */
+}
+
+.monologue-actscene {
+  font-size: 100%;
+  line-height: 125%;
+  white-space: nowrap;
+}
+
+/*
+    Monologues show view modifies above classes
+*/
+
+.monologue-show {
+  margin-top: 0;
+  padding-bottom: 60px;
+  line-height: 150%;
+  font-size: 110%;
+  font-family: 'IM Fell DW Pica', serif;
+}
+
+.monologue-body {
+  font-size: 120%;
+  line-height: 125%;
+  padding: 5px;
+  width: 100%;
+  margin-bottom: 60px;
+}
+
+.monologue-body-inline {
+  padding: 5px;
+  font-size: 100%;
+  font-style: normal;
+  line-height: 1.25;
+  width: 100%;
+  border: #333 solid;
+  border-width: 1px;
+  margin-bottom: 20px;
+  min-height: 300px;
+}
+
+.display-hide {
+  display: none;
+}
+
+.monologue-body-loading {
+  height: 32px;
+  width: 32px;
+}
+
+/*
+    Google search
+*/
+
+div.google-sitesearch {
+  padding-top: 15px;
+}
+
+div.google-sitesearch img {
+  vertical-align: bottom;
+}
+
+input.googlesearch {
+  font-size: 115%;
+}
+
+.small {
+  font-family: verdana;
+  font-size: 10px;
+}
+
+.fieldWithErrors {
+  padding: 2px;
+  background-color: red;
+  display: table;
+}
+
+#errorExplanation {
+  width: 400px;
+  border: 2px solid red;
+  padding: 7px;
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+  background-color: #f0f0f0;
+}
+
+#errorExplanation h2 {
+  text-align: left;
+  font-weight: bold;
+  padding: 5px 5px 5px 15px;
+  font-size: 12px;
+  margin: -7px;
+  background-color: #c00;
+  color: #fff;
+}
+
+#errorExplanation p {
+  color: #333;
+  margin-bottom: 0;
+  padding: 5px;
+}
+
+#errorExplanation ul li {
+  font-size: 12px;
+  list-style: square;
+}
+
+#odd-row {
+  background-color: #F9F9DF;
+}
+
+#even-row {
+  background-color: #F9F9D1;
+}
+
+a.tip-jar {
+  background: #3498db;
+  background-image: linear-gradient(to bottom, #3498db, #2980b9);
+  border-radius: 10px;
+  font-family: Verdana;
+  color: #ffffff;
+  font-size: 12px;
+  padding: 6px 12px 8px 12px;
+  margin-left: 8px;
+  margin-bottom: 20px;
+  text-decoration: none;
+}
+
+a.tip-jar:hover {
+  background: #3cb0fd;
+  background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+  text-decoration: none;
+}
+
+th.th-pad-right {
+  padding-right: 50px;
+}
+
+/* Search box has too much bootstrap bling */
+
+.form-control:focus {
+  border-color: unset;
+  box-shadow: none;
+  outline: -webkit-focus-ring-color auto 0px;
+}
+
+.monologue-controls {
+  margin-top: -5px;
+  margin-bottom: 10px;
+  display: inline-block;
+  line-height: 200%;
+  padding: 2px;
+  width: 390px;
+}
+
+.big-font {
+  font-size: 140%;
+  font-weight: 400;
+}
+
+.huge-font {
+  font-size: 250%;
+  font-style: italic;
+  font-weight: 600;
+  padding-right: 4px;
+  padding-left: 4px;
+  color: gray;
+}
+
+a.filter-gender {
+  padding-right: 8px;
+  padding-left: 8px;
+  font-size: 140%;
+  font-weight: 400;
+}
+
+a.remove-play span.huge-font {
+  color: black;
+}
+
+.filter-play {
+  margin-right: 8px;
+  padding-left: 3px;
+  font-size: 150%;
+  font-weight: 600;
+  border-bottom: 1px solid;
+}
+
+a.control-active {
+  font-size: 150%;
+  font-weight: 900;
+  border-bottom: 1px solid;
+}
+
+span.toggle-control>a.toggle-mono>img {
+  width: 34px;
+  height: 34px;
+  margin-left: 6px;
+  padding-bottom: 6px;
+}
+
+.glyphicon-refresh.searching {
+  /*display: none;*/
+  color: gray;
+  padding: 5px;
+  animation: spin 1s infinite linear;
+  -webkit-animation: spin2 1s infinite linear;
+  font-size: 130%;
+}
+
+@keyframes spin {
+  from {
+    transform: scale(1) rotate(0deg);
+  }
+
+  to {
+    transform: scale(1) rotate(360deg);
+  }
+}
+
+.debug-text {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  font-size: 90%;
+  background-color: orange;
+  color: inherit;
+  padding: 5px;
+  font-family: Arial;
+  z-index: 0;
+}
+
