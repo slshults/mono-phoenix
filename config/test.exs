@@ -7,7 +7,7 @@ import Config
 # Run `mix help test` for more information.
 config :mono_phoenix_v01, MonoPhoenixV01.Repo,
   username: "postgres",
-  password: "postgres",
+  password: "wRto7oD8J",
   hostname: "localhost",
   database: "mono_phoenix_v01_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
