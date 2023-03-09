@@ -26,6 +26,8 @@ defmodule MonoPhoenixV01Web.ConnCase do
 
       alias MonoPhoenixV01Web.Router.Helpers, as: Routes
 
+      use MonoPhoenixV01Web, :verified_routes
+
       # The default endpoint for testing
       @endpoint MonoPhoenixV01Web.Endpoint
     end

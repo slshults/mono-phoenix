@@ -17,13 +17,17 @@ defmodule MonoPhoenixV01Web do
   and import those modules here.
   """
 
+  def static_paths do
+    ~w(assets fonts images favicon.ico robots.txt ads.txt)
+  end
+
   def controller do
     quote do
       use Phoenix.Controller, namespace: MonoPhoenixV01Web
-
       import Plug.Conn
       import MonoPhoenixV01Web.Gettext
       alias MonoPhoenixV01Web.Router.Helpers, as: Routes
+      unquote(verified_routes())
     end
   end
 
@@ -90,7 +94,7 @@ defmodule MonoPhoenixV01Web do
       use Phoenix.HTML
 
       # Import LiveView and .heex helpers (live_render, live_patch, <.form>, etc)
-      import Phoenix.LiveView.Helpers
+      import Phoenix.Component
 
       # Import basic rendering functionality (render, render_layout, etc)
       import Phoenix.View
@@ -98,6 +102,17 @@ defmodule MonoPhoenixV01Web do
       import MonoPhoenixV01Web.ErrorHelpers
       import MonoPhoenixV01Web.Gettext
       alias MonoPhoenixV01Web.Router.Helpers, as: Routes
+
+      unquote(verified_routes())
+    end
+  end
+
+  def verified_routes do
+    quote do
+      use Phoenix.VerifiedRoutes,
+        endpoint: MonoPhoenixV01Web.Endpoint,
+        router: MonoPhoenixV01Web.Router,
+        statics: MonoPhoenixV01Web.static_paths()
     end
   end
 
