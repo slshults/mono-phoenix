@@ -1,0 +1,104 @@
+<div class="tw-block tw-max-w-xs tw-flex-auto">
+  <button
+    type="button"
+    class="tw-hidden tw-text-gray-500 tw-bg-white hover:tw-ring-gray-500 tw-ring-gray-300 tw-h-8 tw-w-full items-center tw-gap-2 tw-rounded-md tw-pl-2 tw-pr-3 tw-text-sm tw-ring-1 tw-transition lg:tw-flex focus:tw-[&:not(:focus-visible)]:outline-none"
+    phx-click={open_modal()}
+  >
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      aria-hidden="true"
+      class="tw-h-5 tw-w-5 tw-stroke-current"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M12.01 12a4.25 4.25 0 1 0-6.02-6 4.25 4.25 0 0 0 6.02 6Zm0 0 3.24 3.25"
+      >
+      </path>
+    </svg>
+    Search for monologues...
+  </button>
+</div>
+
+<div
+  id="searchbar-dialog"
+  class="tw-hidden tw-fixed tw-inset-0 z-50"
+  role="dialog"
+  aria-modal="true"
+  phx-window-keydown={hide_modal()}
+  phx-key="escape"
+>
+  <div class="tw-fixed tw-inset-0 tw-bg-zinc-400/25 tw-backdrop-blur-sm tw-opacity-100"></div>
+  <div class="tw-fixed tw-inset-0 tw-overflow-y-auto tw-px-4 tw-py-4 sm:tw-py-20 sm:tw-px-6 md:tw-py-32 lg:tw-px-8 lg:tw-py-[15vh]">
+    <div
+      id="searchbox_container"
+      class="tw-mx-auto tw-overflow-hidden tw-rounded-lg tw-bg-zinc-50 tw-shadow-xl tw-ring-zinc-900/7.5 sm:tw-max-w-xl tw-opacity-100 tw-scale-100"
+      phx-hook="SearchBar"
+    >
+      <div
+        role="combobox"
+        aria-haspopup="listbox"
+        phx-click-away={hide_modal()}
+        aria-expanded={@monologues != []}
+      >
+        <form action="" novalidate="" role="search" phx-change="change">
+          <div class="tw-group tw-relative tw-flex tw-h-12">
+            <svg
+              viewBox="0 0 20 20"
+              fill="none"
+              aria-hidden="true"
+              class="tw-pointer-events-none tw-absolute tw-left-3 tw-top-0 tw-h-full tw-w-5 tw-stroke-zinc-500"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12.01 12a4.25 4.25 0 1 0-6.02-6 4.25 4.25 0 0 0 6.02 6Zm0 0 3.24 3.25"
+              >
+              </path>
+            </svg>
+
+            <input
+              id="search-input"
+              name="search[query]"
+              class="tw-flex-auto tw-rounded-lg tw-appearance-none tw-bg-transparent tw-pl-10 tw-text-zinc-900 tw-outline-none focus:tw-outline-none tw-border-slate-200 focus:tw-border-slate-200 focus:tw-ring-0 focus:tw-shadow-none placeholder:tw-text-zinc-500 focus:tw-full focus:tw-flex-none sm:tw-text-sm [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-webkit-search-results-button]:hidden [&::-webkit-search-results-decoration]:hidden pr-4"
+              style={
+                @monologues != [] &&
+                  "tw-border-bottom-left-radius: 0; tw-border-bottom-right-radius: 0; tw-border-bottom: none"
+              }
+              aria-autocomplete="both"
+              aria-controls="searchbox__results_list"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              enterkeyhint="search"
+              spellcheck="false"
+              placeholder="Search for monologues"
+              type="search"
+              value=""
+              tabindex="0"
+            />
+          </div>
+
+          <ul
+            :if={@monologues != []}
+            class="tw-divide-y tw-divide-slate-200 tw-overflow-y-auto tw-rounded-b-lg tw-border-t tw-border-slate-200 tw-text-sm tw-leading-6"
+            id="searchbox__results_list"
+            role="listbox"
+          >
+            <%= for monologue <- @monologues do %>
+              <li id={"#{monologue.id}"}>
+                <.link
+                  navigate={~p"/monologues/#{monologue.slug}"}
+                  class="tw-block tw-p-4 hover:tw-bg-slate-100 focus:tw-outline-none focus:tw-bg-slate-100 focus:tw-text-sky-800"
+                >
+                  <%= monologue.body %>
+                </.link>
+              </li>
+            <% end %>
+          </ul>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
