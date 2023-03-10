@@ -1,7 +1,6 @@
 <.live_title prefix="Monologues from ">
   <%= assigns[:page_title] || "#{hd(@rows).play} · Shakespeare's Monologues" %>
 </.live_title>
-...
 <div>
   <!-- Page views should contain .center-column-header and .center-column-list -->
   <div class="jquery-search-replace">
@@ -11,8 +10,12 @@
     <h3>Monologues from</h3>
     <h2>&nbsp; &nbsp; &nbsp;<%= hd(@rows).play %></h2>
     <span font-size: 10px;>
-      Click on the 1st line, under the character's name, to see the full monologue. &nbsp; &nbsp;
-      <a href="#" data-toggle="collapse" data-target=".multi-collapse" id="toggle-button">
+      Click on the 1st line, under the character's name, to see the full monologue. &nbsp;<a
+        href="#"
+        data-toggle="collapse"
+        data-target=".multi-collapse"
+        id="toggle-button"
+      >
         <img
           src="/images/ExpandAll.png"
           id="toggle-image"
@@ -34,7 +37,8 @@
                 <span class="monologue-playname"><%= row.play %></span>&nbsp; · <span class="monologue-actscene"><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; ·
                 <span class="monologue-actscene"><%= row.style %></span>
                 <br />
-                <span class="monologue-character"><%= row.character %></span><br />
+                <span class="monologue-character"><%= row.character %></span>
+                <br />
                 <div
                   class="monologue-firstline-table"
                   data-toggle="collapse"

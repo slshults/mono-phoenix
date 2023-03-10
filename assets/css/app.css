@@ -1,3 +1,7 @@
+/* @tailwind base; nope, using bootstrap for that */
+
+@tailwind components;
+@tailwind utilities;
 
 
 
@@ -641,3 +645,8 @@ span.toggle-control>a.toggle-mono>img {
   z-index: 0;
 }
 
+/* trying to override tailwind's overzealous collapse nonsense */
+
+.collapse {
+  visibility: visible;
+}
