@@ -1,17 +1,25 @@
 <.live_title suffix=" · Shakespeare's Monologues">
   <%= assigns[:page_title] || "The Plays" %>
 </.live_title>
-<div style="font-size: 18px;font-weight: bold;" class="accent-font">
-  <h3>Browse all the monologues by play</h3>
+
+<div style="font-weight: bold;" class="accent-font">
+  <h2>Search or browse all the monologues by play</h2>
 </div>
 <!-- Page views should contain .center-column-header and .center-column-list -->
 <div class="center-column-header">
-  <!-- form class="navbar-form" id="search-form" role="">
-            <div class="input-group accent-font">
-              <input action="#" autocomplete="off" class="form-control" id="search-box" name="search" tabindex="1" type="text">
-              <i class="glyphicon glyphicon-refresh glyphicon-refresh-animate searching"></i>
-            </div>
-          </form -->
+  <br /><br />
+  <!-- Enter The Search Box -->
+  <div class="absolute top-24 w-5/6">
+    <%= live_render(
+      @conn,
+      MonoPhoenixV01Web.SearchbarLive,
+      id: "searchbar",
+      container:
+        {:div,
+         class: "flex flex-wrap justify-between items-start text-left items-center lg:w-full"}
+    ) %>
+  </div>
+  <!-- Exeunt The Search Box -->
 </div>
 <div class="center-column-list">
   <!-- div class="jquery-search-replace">

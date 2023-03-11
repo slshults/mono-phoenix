@@ -1,5 +1,4 @@
 defmodule MonoPhoenixV01Web.Router do
-  # alias MonoPhoenixV01Web.PageController
   use MonoPhoenixV01Web, :router
 
   import Redirect
@@ -28,7 +27,6 @@ defmodule MonoPhoenixV01Web.Router do
     get("/womens", WomensPageController, :womens)
     get("/women/:playid", WomenplayPageController, :womenplay)
     get("/monologues/:monoid", MonologuesPageController, :monologues)
-    # get("/search", SearchPageController, :search)
     get("/aboutus", StaticPageController, :aboutus)
     get("/faq", StaticPageController, :faq)
     get("/home", StaticPageController, :home)

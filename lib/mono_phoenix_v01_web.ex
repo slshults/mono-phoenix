@@ -49,7 +49,7 @@ defmodule MonoPhoenixV01Web do
   def live_view do
     quote do
       use Phoenix.LiveView,
-        layout: {MonoPhoenixV01Web.LayoutView, "live.html"}
+        layout: {MonoPhoenixV01Web.LayoutView, :live}
 
       unquote(view_helpers())
     end
