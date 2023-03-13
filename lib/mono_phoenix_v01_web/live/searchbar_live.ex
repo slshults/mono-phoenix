@@ -1,22 +1,22 @@
 defmodule MonoPhoenixV01Web.SearchbarLive do
   use MonoPhoenixV01Web, :live_view
-
+  import Phoenix.Component
   alias Phoenix.LiveView.JS
-  alias MonoPhoenixV01.Monologues
+  alias MonoPhoenixV01.Monofinds
 
   def mount(_params, _session, socket) do
-    socket = assign(socket, monologues: [])
+    socket = assign(socket, monofinds: [])
     {:ok, socket, layout: false}
   end
 
   def handle_event("change", %{"search" => %{"query" => ""}}, socket) do
-    socket = assign(socket, :monologues, [])
+    socket = assign(socket, :monofinds, [])
     {:noreply, socket}
   end
 
   def handle_event("change", %{"search" => %{"query" => search_query}}, socket) do
-    monologues = Monologues.search(search_query)
-    socket = assign(socket, :monologues, monologues)
+    monofinds = Monofinds.search(search_query)
+    socket = assign(socket, :monofinds, monofinds)
 
     {:noreply, socket}
   end
