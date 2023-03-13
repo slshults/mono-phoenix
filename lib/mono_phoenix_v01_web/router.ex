@@ -35,6 +35,7 @@ defmodule MonoPhoenixV01Web.Router do
     get("/maintenance", StaticPageController, :maintenance)
     get("/hello", PageController, :hello)
     get("/sandbox", PageController, :sandbox)
+    live("/monofinds/:monofinds", SearchbarLive)
   end
 
   ## redirects for deep links from other sites. Will not work inside a scope.

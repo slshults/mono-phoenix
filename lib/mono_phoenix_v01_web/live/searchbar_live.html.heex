@@ -35,7 +35,7 @@
         role="combobox"
         aria-haspopup="listbox"
         phx-click-away={hide_modal()}
-        aria-expanded={@monologues != []}
+        aria-expanded={@monofinds != []}
       >
         <form action="" novalidate="" role="search" phx-change="change">
           <div class="group relative flex h-12">
@@ -58,7 +58,7 @@
               name="search[query]"
               class="flex-auto rounded-lg appearance-none bg-transparent pl-10 text-zinc-900 outline-none focus:outline-none border-slate-200 focus:border-slate-200 focus:ring-0 focus:shadow-none placeholder:text-zinc-500 focus:w-full focus:flex-none md:text-md [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-webkit-search-results-button]:hidden [&::-webkit-search-results-decoration]:hidden pr-4"
               style={
-                @monologues != [] &&
+                @monofinds != [] &&
                   "border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom: none"
               }
               aria-autocomplete="both"
@@ -76,18 +76,18 @@
           </div>
 
           <ul
-            :if={@monologues != []}
+            :if={@monofinds != []}
             class="divide-y divide-slate-200 overflow-y-auto rounded-b-lg border-t border-slate-200 text-md leading-6"
             id="searchbox__results_list"
             role="listbox"
           >
-            <%= for monologue <- @monologues do %>
-              <li id={"#{monologue.id}"}>
+            <%= for monofind <- @monofinds do %>
+              <li id={"#{monofind.id}"}>
                 <.link
-                  navigate={~p"/monologues/#{monologue.slug}"}
+                  navigate={~p"/monofinds/#{monofind.slug}"}
                   class="block p-4 hover:bg-slate-100 focus:outline-none focus:bg-slate-100 focus:text-sky-800"
                 >
-                  <%= monologue.body %>
+                  <%= monofind.body %>
                 </.link>
               </li>
             <% end %>
