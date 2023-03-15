@@ -43,16 +43,15 @@ defmodule MonoPhoenixV01.MixProject do
       {:phoenix_live_view, "~> 0.18.15"},
       {:phoenix_live_dashboard, "~> 0.7.2"},
       {:esbuild, "~> 0.4", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.1.9", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.3"},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
-      {:gettext, "~> 0.18"},
+      {:gettext, "~> 0.22.1"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:redirect, "~> 0.4.0"},
       {:html_assertion, "0.1.5", only: :test},
-      {:floki, ">= 0.30.0", only: :test},
+      {:floki, ">= 0.34.2", only: :test},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false}
     ]
   end
