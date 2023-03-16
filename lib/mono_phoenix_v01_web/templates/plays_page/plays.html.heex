@@ -3,21 +3,17 @@
 </.live_title>
 
 <div style="font-weight: bold;" class="accent-font">
-  <h2>Search or browse all the monologues by play</h2>
+  <h2>Search or browse by play</h2>
 </div>
 <!-- Page views should contain .center-column-header and .center-column-list -->
 <div class="center-column-header">
   <br /><br />
   <!-- Enter The Search Box -->
-  <div class="absolute top-24 w-5/6">
+  <div class="input-group accent-font">
     <%= live_render(
       @conn,
-      MonoPhoenixV01Web.SearchbarLive,
-      id: "searchbar",
-      container:
-        {:div,
-         class: "flex flex-wrap justify-between items-start text-left items-center lg:w-full"},
-      router: MonoPhoenixV01Web.Router
+      MonoPhoenixV01Web.SearchBarLive,
+      id: "searchbar"
     ) %>
   </div>
   <!-- Exeunt The Search Box -->
