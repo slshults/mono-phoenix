@@ -1,6 +1,6 @@
 defmodule MonoPhoenixV01.Play do
   @moduledoc """
-  This module provides the schema for the title from the Plays table.
+  This was an early test. Most of the queries are in the controllers, and/or the live stuff.
   """
   use Ecto.Schema
 
