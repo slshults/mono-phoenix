@@ -2,7 +2,7 @@ defmodule MonoPhoenixV01Web.PlayPageController do
   use MonoPhoenixV01Web, :controller
   import Ecto.Query
 
-  # Show monologues for the play link clicked
+  # Get monologues for the play link clicked
   @spec play(Plug.Conn.t(), map) :: Plug.Conn.t()
   def play(conn, params) do
     playid = String.to_integer(params["playid"])

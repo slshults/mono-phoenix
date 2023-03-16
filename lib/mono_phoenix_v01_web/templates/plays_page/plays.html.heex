@@ -9,7 +9,13 @@
 <div class="center-column-header">
   <br /><br />
   <!-- Enter The Search Box -->
-
+  <div class="input-group accent-font">
+    <%= live_render(
+      @conn,
+      MonoPhoenixV01Web.SearchBarLive,
+      id: "searchbar"
+    ) %>
+  </div>
   <!-- Exeunt The Search Box -->
 </div>
 <div class="center-column-list">
