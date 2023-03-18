@@ -1,51 +1,52 @@
-defmodule MonoPhoenixV01Web.SearchBarLive.Index do
+defmodule MonoPhoenixV01Web.SearchBarLive do
   use MonoPhoenixV01Web, :live_view
   alias MonoPhoenixV01Web.SearchBar
 
   ## socket assigns
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, socket}
+    {:ok, socket |> assign(:query, "") |> assign(search_bar: [])}
   end
 
-  @impl true
-  def handle_params(params, _url, socket) do
-    query = params |> Map.get("query")
-
-    {:noreply, socket |> load_search_bar(query)}
-  end
-
-  def load_search_bar(socket, query) do
-    socket
-    |> assign(:query, query)
-    |> assign(:search_bar, SearchBar.get_all(query))
-  end
+  ## def load_search_bar(socket, query) do
+  ##   socket
+  ##   |> assign(:query, query)
+  ##   |> assign(:search_bar, SearchBar.get_all(query))
+  ## end
 
   ## render assigns
 
   @impl true
   def render(assigns) do
     ~L"""
-      <h3>Search results</h3>
+
       <%= render_search_form(assigns) %> <%# added %>
       <%= render_search_bar(assigns) %>
     """
   end
 
   ## render the search form
-  def render_search_form(assigns) do
+  defp render_search_form(assigns) do
     ~L"""
-    <%= form_for :search, "#", [phx_submit: "search", phx_change: "search", id: "searchbar"], fn f -> %>
-      <%= label f, :search %>
-      <%= text_input f, :query, value: @query %>
-      <%= submit "Search" %>
-    <% end %>
+    <div class="input-group accent-font">
+      <%= form_for :search, "#", [phx_submit: "search", phx_change: "search"], fn f -> %>
+        <%= label f, :query, "" %>
+
+        <%= text_input f, :query,
+          value: Map.get(assigns, :query, ""),
+          placeholder: "Search for monologues...",
+          class: "navbar-form;" %>
+          <%= submit "Search" %>
+      <% end %>
+      <h3>Search results</h3>
+    </div>
     """
   end
 
   @impl true
   def handle_event("search", %{"search" => %{"query" => query}}, socket) do
-    {:noreply, push_patch(socket, to: Routes.search_bar_path(socket, :index, query: query))}
+    search_results = SearchBar.get_all(query)
+    {:noreply, socket |> assign(query: query, search_bar: search_results)}
   end
 
   ## render the search results
