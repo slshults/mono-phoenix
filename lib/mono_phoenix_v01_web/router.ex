@@ -21,7 +21,7 @@ defmodule MonoPhoenixV01Web.Router do
 
     get("/", StaticPageController, :home)
     get("/plays", PlaysPageController, :plays)
-    get("/play/:playid", PlayPageController, :play)
+    live("/play/:playid", PlayPageLive)
     get("/mens", MensPageController, :mens)
     get("/men/:playid", MenplayPageController, :menplay)
     get("/womens", WomensPageController, :womens)
