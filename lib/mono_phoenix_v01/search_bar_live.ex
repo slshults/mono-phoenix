@@ -1,18 +1,25 @@
 defmodule MonoPhoenixV01Web.SearchBarLive do
   use MonoPhoenixV01Web, :live_view
-  alias MonoPhoenixV01Web.SearchBar
 
-  ## socket assigns
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, socket |> assign(:query, "") |> assign(search_bar: [])}
+    {:ok, assign(socket, search_bar: [])}
   end
 
-  ## def load_search_bar(socket, query) do
-  ##   socket
-  ##   |> assign(:query, query)
-  ##   |> assign(:search_bar, SearchBar.get_all(query))
-  ## end
+  ## socket assigns
+
+  @impl true
+  @impl true
+  def handle_event("search", %{"search" => %{"query" => search_value}}, socket) do
+    send(self(), {:search, search_value})
+    {:noreply, socket}
+  end
+
+  @impl Phoenix.LiveView
+  def handle_info({:search, search_value}, socket) do
+    push_event(socket, "search", %{search_value: search_value})
+    {:noreply, socket}
+  end
 
   ## render assigns
 
@@ -41,12 +48,6 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
       <h3>Search results</h3>
     </div>
     """
-  end
-
-  @impl true
-  def handle_event("search", %{"search" => %{"query" => query}}, socket) do
-    search_results = SearchBar.get_all(query)
-    {:noreply, socket |> assign(query: query, search_bar: search_results)}
   end
 
   ## render the search results
