@@ -1,84 +1,16 @@
-<.live_title prefix="Monologues from ">
-  <%= assigns[:page_title] || "#{hd(@rows).play} · Shakespeare's Monologues" %>
-</.live_title>
-<div>
-  </div>
-  <div class="accent-font">
-    <h3>Monologues matching your search:</h3>
-    <span font-size: 10px;>
-      Click on the 1st line, under the character's name, to see the full monologue. &nbsp;<a
-        href="#"
-        data-toggle="collapse"
-        data-target=".multi-collapse"
-        id="toggle-button"
-      >
-        <img
-          src="/images/ExpandAll.png"
-          id="toggle-image"
-          alt="Click to toggle text of all monologues on the page.
-  Reload the page to reset the toggle"
-          title="Click to toggle the text of all monologues on the page.
-  Reload the page to reset the toggle."
-        />
-      </a>
-    </span>
-  </div>
-  <div>
-    <div class="center-this">
-      <table class="monologue-list">
-        <tbody>
-          <%= for row <- @rows do %>
-            <tr class="monologue_list">
-              <td class="{ (index.even? ? 'even' : 'odd') }">
-                <span class="monologue-playname"><%= row.play %></span>&nbsp; · <span class="monologue-actscene"><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; ·
-                <span class="monologue-actscene"><%= row.style %></span>
-                <br />
-                <span class="monologue-character"><%= row.character %></span>
-                <br />
-                <div
-                  class="monologue-firstline-table"
-                  data-toggle="collapse"
-                  data-target={"#collapse-" <> Integer.to_string(row.monologues)}
-                >
-                  <%= row.firstline %>
-                </div>
-                <div
-                  class="collapse multi-collapse monologue-show"
-                  id={"collapse-" <> to_string(row.monologues)}
-                >
-                  <br />
-                  <%= raw(row.body) %>&nbsp;
-                  <%= link to: raw(row.pdf), method: :get, target: "_blank", rel: "noopener" do %>
-                    <img
-                      src={Routes.static_path(@conn, "/images/pdf_file_icon_16x16.png")}
-                      alt="Click for a double-spaced PDF of this monologue"
-                      title="Click for a double-spaced PDF of this monologue"
-                    />
-                  <% end %>
-                </div>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-  </div>
+<div class="input-group">
+  <input
+    type="text"
+    class="form-control"
+    placeholder="Search for monologues"
+    aria-label="Search for monologues"
+    aria-describedby="search-addon"
+    value={@search_value}
+    phx-update="debounce-500"
+    phx-debounce="500"
+    phx-input="search"
+  />
+  <span class="input-group-text" id="search-addon">
+    <i class="fas fa-search"></i>
+  </span>
 </div>
-<script>
-  const toggleButton = document.getElementById('toggle-button');
-  const toggleImage = document.getElementById('toggle-image');
-
-  toggleButton.addEventListener('click', () => {
-    toggleImage.classList.toggle('collapsed');
-  });
-</script>
-
-<style>
-  #toggle-image.collapsed {
-    content: url('/images/CollapseAll.png');
-  }
-
-  #toggle-image {
-    content: url('/images/ExpandAll.png');
-  }
-</style>
