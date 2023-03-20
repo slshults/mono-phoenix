@@ -9,13 +9,15 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
   ## socket assigns
 
   @impl true
-  @impl true
-  def handle_event("search", %{"search" => %{"query" => search_value}}, socket) do
-    send(self(), {:search, search_value})
-    {:noreply, socket}
+  def handle_event("search", %{"search" => %{"query" => query}}, socket) do
+    # Send the search event to the parent LiveView
+    send(socket.parent_pid, {:search, query})
+
+    # Update the socket assigns with the search value
+    {:noreply, assign(socket, search_value: query)}
   end
 
-  @impl Phoenix.LiveView
+  @impl true
   def handle_info({:search, search_value}, socket) do
     push_event(socket, "search", %{search_value: search_value})
     {:noreply, socket}
@@ -42,7 +44,8 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
         <%= text_input f, :query,
           value: Map.get(assigns, :query, ""),
           placeholder: "Search for monologues...",
-          class: "navbar-form;" %>
+          class: "navbar-form;",
+          phx_input: "search_input" %>
           <%= submit "Search" %>
       <% end %>
       <h3>Search results</h3>
