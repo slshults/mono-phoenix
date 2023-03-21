@@ -44,6 +44,8 @@ defmodule MonoPhoenixV01Web.SearchBar do
         }
       )
 
-    MonoPhoenixV01.Repo.all(result)
+    monologues = MonoPhoenixV01.Repo.all(result)
+    IO.inspect(monologues, label: "Search results")
+    monologues
   end
 end

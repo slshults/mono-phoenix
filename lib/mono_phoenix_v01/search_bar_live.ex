@@ -3,22 +3,25 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, search_bar: [])}
+    {:ok, assign(socket, search_results: [])}
   end
 
   ## socket assigns
 
   @impl true
-  def handle_event("search", %{"search" => %{"query" => query}}, socket) do
-    # Send the search event to the parent LiveView
-    send(socket.parent_pid, {:search, query})
-
-    # Update the socket assigns with the search value
-    {:noreply, assign(socket, search_value: query)}
+  def handle_event("search", %{"search" => %{"query" => search_query}}, socket) do
+    search_results = MonoPhoenixV01Web.SearchBar.get_all(search_query)
+    {:noreply, assign(socket, search_results: search_results)}
   end
 
   @impl true
   def handle_info({:search, search_value}, socket) do
+    # Call get_all/1 to get search results
+    search_results = MonoPhoenixV01Web.SearchBar.get_all(search_value)
+
+    # Update the search_bar assign with the search results
+    socket = assign(socket, search_bar: search_results)
+
     push_event(socket, "search", %{search_value: search_value})
     {:noreply, socket}
   end
@@ -38,7 +41,7 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
   defp render_search_form(assigns) do
     ~L"""
     <div class="input-group accent-font">
-      <%= form_for :search, "#", [phx_submit: "search", phx_change: "search"], fn f -> %>
+      <%= form_for :search, "#", [phx_submit: "search", phx_change: "search", phx_page_loading: :prevent], fn f -> %>
         <%= label f, :query, "" %>
 
         <%= text_input f, :query,
@@ -59,7 +62,7 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
     <div class="center-this">
       <table class="monologue-list">
         <tbody>
-          <%= for %{row: row} <- @search_bar do %>
+        <%= for row <- @search_results do %>
             <tr class="monologue_list">
               <td class="{ (index.even? ? 'even' : 'odd') }">
                 <span class="monologue-playname"><%= row.play %></span>&nbsp; · <span class="monologue-actscene"><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; ·

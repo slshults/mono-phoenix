@@ -25,20 +25,22 @@ defmodule MonoPhoenixV01Web.PlayPageLive do
 
   @impl true
   def handle_info({:search, search_value}, socket) do
-    playid = hd(socket.assigns.rows).play_id
+    # Check if rows are empty before calling hd
+    playid = if length(socket.assigns.rows) > 0, do: hd(socket.assigns.rows).play_id, else: nil
     updated_rows = fetch_monologues(playid, search_value)
+
     {:noreply, assign(socket, rows: updated_rows, search_timer: nil)}
   end
 
   # Update fetch_monologues/1 to fetch_monologues/2 and add search_value as an argument
+  defp fetch_monologues(nil, _search_value), do: []
+
   defp fetch_monologues(play_id, search_value) do
-    query =
+    base_query =
       from(m in "monologues",
         join: p in "plays",
         on: m.play_id == p.id,
         where: p.id == ^play_id,
-        # Add this line to filter by character
-        where: ilike(m.character, ^"%#{search_value}%"),
         group_by: [
           p.id,
           p.title,
@@ -53,7 +55,6 @@ defmodule MonoPhoenixV01Web.PlayPageLive do
         ],
         select: %{
           play: p.title,
-          # Add this line to include play_id in the result
           play_id: p.id,
           monologues: m.id,
           location: m.location,
@@ -65,6 +66,15 @@ defmodule MonoPhoenixV01Web.PlayPageLive do
           pdf: m.pdf_link
         }
       )
+
+    query =
+      if String.trim(search_value) != "" do
+        from(m in base_query,
+          where: ilike(m.character, ^"%#{search_value}%")
+        )
+      else
+        base_query
+      end
 
     MonoPhoenixV01.Repo.all(query)
   end
