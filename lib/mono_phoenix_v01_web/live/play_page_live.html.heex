@@ -1,10 +1,14 @@
 <.live_title prefix="Monologues from ">
-  <%= assigns[:page_title] || "#{hd(@rows).play} · Shakespeare's Monologues" %>
+  <%= if length(@rows) > 0,
+    do: "#{hd(@rows).play} · Shakespeare's Monologues",
+    else: "Shakespeare's Monologues" %>
 </.live_title>
 <div>
   <div class="accent-font">
     <h3>Monologues from</h3>
-    <h2>&nbsp; &nbsp; &nbsp;<%= hd(@rows).play %></h2>
+    <h2>
+      &nbsp; &nbsp; &nbsp; <%= if length(@rows) > 0, do: hd(@rows).play, else: "" %>
+    </h2>
     <!-- Enter The Search Box -->
     <div class="input-group accent-font">
       <%= live_render(
@@ -56,7 +60,7 @@
                   id={"collapse-" <> to_string(row.monologues)}
                 >
                   <br />
-                  <%= raw(row.body) %>&nbsp;
+                  <%= raw(Map.get(row, :body)) %>&nbsp;
                   <%= link to: raw(row.pdf), method: :get, target: "_blank", rel: "noopener" do %>
                     <img
                       src={Routes.static_path(@socket, "/images/pdf_file_icon_16x16.png")}
