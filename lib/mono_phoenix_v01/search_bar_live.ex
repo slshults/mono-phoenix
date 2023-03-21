@@ -62,33 +62,34 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
     <div class="center-this">
       <table class="monologue-list">
         <tbody>
-        <%= for row <- @search_results do %>
+        <%= for {row, index} <- Enum.with_index(@search_results) do %>
             <tr class="monologue_list">
-              <td class="{ (index.even? ? 'even' : 'odd') }">
+              <td class="<%= if rem(index, 2) == 0, do: 'even', else: 'odd' %>">
                 <span class="monologue-playname"><%= row.play %></span>&nbsp; · <span class="monologue-actscene"><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; ·
                 <span class="monologue-actscene"><%= row.style %></span>
                 <br />
                 <span class="monologue-character"><%= row.character %></span>
                 <br />
                 <div
-                  class="monologue-firstline-table"
-                  data-toggle="collapse"
-                  data-target={"#collapse-" <> Integer.to_string(row.monologues)}
+                class="monologue-firstline-table"
+                data-toggle="collapse"
+                data-target="#collapse-<%= Integer.to_string(index) %>"
                 >
                   <%= row.firstline %>
                 </div>
+
                 <div
-                  class="collapse multi-collapse monologue-show"
-                  id={"collapse-" <> to_string(row.monologues)}
+                class="collapse multi-collapse monologue-show"
+                id="collapse-<%= Integer.to_string(index) %>"
                 >
                   <br />
                   <%= raw(row.body) %>&nbsp;
                   <%= link to: raw(row.pdf), method: :get, target: "_blank", rel: "noopener" do %>
-                    <img
-                      src={Routes.static_path(@conn, "/images/pdf_file_icon_16x16.png")}
-                      alt="Click for a double-spaced PDF of this monologue"
-                      title="Click for a double-spaced PDF of this monologue"
-                    />
+                  <img
+                  src="<%= Routes.static_path(@socket, "/images/pdf_file_icon_16x16.png") %>"
+                  alt="Click for a double-spaced PDF of this monologue"
+                  title="Click for a double-spaced PDF of this monologue"
+                />
                   <% end %>
                 </div>
               </td>
