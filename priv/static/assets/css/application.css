@@ -164,10 +164,11 @@ div.login-banner {
 
 input#search-box {
     font-size: 175%;
-    width: 670px;
+    width: 100%;
     margin-left: -10px;
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
+    background-color: #F9F9DF;
 }
 
 div.search-links {
@@ -251,11 +252,19 @@ table.categories-list th {
     border-collapse: collapse;
 }
 
+monologue-list {
+    /*width: 100%;*/
+    max-width: 550px;
+    margin: 0px auto;
+    text-align: left;
+    background-color: #F9F9DF;
+}
 table.monologue-list {
     /*width: 100%;*/
     max-width: 550px;
     margin: 0px auto;
     text-align: left;
+    background-color: #F9F9DF;
 }
 
 table.monologue-list th {
@@ -280,6 +289,7 @@ table.monologue-list td {
     padding: 6px;
     margin: 0px auto;
     text-align: left;
+    background-color: #F9F9DF;
 }
 
 tr.odd {
@@ -575,6 +585,7 @@ a.control-active {
     margin: auto;
     width: 65%;
     min-width: 350px;
+    background-color: #F9F9DF;
 }
 
 span.toggle-control>a.toggle-mono>img {
@@ -583,6 +594,15 @@ span.toggle-control>a.toggle-mono>img {
     margin-left: 12px;
     padding-bottom: 6px;
 }
+
+form-control{
+    border-color: unset;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    outline: -webkit-focus-ring-color auto 0px;
+    background-color: #F9F9DF;
+}
+
 
 .glyphicon-refresh.searching {
     /*display: none;*/

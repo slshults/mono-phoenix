@@ -1,5 +1,5 @@
 <.live_title prefix="Monologues from ">
-  <%= assigns[:page_title] || "#{hd(@rows).play} · Shakespeare's Monologues" %>
+  <%= assigns[:page_title] || "#{hd(@rows).play} &middot; Shakespeare's Monologues" %>
 </.live_title>
 <div>
   </div>
@@ -24,13 +24,13 @@
     </span>
   </div>
   <div>
-    <div class="center-this">
-      <table class="monologue-list">
+    <div class="center-this monologue-list">
+      <table class="monologue-list" style="background-color: #F9F9DF;">
         <tbody>
           <%= for row <- @rows do %>
-            <tr class="monologue_list">
+            <tr class="monologue_list" style="background-color: #F9F9DF;">
               <td class="{ (index.even? ? 'even' : 'odd') }">
-                <span class="monologue-playname"><%= row.play %></span>&nbsp; 路 <span class="monologue-actscene"><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; 路
+                <span class="monologue-playname" style="background-color: #F9F9DF;"><%= row.play %></span>&nbsp; &middot;  <span class="monologue-actscene"><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; &middot; 
                 <span class="monologue-actscene"><%= row.style %></span>
                 <br />
                 <span class="monologue-character"><%= row.character %></span>

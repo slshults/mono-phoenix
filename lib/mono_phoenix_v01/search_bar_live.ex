@@ -40,18 +40,18 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
   ## render the search form
   defp render_search_form(assigns) do
     ~L"""
-    <div class="input-group accent-font">
+    <div class="accent-font monologue-list" style="background-color: #F9F9DF;">
       <%= form_for :search, "#", [phx_submit: "search", phx_change: "search", phx_page_loading: :prevent], fn f -> %>
         <%= label f, :query, "" %>
 
         <%= text_input f, :query,
           value: Map.get(assigns, :query, ""),
           placeholder: "Search for monologues...",
-          class: "navbar-form;",
-          phx_input: "search_input" %>
-          <%= submit "Search" %>
+          class: "input-group accent-font form-control monologue-list",
+          phx_input: "search_input",
+          phx_debounce: "300"
+          %>
       <% end %>
-      <h3>Search results</h3>
     </div>
     """
   end
@@ -59,13 +59,33 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
   ## render the search results
   def render_search_bar(assigns) do
     ~L"""
-    <div class="center-this">
+    <div class="center-this monologue-list">
+    <!-- hidden until I figure out how to make it display only with search results <h3>Search results</h3>
+    <span font-size: 10px;>
+    Click on the 1st line, under the character's name, to see the full monologue. &nbsp;<a
+      href="#"
+      data-toggle="collapse"
+      data-target=".multi-collapse"
+      id="toggle-button"
+    >
+    <img
+        src="/images/ExpandAll.png"
+        id="toggle-image"
+        alt="Click to toggle text of all monologues on the page.
+    Reload the page to reset the toggle"
+        title="Click to toggle the text of all monologues on the page.
+    Reload the page to reset the toggle."
+      />
+    </a>
+    </span> -->
       <table class="monologue-list">
         <tbody>
+
         <%= for {row, index} <- Enum.with_index(@search_results) do %>
+
             <tr class="monologue_list">
               <td class="<%= if rem(index, 2) == 0, do: 'even', else: 'odd' %>">
-                <span class="monologue-playname"><%= row.play %></span>&nbsp; · <span class="monologue-actscene"><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; ·
+                <span class="monologue-playname"><%= row.play %></span>&nbsp; &middot; <span class="monologue-actscene"><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; &middot;
                 <span class="monologue-actscene"><%= row.style %></span>
                 <br />
                 <span class="monologue-character"><%= row.character %></span>
