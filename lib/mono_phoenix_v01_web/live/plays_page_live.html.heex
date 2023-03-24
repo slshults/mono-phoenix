@@ -1,0 +1,136 @@
+<.live_title suffix=" · Shakespeare's Monologues">
+  <%= assigns[:page_title] || "The Plays" %>
+</.live_title>
+<div>
+  <div class="center-column-header accent-font">
+    <h2>Search or browse by play</h2>
+    <!-- Enter The Search Box -->
+  </div>
+  <div
+    class="input-group accent-font form-control monologue-list"
+    style="background-color: #F9F9DF;"
+  >
+    <%= live_render(
+      @socket,
+      MonoPhoenixV01Web.SearchBarLive,
+      id: "searchbar",
+      class: "input-group accent-font form-control monologue-list"
+    ) %>
+  </div>
+  <!-- Exeunt The Search Box -->
+</div>
+<div>
+  <div class="center-column-list">
+    <div class="center-column-list">
+      <table class="categories-list">
+        <tr></tr>
+        <thead class="accent-font">
+          <th>Comedies</th>
+          <th>Histories</th>
+          <th>Tragedies</th>
+        </thead>
+        <tr style="font-size: 16px;font-weight: bold;" class="accent-font">
+          <td data-label="Comedies" style="vertical-align:top;">
+            <%= link("A Midsummer Night's Dream", to: "/play/13") %>
+            <br />
+            <%= link("All's Well That Ends Well", to: "/play/9") %>
+            <br />
+            <%= link("As You Like It", to: "/play/1") %>
+            <br />
+            <%= link("Cymbeline", to: "/play/3") %>
+            <br />
+            <%= link("Love's Labour's Lost", to: "/play/4") %>
+            <br />
+            <%= link("Measure for Measure", to: "/play/10") %>
+            <br />
+            <%= link("Merry Wives of Windsor", to: "/play/11") %>
+            <br />
+            <%= link("Much Ado About Nothing", to: "/play/6") %>
+            <br />
+            <%= link("Pericles, Prince of Tyre", to: "/play/18") %>
+            <br />
+            <%= link("The Comedy of Errors", to: "/play/2") %>
+            <br />
+            <%= link("The Merchant of Venice", to: "/play/5") %>
+            <br />
+            <%= link("The Taming of the Shrew", to: "/play/7") %>
+            <br />
+            <%= link("The Tempest", to: "/play/14") %>
+            <br />
+            <%= link("The Winter's Tale", to: "/play/17") %>
+            <br />
+            <%= link("Troilus and Cressida", to: "/play/15") %>
+            <br />
+            <%= link("Twelfth Night, Or What You Will", to: "/play/8") %>
+            <br />
+            <%= link("Two Gentlemen of Verona", to: "/play/16") %>
+            <br />
+          </td>
+          <td data-label="Histories" style="vertical-align:top">
+            <%= link("Henry IV i", to: "/play/19") %>
+            <br />
+            <%= link("Henry IV ii", to: "/play/20") %>
+            <br />
+            <%= link("Henry V", to: "/play/21") %>
+            <br />
+            <%= link("Henry VI i", to: "/play/22") %>
+            <br />
+            <%= link("Henry VI ii", to: "/play/23") %>
+            <br />
+            <%= link("Henry VI iii", to: "/play/24") %>
+            <br />
+            <%= link("Henry VIII", to: "/play/25") %>
+            <br />
+            <%= link("King John", to: "/play/26") %>
+            <br />
+            <%= link("Richard II", to: "/play/27") %>
+            <br />
+            <%= link("Richard III", to: "/play/28") %>
+            <br />
+          </td>
+          <td data-label="Tragedies" style="vertical-align:top">
+            <%= link("Antony & Cleopatra", to: "/play/29") %>
+            <br />
+            <%= link("Coriolanus", to: "/play/30") %>
+            <br />
+            <%= link("Hamlet", to: "/play/31") %>
+            <br />
+            <%= link("Julius Caesar", to: "/play/38") %>
+            <br />
+            <%= link("King Lear", to: "/play/32") %>
+            <br />
+            <%= link("Macbeth", to: "/play/33") %>
+            <br />
+            <%= link("Othello", to: "/play/34") %>
+            <br />
+            <%= link("Romeo and Juliet", to: "/play/35") %>
+            <br />
+            <%= link("Timon of Athens", to: "/play/36") %>
+            <br />
+            <%= link("Titus Andronicus", to: "/play/37") %>
+            <br />
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  const toggleButton = document.getElementById('toggle-button');
+  const toggleImage = document.getElementById('toggle-image');
+
+  toggleButton.addEventListener('click', () => {
+    toggleImage.classList.toggle('collapsed');
+  });
+</script>
+
+<style>
+  #toggle-image.collapsed {
+    content: url('/images/CollapseAll.png');
+  }
+
+  #toggle-image {
+    content: url('/images/ExpandAll.png');
+  }
+</style>
