@@ -10,7 +10,13 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
 
   @impl true
   def handle_event("search", %{"search" => %{"query" => search_query}}, socket) do
-    search_results = MonoPhoenixV01Web.SearchBar.get_all(search_query)
+    search_results =
+      if search_query == "" do
+        []
+      else
+        MonoPhoenixV01Web.SearchBar.get_all(search_query)
+      end
+
     {:noreply, assign(socket, search_results: search_results)}
   end
 
@@ -49,7 +55,7 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
           placeholder: "Search for monologues...",
           class: "input-group accent-font form-control monologue-list",
           phx_input: "search_input",
-          phx_debounce: "300"
+          phx_debounce: "240"
           %>
       <% end %>
     </div>

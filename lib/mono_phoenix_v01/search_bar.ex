@@ -9,16 +9,29 @@ defmodule MonoPhoenixV01Web.SearchBar do
 
   def get_all(query) do
     query = String.downcase(query)
+    cleaned_query = Regex.replace(~r/[^\w\s]/, query, "")
 
     result =
       from(m in "monologues",
         join: p in "plays",
         on: m.play_id == p.id,
         where:
-          ilike(p.title, ^"%#{query}%") or
-            ilike(m.location, ^"%#{query}%") or
-            ilike(m.character, ^"%#{query}%") or
-            ilike(m.body, ^"%#{query}%"),
+          ilike(
+            fragment("REGEXP_REPLACE(?, '[^\\w\\s]', '', 'g')", p.title),
+            ^"%#{cleaned_query}%"
+          ) or
+            ilike(
+              fragment("REGEXP_REPLACE(?, '[^\\w\\s]', '', 'g')", m.location),
+              ^"%#{cleaned_query}%"
+            ) or
+            ilike(
+              fragment("REGEXP_REPLACE(?, '[^\\w\\s]', '', 'g')", m.character),
+              ^"%#{cleaned_query}%"
+            ) or
+            ilike(
+              fragment("REGEXP_REPLACE(?, '[^\\w\\s]', '', 'g')", m.body),
+              ^"%#{cleaned_query}%"
+            ),
         group_by: [
           p.id,
           p.title,

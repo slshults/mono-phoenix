@@ -20,7 +20,7 @@ defmodule MonoPhoenixV01Web.Router do
     pipe_through(:browser)
 
     get("/", StaticPageController, :home)
-    get("/plays", PlaysPageController, :plays)
+    live("/plays", PlaysPageLive)
     live("/play/:playid", PlayPageLive)
     get("/mens", MensPageController, :mens)
     get("/men/:playid", MenplayPageController, :menplay)
