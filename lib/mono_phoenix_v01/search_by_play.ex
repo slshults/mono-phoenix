@@ -8,7 +8,7 @@ defmodule MonoPhoenixV01Web.SearchByPlay do
   @spec get_all(String.t(), non_neg_integer()) :: list()
 
   def get_all(query, play_id) do
-    if is_nil(query) do
+    if is_nil(query) or String.trim(query) == "" do
       []
     else
       query = String.downcase(query)

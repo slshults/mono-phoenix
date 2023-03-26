@@ -29,7 +29,8 @@ defmodule MonoPhoenixV01Web.SearchByPlayLive do
         MonoPhoenixV01Web.SearchByPlay.get_all(search_query, play_id)
       end
 
-    {:noreply, assign(socket, search_results: search_results)}
+    {:noreply,
+     assign(socket, search_results: if(length(search_results) > 0, do: search_results, else: nil))}
   end
 
   ## render assigns
@@ -66,29 +67,34 @@ defmodule MonoPhoenixV01Web.SearchByPlayLive do
   def render_search_by_play(assigns) do
     ~L"""
     <div class="center-this monologue-list">
-    <!-- hidden until I figure out how to make it display only with search results <h3>Search results</h3>
-    <span font-size: 10px;>
-    Click on the 1st line, under the character's name, to see the full monologue. &nbsp;<a
-      href="#"
-      data-toggle="collapse"
-      data-target=".multi-collapse"
-      id="toggle-button"
-    >
-    <img
-        src="/images/ExpandAll.png"
-        id="toggle-image"
-        alt="Click to toggle text of all monologues on the page.
-    Reload the page to reset the toggle"
-        title="Click to toggle the text of all monologues on the page.
-    Reload the page to reset the toggle."
-      />
-    </a>
-    </span> -->
       <table class="monologue-list">
         <tbody>
+        <%= if !is_nil(@search_results) do %>
+          <%= if length(@search_results) > 0 do %>
+            <!-- begin results heading, text, and body toggle -->
+            <h3>Search results</h3>
+            <span font-size: 10px;>
+            Click on the 1st line, under the character's name, to see the full monologue. &nbsp;<a
+              href="#"
+              data-toggle="collapse"
+              data-target=".multi-collapse"
+              id="toggle-button"
+            >
+            <img
+                src="/images/ExpandAll.png"
+                id="toggle-image"
+                alt="Click to toggle text of all monologues on the page.
+            Reload the page to reset the toggle"
+                title="Click to toggle the text of all monologues on the page.
+            Reload the page to reset the toggle."
+              />
+            </a>
+            </span>
+            <!-- end results heading, text, and body toggle -->
+          <% end %>
+          <%= for {row, index} <- Enum.with_index(@search_results) do %>
 
-        <%= for {row, index} <- Enum.with_index(@search_results) do %>
-
+          <!-- Render each search result here -->
             <tr class="monologue_list">
               <td class="<%= if rem(index, 2) == 0, do: 'even', else: 'odd' %>">
                 <span class="monologue-playname"><%= row.play %></span>&nbsp; &middot; <span class="monologue-actscene"><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; &middot;
@@ -120,6 +126,7 @@ defmodule MonoPhoenixV01Web.SearchByPlayLive do
                 </div>
               </td>
             </tr>
+          <% end %>
           <% end %>
         </tbody>
       </table>
