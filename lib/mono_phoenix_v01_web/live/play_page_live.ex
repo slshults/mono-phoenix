@@ -7,7 +7,7 @@ defmodule MonoPhoenixV01Web.PlayPageLive do
   def mount(%{"playid" => playid_str}, _session, socket) do
     playid = String.to_integer(playid_str)
     rows = fetch_monologues(playid, "")
-    {:ok, assign(socket, search_bar: %{}, search_value: "", rows: rows)}
+    {:ok, assign(socket, search_bar: %{}, search_value: "", rows: rows, play_id: playid)}
   end
 
   # Add this function to handle the search event

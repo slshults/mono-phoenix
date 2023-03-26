@@ -17,9 +17,10 @@
   >
     <%= live_render(
       @socket,
-      MonoPhoenixV01Web.SearchBarLive,
-      id: "searchbar",
-      class: "input-group accent-font form-control monologue-list"
+      MonoPhoenixV01Web.SearchByPlayLive,
+      id: "searchbyplay",
+      class: "input-group accent-font form-control monologue-list",
+      session: %{"play_id" => @play_id}
     ) %>
   </div>
   <!-- Exeunt The Search Box -->
