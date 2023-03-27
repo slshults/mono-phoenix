@@ -23,9 +23,9 @@ defmodule MonoPhoenixV01Web.Router do
     live("/plays", PlaysPageLive)
     live("/play/:playid", PlayPageLive)
     get("/mens", MensPageController, :mens)
-    get("/men/:playid", MenplayPageController, :menplay)
+    live("/men/:playid", MenplayPageLive, :menplay)
     get("/womens", WomensPageController, :womens)
-    get("/women/:playid", WomenplayPageController, :womenplay)
+    live("/women/:playid", WomenplayPageLive, :womenplay)
     get("/monologues/:monoid", MonologuesPageController, :monologues)
     get("/aboutus", StaticPageController, :aboutus)
     get("/faq", StaticPageController, :faq)
@@ -37,6 +37,8 @@ defmodule MonoPhoenixV01Web.Router do
     get("/sandbox", PageController, :sandbox)
     live("/search_bar", SearchBarLive, :search_bar)
     live("/search_by_play", SearchByPlayLive, :search_by_play)
+    live("/searchmen_by_play", SearchmenByPlayLive, :searchmen_by_play)
+    live("/searchwomen_by_play", SearchwomenByPlayLive, :searchwomen_by_play)
   end
 
   ## redirects for deep links from other sites. Will not work inside a scope.
