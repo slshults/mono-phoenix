@@ -73,7 +73,7 @@ defmodule MonoPhoenixV01Web.SearchByPlayLive do
           <%= if length(@search_results) > 0 do %>
             <!-- begin results heading, text, and body toggle -->
             <h3>Search results</h3>
-            <span font-size: 10px;>
+            <span style="font-size:11px">
             Click on the 1st line, under the character's name, to see the full monologue. &nbsp;<a
               href="#"
               data-toggle="collapse"

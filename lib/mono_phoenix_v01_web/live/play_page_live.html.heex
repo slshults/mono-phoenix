@@ -9,8 +9,8 @@
     <h2>
       &nbsp; &nbsp; &nbsp; <%= if length(@rows) > 0, do: hd(@rows).play, else: "" %>
     </h2>
-    <!-- Enter The Search Box -->
   </div>
+  <!-- Enter The Search Box -->
   <div
     class="input-group accent-font form-control monologue-list"
     style="background-color: #F9F9DF;"
@@ -27,7 +27,9 @@
 </div>
 <div>
   <div class="center-this monologue-list">
-    <span font-size: 10px;>
+    <table class="monologue-list">
+      <tbody>
+          <span style="font-size:10px">
       Click on the 1st line, under the character's name, to see the full monologue. &nbsp;<a
         href="#"
         data-toggle="collapse"
@@ -44,8 +46,6 @@
         />
       </a>
     </span>
-    <table class="monologue-list">
-      <tbody>
         <%= for row <- @rows do %>
           <tr class="monologue_list">
             <td class="{ (index.even? ? 'even' : 'odd') }">
