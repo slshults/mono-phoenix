@@ -1,0 +1,103 @@
+<.live_title prefix="Men's monologues from ">
+  <%= if length(@rows) > 0,
+    do: "#{hd(@rows).play} &middot; Shakespeare's Monologues",
+    else: "Shakespeare's Monologues" %>
+</.live_title>
+<div>
+  <div class="center-column-header accent-font">
+    <h3>Men's monologues from</h3>
+    <h2>
+      &nbsp; &nbsp; &nbsp; <%= if length(@rows) > 0, do: hd(@rows).play, else: "" %>
+    </h2>
+  </div>
+  <!-- Enter The Search Box -->
+  <div
+    class="input-group accent-font form-control monologue-list"
+    style="background-color: #F9F9DF;"
+  >
+    <%= live_render(
+      @socket,
+      MonoPhoenixV01Web.SearchmenByPlayLive,
+      id: "searchmenbyplay",
+      class: "input-group accent-font form-control monologue-list",
+      session: %{"play_id" => @play_id}
+    ) %>
+  </div>
+  <!-- Exeunt The Search Box -->
+</div>
+<div>
+  <div class="center-this monologue-list">
+    <table class="monologue-list">
+      <tbody>
+          <span style="font-size:10px">
+      Click on the 1st line, under the character's name, to see the full monologue. &nbsp;<a
+        href="#"
+        data-toggle="collapse"
+        data-target=".multi-collapse"
+        id="toggle-button"
+      >
+        <img
+          src="/images/ExpandAll.png"
+          id="toggle-image"
+          alt="Click to toggle text of all monologues on the page.
+  Reload the page to reset the toggle"
+          title="Click to toggle the text of all monologues on the page.
+  Reload the page to reset the toggle."
+        />
+      </a>
+    </span>
+        <%= for row <- @rows do %>
+          <tr class="monologue_list">
+            <td class="{ (index.even? ? 'even' : 'odd') }">
+              <span class="monologue-playname"><%= row.play %></span>&nbsp; &middot; <span class="monologue-actscene"><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; &middot;
+              <span class="monologue-actscene"><%= row.style %></span>
+              <br />
+              <span class="monologue-character"><%= row.character %></span>
+              <br />
+              <div
+                class="monologue-firstline-table"
+                data-toggle="collapse"
+                data-target={"#collapse-" <> Integer.to_string(row.monologues)}
+              >
+                <%= row.firstline %>
+              </div>
+              <div
+                class="collapse multi-collapse monologue-show"
+                id={"collapse-" <> to_string(row.monologues)}
+              >
+                <br />
+                <%= raw(Map.get(row, :body)) %>&nbsp;
+                <%= link to: raw(row.pdf), method: :get, target: "_blank", rel: "noopener" do %>
+                  <img
+                    src={Routes.static_path(@socket, "/images/pdf_file_icon_16x16.png")}
+                    alt="Click for a double-spaced PDF of this monologue"
+                    title="Click for a double-spaced PDF of this monologue"
+                  />
+                <% end %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  const toggleButton = document.getElementById('toggle-button');
+  const toggleImage = document.getElementById('toggle-image');
+
+  toggleButton.addEventListener('click', () => {
+    toggleImage.classList.toggle('collapsed');
+  });
+</script>
+
+<style>
+  #toggle-image.collapsed {
+    content: url('/images/CollapseAll.png');
+  }
+
+  #toggle-image {
+    content: url('/images/ExpandAll.png');
+  }
+</style>
