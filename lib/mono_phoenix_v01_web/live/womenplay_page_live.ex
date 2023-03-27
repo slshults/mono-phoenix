@@ -40,7 +40,9 @@ defmodule MonoPhoenixV01Web.WomenplayPageLive do
       from(m in "monologues",
         join: p in "plays",
         on: m.play_id == p.id,
-        where: p.id == ^play_id,
+        join: g in "genders",
+        on: g.id == m.gender_id,
+        where: p.id == ^play_id and (g.name == "Women" or g.name == "Both"),
         group_by: [
           p.id,
           p.title,
