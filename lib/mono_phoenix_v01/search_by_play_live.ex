@@ -74,21 +74,19 @@ defmodule MonoPhoenixV01Web.SearchByPlayLive do
             <!-- begin results heading, text, and body toggle -->
             <h3>Search results</h3>
             <span style="font-size:11px">
-            Click on the 1st line, under the character's name, to see the full monologue. &nbsp;<a
+            Click on the 1st line, under the character's name, to see the full monologue. <a
               href="#"
               data-toggle="collapse"
               data-target=".multi-collapse"
               id="toggle-button"
-            >
-            <img
+            ><img
                 src="/images/ExpandAll.png"
                 id="toggle-image"
                 alt="Click to toggle text of all monologues on the page.
             Reload the page to reset the toggle"
                 title="Click to toggle the text of all monologues on the page.
             Reload the page to reset the toggle."
-              />
-            </a>
+              /></a>
             </span>
             <!-- end results heading, text, and body toggle -->
           <% end %>
@@ -131,6 +129,24 @@ defmodule MonoPhoenixV01Web.SearchByPlayLive do
         </tbody>
       </table>
     </div>
+    <script>
+    const toggleButton = document.getElementById('toggle-button');
+    const toggleImage = document.getElementById('toggle-image');
+
+    toggleButton.addEventListener('click', () => {
+      toggleImage.classList.toggle('collapsed');
+    });
+    </script>
+
+    <style>
+    #toggle-image.collapsed {
+      content: url('/images/CollapseAll.png');
+    }
+
+    #toggle-image {
+      content: url('/images/ExpandAll.png');
+    }
+    </style>
     """
   end
 end

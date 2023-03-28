@@ -603,6 +603,11 @@ form-control{
     background-color: #F9F9DF;
 }
 
+.custom-h1 {
+    margin-top: 10px; /* Adjust the value as needed */
+    margin-bottom: 10px; /* Adjust the value as needed */
+  }
+  
 
 .glyphicon-refresh.searching {
     /*display: none;*/
