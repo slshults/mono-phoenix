@@ -16,7 +16,10 @@ defmodule MonoPhoenixV01Web.Endpoint do
       "https://www.shakespeare-monologues.org",
       "//www.shakespeare-monologues.org",
       "//shakespeare-monologues.org",
-      "//experimental-narwhal-d8n46nst3i1yfpjw0f94xg25.herokudns.com"
+      "//experimental-narwhal-d8n46nst3i1yfpjw0f94xg25.herokudns.com",
+      "//mono-phoenix.herokuapp.com",
+      "https://mono-phoenix.herokuapp.com",
+      "https://experimental-narwhal-d8n46nst3i1yfpjw0f94xg25.herokudns.com"
     ]
   )
 
