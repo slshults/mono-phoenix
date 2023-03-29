@@ -11,7 +11,8 @@ defmodule MonoPhoenixV01Web.Endpoint do
   ]
 
   socket("/live", Phoenix.LiveView.Socket,
-    websocket: [timeout: 45_000, connect_info: [session: @session_options]]
+    websocket: [timeout: 45_000, connect_info: [session: @session_options]],
+    check_origin: ["https://www.shakespeare-monologues.org"]
   )
 
   # Serve at "/" the static files from "priv/static" directory.
