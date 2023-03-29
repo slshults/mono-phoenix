@@ -22,7 +22,7 @@ config :mono_phoenix_v01, MonoPhoenixV01.Repo,
 config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
   url: [
     scheme: "https",
-    host: "mono-phoenix-staging.herokuapp.com",
+    host: "experimental-narwhal-d8n46nst3i1yfpjw0f94xg25.herokudns.com",
     port: 443
   ],
   force_ssl: [rewrite_on: [:x_forwarded_proto]]
