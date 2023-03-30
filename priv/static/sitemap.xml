@@ -8,603 +8,615 @@
 
 
 <url>
-  <loc>https://www.shakespeare-monologues.org/home</loc>
-  <lastmod>2018-07-14T01:30:30+00:00</lastmod>
+  <loc>https://www.shakespeare-monologues.org/</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
   <priority>1.00</priority>
 </url>
 <url>
-  <loc>https://www.shakespeare-monologues.org/men/</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
+  <loc>https://www.shakespeare-monologues.org/mens/</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
-  <loc>https://www.shakespeare-monologues.org/women/</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
+  <loc>https://www.shakespeare-monologues.org/womens/</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
   <loc>https://www.shakespeare-monologues.org/plays/</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.85</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/mens</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/womens</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/plays</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
   <loc>https://www.shakespeare-monologues.org/links</loc>
-  <lastmod>2018-07-14T01:30:30+00:00</lastmod>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
   <priority>0.70</priority>
 </url>
 <url>
-  <loc>https://www.shakespeare-monologues.org/quiz.html</loc>
-  <lastmod>2018-07-14T01:30:30+00:00</lastmod>
-  <priority>0.50</priority>
+  <loc>https://www.shakespeare-monologues.org/home</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.95</priority>
 </url>
 <url>
-  <loc>https://www.shakespeare-monologues.org/faqs</loc>
-  <lastmod>2018-07-14T01:30:30+00:00</lastmod>
-  <priority>0.70</priority>
+  <loc>https://www.shakespeare-monologues.org/faq</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.75</priority>
 </url>
 <url>
   <loc>https://www.shakespeare-monologues.org/aboutus</loc>
-  <lastmod>2018-07-14T01:30:30+00:00</lastmod>
-  <priority>0.70</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/13</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/9</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/1</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/3</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/4</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/10</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/11</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/6</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/18</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/2</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/5</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/7</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/14</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/17</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/15</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/8</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/16</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/19</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/20</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/21</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/22</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/23</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/24</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/25</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/26</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/27</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/28</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/29</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/30</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/31</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/38</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/32</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/33</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/34</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/35</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/36</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/men/plays/37</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/13</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/9</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/1</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/3</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/4</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/10</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/11</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/6</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/18</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/2</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/5</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/7</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/14</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/17</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/15</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/8</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/16</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/19</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/20</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/21</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/22</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/23</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/24</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/25</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/26</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/27</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/28</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/29</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/30</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/31</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/38</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/32</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/33</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/34</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/35</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/36</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/women/plays/37</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/13</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/9</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/1</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/3</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/4</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/10</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/11</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/6</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/18</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/2</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/5</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/7</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/14</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/17</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/15</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/8</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/16</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/19</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/20</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/21</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/22</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/23</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/24</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/25</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/26</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/27</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/28</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/29</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/30</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/31</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/38</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/32</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/33</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/34</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/35</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/36</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://www.shakespeare-monologues.org/plays/37</loc>
-  <lastmod>2018-07-14T02:26:15+00:00</lastmod>
-  <priority>0.64</priority>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.75</priority>
 </url>
 <url>
   <loc>https://www.shakespeare-monologues.org/privacy</loc>
-  <lastmod>2018-07-14T01:30:30+00:00</lastmod>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.70</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/13</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
   <priority>0.64</priority>
 </url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/9</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/1</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/3</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/4</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/10</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/11</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/6</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/18</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/2</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/5</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/7</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/14</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/17</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/15</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/8</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/16</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/19</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/20</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/21</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/22</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/23</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/24</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/25</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/26</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/27</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/28</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/29</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/30</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/31</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/38</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/32</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/33</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/34</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/35</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/36</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/men/37</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/13</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/9</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/1</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/3</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/4</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/10</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/11</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/6</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/18</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/2</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/5</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/7</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/14</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/17</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/15</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/8</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/16</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/19</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/20</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/21</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/22</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/23</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/24</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/25</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/26</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/27</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/28</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/29</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/30</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/31</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/38</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/32</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/33</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/34</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/35</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/women/37</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/13</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/9</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/1</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/3</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/4</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/10</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/11</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/6</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/18</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/2</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/5</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/7</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/14</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/17</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/15</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/8</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/16</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/19</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/20</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/21</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/22</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/23</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/24</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/25</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/26</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/27</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/28</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/29</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/30</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/31</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/38</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/32</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/33</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/34</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/35</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/36</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.shakespeare-monologues.org/play/37</loc>
+  <lastmod>2023-03-30T07:03:04+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+
+
 </urlset>
