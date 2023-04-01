@@ -1,15 +1,28 @@
-
-
-<section class="row">
-  <article class="monologue_preview">
-     <%= for row <- @rows do %>
-       <br><br>
-       <%= row.play %>&nbsp; · <%= row.location %>&nbsp; · <%= row.style %> 
-       <br>
-       <%= row.character %><br>
-       <%= row.firstline %>
-      <br><br>
-       <%= raw(row.body) %>
-     <% end %>
-  </article>
-</section>
+<div class="center-this">
+  <br /><br />
+  <table class="monologue-list">
+    <tbody>
+      <%= for row <- @rows do %>
+        <tr class="monologue_list">
+          <td class="monologue_preview">
+            <span class="monologue-playname"><%= row.play %></span>
+            &nbsp; &middot;<span class="monologue-actscene"><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; &middot;
+            <span class="monologue-actscene"><%= row.style %></span>
+            <br />
+            <span class="monologue-character"><%= row.character %><br /></span>
+            <span class="monologue-firstline-table"><%= row.firstline %></span>
+            <br /><br />
+            <%= raw(row.body) %>
+            <%= link to: raw(row.pdf), method: :get, target: "_blank", rel: "noopener" do %>
+              <img
+                src={Routes.static_path(@conn, "/images/pdf_file_icon_16x16.png")}
+                alt="Click for a double-spaced PDF of this monologue"
+                title="Click for a double-spaced PDF of this monologue"
+              />
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
