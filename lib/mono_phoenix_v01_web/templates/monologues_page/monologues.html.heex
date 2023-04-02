@@ -10,9 +10,8 @@
             <span class="monologue-actscene"><%= row.style %></span>
             <br />
             <span class="monologue-character"><%= row.character %><br /></span>
-            <span class="monologue-firstline-table"><%= row.firstline %></span>
-            <br /><br />
-            <%= raw(row.body) %>
+            <br />
+            <span class="monologue-body accent-font"><%= raw(row.body) %></span>
             <%= link to: raw(row.pdf), method: :get, target: "_blank", rel: "noopener" do %>
               <img
                 src={Routes.static_path(@conn, "/images/pdf_file_icon_16x16.png")}

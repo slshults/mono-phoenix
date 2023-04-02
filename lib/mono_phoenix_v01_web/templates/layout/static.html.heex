@@ -251,95 +251,102 @@
   </head>
   <body bgcolor="#F9F9DF" background="/images/parchment.jpg">
     <!-- The site heading, or banner, or title or whatso'er shall please you -->
-    <div class="col-md-12 text-center accent-font" style="padding-top: 0; padding-bottom: 0;">
-      <h1 class="custom-h1" style="margin-top: 0; margin-bottom: 0;">Shakespeare's Monologues</h1>
-    </div>
-    <!-- begin left column -->
-    <div
-      class="left-column col-md-2 col-xs-12"
-      style="display: inline; text-align: center; margin: 0 auto; padding-left: 0;"
-    >
-      <div
-        class="link-menu-left accent-font"
-        style="display: inline; text-align: center; margin: 0 auto;"
-      >
-        <!-- left column menu -->
-        <a href="/mens">Men</a>&nbsp; · <a href="/womens">Women</a>&nbsp; ·
-        <a href="/plays">All</a>
-        <br />
-        <a href="/home">Home</a>&nbsp; · <a href="/faq">Help</a>&nbsp; ·
-        <span class="link-menu-left accent-font" style="font-size: 14px">
-          <a
-            id="everbutton-693-1398040059-85"
-            class="everbutton-693-1398040059-85"
-            href="https://www.everbutton.com/donate/693"
-            style="height:0px;width:0px;min-width:0px;padding:0px;accent-font;"
-          >
-            Tip Jar
-          </a>
-        </span>
+    <%= if @conn.request_path != "/home" do %>
+      <div class="col-md-12 text-center accent-font" style="padding-top: 15px; padding-bottom: 0;">
+        <h1 class="custom-h1" style="margin-top: 0; margin-bottom: 0;">
+          Shakespeare's Monologues
+        </h1>
       </div>
-      <!-- left_column_ads -->
-      <br /><br />
-    </div>
-    <!-- end left column -->
-
-  <!-- begin center column -->
-    <div class="center-column col-md-8 col-xs-12">
+      <!-- begin left column -->
+      <div
+        class="left-column col-md-2 col-xs-12"
+        style="display: inline; text-align: center; margin: 0 auto; padding-left: 0;"
+      >
+        <div
+          class="link-menu-left accent-font"
+          style="display: inline; text-align: center; margin: 0 auto;"
+        >
+          <!-- left column menu -->
+          <a href="/mens">Men</a>&nbsp; · <a href="/womens">Women</a>&nbsp; ·
+          <a href="/plays">All</a>
+          <br />
+          <a href="/home">Home</a>&nbsp; · <a href="/faq">Help</a>&nbsp; ·
+          <span class="link-menu-left accent-font" style="font-size: 14px">
+            <a
+              id="everbutton-693-1398040059-85"
+              class="everbutton-693-1398040059-85"
+              href="https://www.everbutton.com/donate/693"
+              style="height:0px;width:0px;min-width:0px;padding:0px;accent-font;"
+            >
+              Tip Jar
+            </a>
+          </span>
+        </div>
+        <!-- left_column_ads -->
+        <br /><br />
+      </div>
+      <!-- end left column -->
+    <% end %>
+    <!-- begin center column -->
+   
       <!-- begin dynamic inner content -->
-      <%= @inner_content %>
-      <!-- end dynamic inner content -->
-    </div>
+    <%= @inner_content %>
+    <!-- end dynamic inner content -->
+    
     <!--end center column --> 
-                            <!-- begin right column -->
-    <div
-      class="right-column col-md-2 col-xs-12"
-      style="display: inline; text-align: center; margin: 0 auto; padding-left: 100px; padding-right: 5px;"
-    >
-      <!-- /.link-menu-right -->
+      
+      <!-- begin right column -->
+    <br />
+    <%= if @conn.request_path != "/home" do %>
+      <div
+        class="right-column col-md-2 col-xs-12"
+        style="display: inline; text-align: center; margin: 0 auto; padding-left: 100px; padding-right: 5px;"
+      >
+        <!-- /.link-menu-right -->
         
               <!-- begin tip jar button -->
-      <a
-        id="everbutton-693-1398040059-85"
-        class="everbutton everbutton-693-1398040059-85 everbutton-blue"
-        href="https://www.everbutton.com/donate/693"
-        style="height:20px;width:49px;min-width:45px;padding:0px;"
-      >
-        Tip Jar
-      </a>
-      <!-- end tip jar button -->
-      <br /><br />
-      <!-- Zazzle Button BEGIN -->
-      <a href="https://www.zazzle.com/shakesmonosstuff*" rel="nofollow" target="_blank">
-        <img
-          border="0"
-          width="78"
-          height="20"
-          src={Routes.static_path(@conn, "/images/zazzlebutton.png")}
-        />
-      </a>
-      <!-- Zazzle Button END -->
-      <br /><br />
-      <div class="addthis_inline_share_toolbox"></div>
-      <!-- AddThis Button END -->
-      <div style="display: inline; text-align: center; margin: 0 auto; padding-right: 0;">
-        <span class="small">
-          <font face="verdana" size="-1">
-            <a rel="me" href="https://mastodon.social/@shakesmonos" target="_blank">
-              <img
-                src="/images/mastodon16x16.png"
-                alt="Mastodon"
-                title="Mastodon"
-                width="16"
-                height="16"
-                border="0"
-              />
-            </a>
-          </font>
-        </span>
-        <hr style="width:75px;  noshade;" />
+        <a
+          id="everbutton-693-1398040059-85"
+          class="everbutton everbutton-693-1398040059-85 everbutton-blue"
+          href="https://www.everbutton.com/donate/693"
+          style="height:20px;width:49px;min-width:45px;padding:0px;"
+        >
+          Tip Jar
+        </a>
+        <!-- end tip jar button -->
+        <br /><br />
+        <!-- Zazzle Button BEGIN -->
+        <a href="https://www.zazzle.com/shakesmonosstuff*" rel="nofollow" target="_blank">
+          <img
+            border="0"
+            width="78"
+            height="20"
+            src={Routes.static_path(@conn, "/images/zazzlebutton.png")}
+          />
+        </a>
+        <!-- Zazzle Button END -->
+        <br /><br />
+        <div class="addthis_inline_share_toolbox"></div>
+        <!-- AddThis Button END -->
+        <div style="display: inline; text-align: center; margin: 0 auto; padding-right: 0;">
+          <span class="small">
+            <font face="verdana" size="-1">
+              <a rel="me" href="https://mastodon.social/@shakesmonos" target="_blank">
+                <img
+                  src="/images/mastodon16x16.png"
+                  alt="Mastodon"
+                  title="Mastodon"
+                  width="16"
+                  height="16"
+                  border="0"
+                />
+              </a>
+            </font>
+          </span>
+          <hr style="width:75px;  noshade;" />
+        </div>
       </div>
-    </div>
+    <% end %>
     <!-- The site footer, or boot, or epilogue, or whatso'er shall please you -->
     <div class="col-md-12 text-center accent-font" style="padding-top: 0; padding-bottom: 0;">
       <br />

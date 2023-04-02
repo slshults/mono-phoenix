@@ -603,6 +603,14 @@ form-control{
     background-color: #F9F9DF;
 }
 
+.home-page div {
+    margin-top: 0;
+    padding-top: 0;
+    padding-top: 0; 
+    padding-bottom: 0; 
+    margin-top: 5px;
+  }  
+
 .custom-h1 {
     margin-top: 10px; /* Adjust the value as needed */
     margin-bottom: 10px; /* Adjust the value as needed */
