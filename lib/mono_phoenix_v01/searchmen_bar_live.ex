@@ -71,9 +71,9 @@ defmodule MonoPhoenixV01Web.SearchmenBarLive do
         <%= if !is_nil(@search_results) do %>
           <%= if length(@search_results) > 0 do %>
             <!-- begin results heading, text, and body toggle -->
-            <h3>Search results</h3>
+            <h3>Search results from all the plays...</h3>
             <span style="font-size:11px">
-            Click on the 1st line, under the character's name, to see the full monologue. <a
+            Click on the 1st line, under the character's name, to see the full monologue.<br/><a
               href="#"
               data-toggle="collapse"
               data-target=".multi-collapse"
