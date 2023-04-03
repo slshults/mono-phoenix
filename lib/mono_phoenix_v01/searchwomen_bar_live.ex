@@ -66,32 +66,14 @@ defmodule MonoPhoenixV01Web.SearchwomenBarLive do
   def render_searchwomen_bar(assigns) do
     ~L"""
     <div class="center-this monologue-list">
-    <!-- hidden until I figure out how to make it display only with search results <h3>Search results</h3>
-    <span font-size: 10px;>
-    Click on the 1st line, under the character's name, to see the full monologue. &nbsp;<a
-      href="#"
-      data-toggle="collapse"
-      data-target=".multi-collapse"
-      id="toggle-button"
-    >
-    <img
-        src="/images/ExpandAll.png"
-        id="toggle-image"
-        alt="Click to toggle text of all monologues on the page.
-    Reload the page to reset the toggle"
-        title="Click to toggle the text of all monologues on the page.
-    Reload the page to reset the toggle."
-      />
-    </a>
-    </span> -->
       <table class="monologue-list">
         <tbody>
         <%= if !is_nil(@search_results) do %>
         <%= if length(@search_results) > 0 do %>
           <!-- begin results heading, text, and body toggle -->
-          <h3>Search results</h3>
+          <h3>Search results from all the plays...</h3>
           <span style="font-size:11px">
-          Click on the 1st line, under the character's name, to see the full monologue. <a
+          Click on the 1st line, under the character's name, to see the full monologue.<br/><a
             href="#"
             data-toggle="collapse"
             data-target=".multi-collapse"

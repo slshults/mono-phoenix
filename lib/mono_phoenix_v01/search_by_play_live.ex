@@ -71,10 +71,12 @@ defmodule MonoPhoenixV01Web.SearchByPlayLive do
         <tbody>
         <%= if !is_nil(@search_results) do %>
           <%= if length(@search_results) > 0 do %>
+          <!-- Extract play title from the first result -->
+            <% play_title = hd(@search_results).play %>
             <!-- begin results heading, text, and body toggle -->
-            <h3>Search results</h3>
+            <h3>Search results from <%= play_title %></h3>
             <span style="font-size:11px">
-            Click on the 1st line, under the character's name, to see the full monologue. <a
+            Click on the 1st line, under the character's name, to see the full monologue.<br/><a
               href="#"
               data-toggle="collapse"
               data-target=".multi-collapse"
@@ -91,7 +93,6 @@ defmodule MonoPhoenixV01Web.SearchByPlayLive do
             <!-- end results heading, text, and body toggle -->
           <% end %>
           <%= for {row, index} <- Enum.with_index(@search_results) do %>
-
           <!-- Render each search result here -->
             <tr class="monologue_list">
               <td class="<%= if rem(index, 2) == 0, do: 'even', else: 'odd' %>">
