@@ -1,406 +1,132 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href={Routes.static_path(@conn, "/favicon.ico")} />
-
-    <link rel="icon" href={Routes.static_path(@conn, "/favicon.ico")} />
-
-    <link
-      phx-track-static
-      rel="stylesheet"
-      href={Routes.static_path(@conn, "/assets/css/normalize.css")}
-    />
-
-    <link
-      phx-track-static
-      rel="stylesheet"
-      href={Routes.static_path(@conn, "/assets/css/bootstrap.css.map")}
-    />
-    <!-- link phx-track-static rel="stylesheet" href={ Routes.static_path(@conn, "/assets/css/bootstrap.min.css")} -->
-    <link
-      phx-track-static
-      rel="stylesheet"
-      href={Routes.static_path(@conn, "/assets/css/bootstrap-theme.min.css")}
-    />
-
-    <link
-      phx-track-static
-      rel="stylesheet"
-      href={Routes.static_path(@conn, "/assets/css/static.css")}
-    />
-
-    <link
-      phx-track-static
-      rel="stylesheet"
-      href={Routes.static_path(@conn, "/assets/css/application.css")}
-    />
-    <!-- link phx-track-static rel="stylesheet" href={ Routes.static_path(@conn, "/assets/css/application.withmobile.css")} -->
-
-    <!--script defer phx-track-static type="text/javascript"  src={ Routes.static_path(@conn, "/assets/js/jquery.min.js")}></script -->
-
-    <!--script defer phx-track-static type="text/javascript"  src={ Routes.static_path(@conn, "/assets/js/bootstrap.min.js")}></script -->
-    <link
-      rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-    />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js">
-    </script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js">
-    </script>
-
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css?family=IM+Fell+English"
-      type="text/css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css?family=IM+Fell+DW+Pica:400,400italic"
-      type="text/css"
-      rel="stylesheet"
-    />
-    <!-- begin header goodies copied from an old static page after migration -->
-    <script type="text/javascript">
-      jQuery.noConflict()
-    </script>
-    <!-- Mobile OS add to homescreen and web app goodies -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <link
-      rel="apple-touch-icon"
-      sizes="196x196"
-      href={Routes.static_path(@conn, "/images/icon-196x196.png")}
-    />
-    <link
-      rel="shortcut icon"
-      sizes="196x196"
-      href={Routes.static_path(@conn, "/images/icon-196x196.png")}
-    />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-    <meta name="apple-mobile-web-app-title" content="ShakesMonos" />
-    <meta name="msapplication-tap-highlight" content="no" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <link
-      rel="apple-touch-icon"
-      sizes="144x144"
-      href={Routes.static_path(@conn, "/images/icon-144x144.png")}
-    />
-    <link
-      rel="apple-touch-icon"
-      sizes="120x120"
-      href={Routes.static_path(@conn, "/images/icon-120x120.png")}
-    />
-    <link
-      rel="apple-touch-icon"
-      sizes="114x114"
-      href={Routes.static_path(@conn, "/images/icon-114x114.png")}
-    />
-    <link
-      rel="apple-touch-icon"
-      sizes="76x76"
-      href={Routes.static_path(@conn, "/images/icon-76x76.png")}
-    />
-    <link
-      rel="apple-touch-icon"
-      sizes="72x72"
-      href={Routes.static_path(@conn, "/images/icon-72x72.png")}
-    />
-    <!-- iPhone Splash Screen-->
-    <link
-      href="/img/apple-touch-startup-image-320x460.png"
-      media="(device-width: 320px)"
-      rel="apple-touch-startup-image"
-    />
-    <!-- iPhone (Retina) Splash Screen-->
-    <link
-      href="/img/apple-touch-startup-image-640x920.png"
-      media="(device-width: 320px) and (-webkit-device-pixel-ratio: 2)"
-      rel="apple-touch-startup-image"
-    />
-    <!-- iPhone (5) Splash Screen-->
-    <link
-      href="/img/Default-568h@2x.png"
-      media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"
-      rel="apple-touch-startup-image"
-      sizes="640x1096"
-    />
-    <!-- iPad (portrait) Splash Screen-->
-    <link
-      href="/img/apple-touch-startup-image-768x1004.png"
-      media="(device-width: 768px) and (orientation: portrait)"
-      rel="apple-touch-startup-image"
-    />
-    <!-- iPad (landscape) Splash Screen-->
-    <link
-      href="/img/apple-touch-startup-image-1024x1024.png"
-      media="(device-width: 768px) and (orientation: landscape)"
-      rel="apple-touch-startup-image"
-    />
-    <!-- iPad (Retina, portrait) Splash Screen-->
-    <link
-      href="/img/apple-touch-startup-image-1536x2008.png"
-      media="(device-width: 1536px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2)"
-      rel="apple-touch-startup-image"
-    />
-    <!-- iPad (Retina, landscape) Splash Screen-->
-    <link
-      href="/img/apple-touch-startup-image-2048x1496.png"
-      media="(device-width: 1536px)  and (orientation: landscape) and (-webkit-device-pixel-ratio: 2)"
-      rel="apple-touch-startup-image"
-    />
-    <link rel="apple-touch-icon-precomposed" href="/img/icon-152x152.png" />
-
-    <link rel="icon" sizes="196x196" href={Routes.static_path(@conn, "/images/icon-196x196.png")} />
-    <link
-      rel="apple-touch-icon"
-      sizes="196x196"
-      href={Routes.static_path(@conn, "/images/icon-196x196.png")}
-    />
-    <link
-      rel="shortcut icon"
-      sizes="196x196"
-      href={Routes.static_path(@conn, "/images/icon-196x196.png")}
-    />
-    <!-- iOS - keep internal links in web app, don't break out to safari -->
-    <script>
-      (function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^(a|html)$/i;a.addEventListener("click",function(a){d=a.target;while(!f.test(d.nodeName))d=d.parentNode;"href"in d&&(d.href.indexOf("http")||~d.href.indexOf(e.host))&&(a.preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone")
-    </script>
-    <!-- end iOS - keep internal links in web app, don't break out to safari -->
-    <!-- end Mobile OS add to homescreen and web app goodies -->
-
-    <!-- I'm not an seo-bro, but I do want to help people find their next monologue -->
-    <meta
-      name="description"
-      content="Making it easier to find monologues since 1997. A complete database of Shakespeare's Monologues. All of them. The monologues are organized by play, then categorized by comedy, history and tragedy. You can browse and/or search. Each monologue entry includes the character's name, the first line of the speech, whether it is verse or prose, and shows the act, scene & line number. Each entry provides a link to the full text of the scene. You can download each monologue for printing, already double-spaced for scansion and transcription."
-    />
-
-    <meta
-      name="keywords"
-      content="William Shakespeare, shakespeare, monologues, shakespeare monologues, shakespeare's monologues, shakespearean, monologue, speech, speeches, soliloquy, soliloquies, database, find, search, browse, index, quotes, quotations, Comedies, Histories, Tragedies, A Midsummer Night's Dream, All's Well That Ends Well, As You Like It, Cymbeline, Love's Labour's Lost, Measure for Measure, Merry Wives of Windsor, Much Ado About Nothing, Pericles, Prince of Tyre, The Comedy of Errors, The Merchant of Venice, The Taming of the Shrew, The Tempest, The Winter's Tale, Troilus and Cressida, Twelfth Night Or What You Will, 12th Night, TWelfth Night, Two Gentlemen of Verona, Henry IV i, Henry IV ii, Henry V, Henry VI i, Henry VI ii, Henry VI iii, Henry VIII, King John, Richard II, Richard III, Antony & Cleopatra, Coriolanus, Hamlet, Julius Caesar, King Lear, Macbeth, Othello, Romeo and Juliet, Timon of Athens, Titus Andronicus"
-    />
-
-    <meta name="verify-v1" content="43Tfyc84pBq4LxJ6S3NHue3NJt2M+oKCcoiN41SEKB8=" />
-    <style fprolloverstyle="">
-      a:hover {color: #5E2612; text-decoration: underline; font-weight: italic;}
-          
-    </style>
-    <style>
-      a {text-decoration: none; color: #696969; font-style: bold;}
-          
-    </style>
-    <script type="text/javascript">
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-600620-1']);
-      _gaq.push(['_trackPageview']);
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
-    </script>
-
-    <link
-      rel="search"
-      type="application/opensearchdescription+xml"
-      title="Search Shakespare's Monologues"
-      href={Routes.static_path(@conn, "/opensearch.xml")}
-    />
-    <!-- when the rest of the page has loaded, load the social.js-one-script-to-rule-them-all -->
-    <script>
-      (function($) {
-        $(window).bind("load", function() {
-        $.getScript('/assets/js/social.js', function() {});
-        });
-      })(jQuery);
-    </script>
-    <!-- Begin cookie consent -->
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.css"
-    />
-    <script src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.js">
-    </script>
-    <script>
-      window.addEventListener("load", function(){
-      window.cookieconsent.initialise({
-        "palette": {
-          "popup": {
-            "background": "#d5ca9d"
-          },
-          "button": {
-            "background": "#4b81e8"
-          }
-        },
-        "content": {
-          "message": "This site uses cookies for site functionality.  We use third-party tools for ads, social media integration, link-sharing, donations, and site analytics. Each of these third party tools also use cookies. By using this site, you agree to the use of these cookies.",
-          "dismiss": "Understood",
-          "link": "Click here for details.",
-          "href": "https://www.shakespeare-monologues.org/privacy"
-        }
-      })});
-    </script>
-    <!-- End cookie consent -->
-
-<!-- end header goodies copied from an old static page after migration -->
-  </head>
-  <body bgcolor="#F9F9DF" background="/images/parchment.jpg">
-    <!-- The site heading, or banner, or title or whatso'er shall please you -->
+<!-- The site heading, or banner, or title or whatso'er shall please you -->
+<div
+  class="col-md-12 text-center accent-font"
+  style="padding-top: 15px; padding-bottom: 0; vertical-align: top"
+>
+  <%= if @conn.request_path != "/home" do %>
+    <h1 class="custom-h1" style="margin-top: 0; margin-bottom: 0;">
+      Shakespeare's Monologues
+    </h1>
+  <% end %>
+</div>
+<!-- begin left column -->
+<div
+  class="left-column col-md-2 col-xs-12"
+  style="display: inline; text-align: center; margin: 0 auto; padding-left: 0;"
+>
+  <div
+    class="link-menu-left accent-font"
+    style="display: inline; text-align: center; margin: 0 auto;"
+  >
     <%= if @conn.request_path != "/home" do %>
-      <div class="col-md-12 text-center accent-font" style="padding-top: 15px; padding-bottom: 0;">
-        <h1 class="custom-h1" style="margin-top: 0; margin-bottom: 0;">
-          Shakespeare's Monologues
-        </h1>
-      </div>
-      <!-- begin left column -->
-      <div
-        class="left-column col-md-2 col-xs-12"
-        style="display: inline; text-align: center; margin: 0 auto; padding-left: 0;"
-      >
-        <div
-          class="link-menu-left accent-font"
-          style="display: inline; text-align: center; margin: 0 auto;"
-        >
-          <!-- left column menu -->
-          <a href="/mens">Men</a>&nbsp; · <a href="/womens">Women</a>&nbsp; ·
-          <a href="/plays">All</a>
-          <br />
-          <a href="/home">Home</a>&nbsp; · <a href="/faq">Help</a>&nbsp; ·
-          <span class="link-menu-left accent-font" style="font-size: 14px">
-            <a
-              id="everbutton-693-1398040059-85"
-              class="everbutton-693-1398040059-85"
-              href="https://www.everbutton.com/donate/693"
-              style="height:0px;width:0px;min-width:0px;padding:0px;accent-font;"
-            >
-              Tip Jar
-            </a>
-          </span>
-        </div>
-        <!-- left_column_ads -->
-        <br /><br />
-      </div>
-      <!-- end left column -->
-    <% end %>
-    <!-- begin center column -->
-   
-      <!-- begin dynamic inner content -->
-    <%= @inner_content %>
-    <!-- end dynamic inner content -->
-    
-    <!--end center column --> 
-      
-      <!-- begin right column -->
-    <br />
-    <%= if @conn.request_path != "/home" do %>
-      <div
-        class="right-column col-md-2 col-xs-12"
-        style="display: inline; text-align: center; margin: 0 auto; padding-left: 100px; padding-right: 5px;"
-      >
-        &nbsp;
-      </div>
-    <% end %>
-    <!-- The site footer, or boot, or epilogue, or whatso'er shall please you -->
-    <div class="col-md-12 text-center accent-font" style="padding-top: 0; padding-bottom: 0;">
+      <!-- left column menu -->
+      <a href="/mens">Men</a>&nbsp; · <a href="/womens">Women</a>&nbsp; · <a href="/plays">All</a>
       <br />
-      <div class="center-column-footer accent-font">
-        <div class="link-menu-bottom">
-          <a href="/mens">The Men</a>&nbsp; · <a href="/womens">The Women</a>&nbsp; · <a href="/plays">All</a>&nbsp; · <a href="/links">Links</a>&nbsp; · <a
-            rel="me"
-            href="https://mastodon.social/@shakesmonos"
-          >Mastodon</a>&nbsp; ·
-          <a href="https://www.facebook.com/ShakespearesMonologues" target="_blank">FB</a>
-          <br />
-          <a href="/home">Home</a>&nbsp; · <a href="/faq">FAQ &nbsp;</a>&nbsp; · <a href="/aboutus">About</a>&nbsp; · <a href="/privacy">Privacy</a>&nbsp; ·
-          <a href="http://shults.org/shakes/contact.php">Contact</a>
-        </div>
-        <!-- Everbutton Tip Jar Button BEGIN -->
-        <div class="tip_jar">
-          <!-- begin donation button -->
-          <a
-            id="everbutton-693-1398040059-85"
-            class="everbutton everbutton-693-1398040059-85 everbutton-blue"
-            href="https://www.everbutton.com/donate/693"
-            style="height:20px;width:49px;min-width:45px;padding:0px;"
-          >
-            Tip Jar
-          </a>
-          <!-- end donation button -->
-        </div>
-        <!-- Everbutton Tip Jar Button END -->
-        <br />
-        <div id="fb-root"></div>
-        <div
-          class="fb-like"
-          data-action="like"
-          data-href="//www.shakespeare-monologues.org/"
-          data-layout="button_count"
-          data-share="false"
-          data-show-faces="true"
+      <a href="/home">Home</a>&nbsp; · <a href="/faq">Help</a>&nbsp; ·
+      <span class="link-menu-left accent-font" style="font-size: 14px">
+        <a
+          id="everbutton-693-1398040059-85"
+          class="everbutton-693-1398040059-85"
+          href="https://www.everbutton.com/donate/693"
+          style="height:0px;width:0px;min-width:0px;padding:0px;accent-font;"
         >
-        </div>
-
-        <div class="mastodon">
-          <a href="https://mastodon.social/@shakesmonos" target="_blank">
-            <img
-              src={Routes.static_path(@conn, "/images/mastodon16x16.png")}
-              alt="Mastodon"
-              width="20"
-              height="20"
-              border="0"
-            />
-          </a>
-        </div>
-
-        <hr size="1" width="75" noshade />
-        <!-- begin copyright -->
-        <table align="right" style="padding-right: 25px;">
-          <tr>
-            <td align="right" valign="bottom" height="200" width="300">
-              <font style="font-size:70%">
-                The texts of Shakespeare's plays is public domain.
-              </font>
-              <br />
-              <font style="font-size:75%">
-                This site is licensed under
-                a<br /><a
-                  rel="license"
-                  href="//creativecommons.org/licenses/by-nc-sa/3.0/"
-                  target="_blank"
-                >Creative
-                  Commons License</a>.<br />
-                <!-- Creative Commons License -->
-                <a
-                  rel="license"
-                  href="//creativecommons.org/licenses/by-nc-sa/3.0/"
-                  target="_blank"
-                >
-                  <img
-                    alt="Creative Commons License"
-                    src={Routes.static_path(@conn, "/images/somerights20.gif")}
-                    border="0"
-                  />
-                </a>
-                <br />
-                <!-- /Creative Commons License -->
-                  &copy; 1997
-                <script>
-                  new Date().getFullYear()>2010&&document.write("-"+new Date().getFullYear());
-                </script>
-                Steven Shults &amp; Brandon Faloona
-                <br />Contact linked sites regarding their copyrights.
-              </font>
-              <br /><br />
-            </td>
-          </tr>
-        </table>
-        <!-- end copyright -->
+          Tip Jar
+        </a>
+      </span>
+    <% end %>
+  </div>
+  <!-- left_column_ads -->
+  <br /><br />
+</div>
+<!-- end left column -->
+    
+    <!-- begin center column -->
+<div class="center-column col-md-8 col-xs-12" style="padding-left:5px;">
+  <!-- begin dynamic inner content -->
+  <%= @inner_content %>
+  <!-- end dynamic inner content -->
+    
+     <!--end center column --> 
+      
+      
+      <!-- The site footer, or boot, or epilogue, or whatso'er shall please you -->
+  <div
+    class="col-md-12 text-center center-column-footer accent-font link-menu-bottom"
+    style="padding-top: 0; padding-bottom: 0;"
+  >
+    <br />
+    <div class="center-column-footer accent-font">
+      <div class="link-menu-bottom">
+        <a href="/mens">The Men</a>&nbsp; · <a href="/womens">The Women</a>&nbsp; · <a href="/plays">All</a>&nbsp; · <a href="/links">Links</a>&nbsp; · <a
+          rel="me"
+          href="https://mastodon.social/@shakesmonos"
+        >Mastodon</a>&nbsp; ·
+        <a href="https://www.facebook.com/ShakespearesMonologues" target="_blank">FB</a>
+        <br />
+        <a href="/home">Home</a>&nbsp; · <a href="/faq">FAQ &nbsp;</a>&nbsp; · <a href="/aboutus">About</a>&nbsp; · <a href="/privacy">Privacy</a>&nbsp; ·
+        <a href="http://shults.org/shakes/contact.php">Contact</a>
       </div>
+      <!-- Everbutton Tip Jar Button BEGIN -->
+      <div class="tip_jar">
+        <!-- begin donation button -->
+        <a
+          id="everbutton-693-1398040059-85"
+          class="everbutton everbutton-693-1398040059-85 everbutton-blue"
+          href="https://www.everbutton.com/donate/693"
+          style="height:20px;width:49px;min-width:45px;padding:0px;"
+        >
+          Tip Jar
+        </a>
+        <!-- end donation button -->
+      </div>
+      <!-- begin copyright -->
+      <table align="right" style="padding-right: 25px;">
+        <tr>
+          <td align="right" valign="bottom" height="200" width="300">
+            <font style="font-size:70%">
+              The texts of Shakespeare's plays is public domain.
+            </font>
+            <br />
+            <font style="font-size:75%">
+              This site is licensed under
+              a<br /><a
+                rel="license"
+                href="//creativecommons.org/licenses/by-nc-sa/3.0/"
+                target="_blank"
+              >Creative
+                  Commons License</a>.<br />
+              <!-- Creative Commons License -->
+              <a rel="license" href="//creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank">
+                <img
+                  alt="Creative Commons License"
+                  src={Routes.static_path(@conn, "/images/somerights20.gif")}
+                  border="0"
+                />
+              </a>
+              <br />
+              <!-- /Creative Commons License -->
+                  &copy; 1997
+              <script>
+                new Date().getFullYear()>2010&&document.write("-"+new Date().getFullYear());
+              </script>
+              Steven Shults &amp; Brandon Faloona
+              <br />Contact linked sites regarding their copyrights.
+            </font>
+            <br /><br />
+          </td>
+        </tr>
+      </table>
     </div>
-  </body>
-</html>
+    <!-- end copyright -->
+  </div>
+  <!-- begin right column -->
+  <br />
+  <%= if @conn.request_path != "/home" do %>
+    <div
+      class="right-column col-md-2 col-xs-12"
+      style="display: inline; text-align: center; margin: 0 auto; padding-left: 10px; padding-right: 5px;"
+    >
+      &nbsp;
+    </div>
+  <% end %>
+</div>
