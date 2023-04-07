@@ -76,6 +76,7 @@ body .accent-font {
     margin-left: min(2px, 600px);
     margin-right: min(2px, 600px);
     padding: 0px;
+    margin-top: 5px;
   }
 
 h3 {
@@ -86,7 +87,7 @@ h3 {
 
 .center-column-list {
     min-height: 300px;
-    padding-bottom: 40px;
+    padding-bottom: 10px;
 }
 
 .link-menu-left,
@@ -258,6 +259,7 @@ monologue-list {
     margin: 0px auto;
     text-align: left;
     background-color: #F9F9DF;
+    padding-bottom: 20px;
 }
 table.monologue-list {
     /*width: 100%;*/
@@ -265,6 +267,8 @@ table.monologue-list {
     margin: 0px auto;
     text-align: left;
     background-color: #F9F9DF;
+    padding-bottom: 20px;
+    margin-bottom: 30px
 }
 
 table.monologue-list th {
@@ -283,6 +287,7 @@ table.monologue-list th {
 
 table.monologue-list tr {
     vertical-align: top;
+    padding-bottom: 20px;
 }
 
 table.monologue-list td {
@@ -290,6 +295,7 @@ table.monologue-list td {
     margin: 0px auto;
     text-align: left;
     background-color: #F9F9DF;
+    padding-bottom: 10px;
 }
 
 tr.odd {
@@ -588,6 +594,13 @@ a.control-active {
     background-color: #F9F9DF;
 }
 
+.center-that {
+    margin: auto;
+    width: 85%;
+    min-width: 350px;
+    background-color: #F9F9DF;
+    vertical-align: top;
+}
 span.toggle-control>a.toggle-mono>img {
     width: 34px;
     height: 34px;
@@ -604,9 +617,8 @@ form-control{
 }
 
 .home-page div {
-    margin-top: 0;
+    margin: auto;
     padding-top: 0;
-    padding-top: 0; 
     padding-bottom: 0; 
     margin-top: 5px;
   }  
