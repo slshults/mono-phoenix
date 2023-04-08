@@ -96,8 +96,8 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
 
             <tr class="monologue_list">
               <td class="<%= if rem(index, 2) == 0, do: 'even', else: 'odd' %>">
-                <span class="monologue-playname" alt="👆 Click to view all the men's monologues from this play"
-                title="👆 Click to view all the men's monologues from this play"><%= link to: "/play/#{row.play_id}", method: :get do %><%= row.play %><% end %></span>&nbsp; &middot; <span class="monologue-actscene"                 alt="👆 Click here to read the whole scene.
+                <span class="monologue-playname" alt="👆 Click to view all the monologues from this play"
+                title="👆 Click to view all the monologues from this play"><%= link to: "/play/#{row.play_id}", method: :get do %><%= row.play %><% end %></span>&nbsp; &middot; <span class="monologue-actscene"                 alt="👆 Click here to read the whole scene.
           This link jumps you to the monologue,
           scroll up to read from the top of the scene."
                                 title="👆 Click here to read the whole scene.
