@@ -5,22 +5,40 @@
       <%= for row <- @rows do %>
         <tr class="monologue_list">
           <td class="monologue_preview">
-            <span class="monologue-playname">
+            <span
+              class="monologue-playname"
+              alt="👆 Click to view all the monologues from this play"
+              title="👆 Click to view all the monologues from this play"
+            >
               <%= link to: "/play/#{row.id}", method: :get do %>
                 <%= row.play %>
               <% end %>
             </span>
-            &nbsp; &middot;<span class="monologue-actscene"><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; &middot;
+            &nbsp; &middot;<span
+              class="monologue-actscene"
+              alt="👆 Click here to read the whole scene. 
+This link jumps you to the monologue, 
+scroll up to read from the top of the scene."
+              title="👆 Click here to read the whole scene. 
+This link jumps you to the monologue, 
+scroll up to read from the top of the scene."
+            ><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; &middot;
             <span class="monologue-actscene"><%= row.style %></span>
             <br />
-            <span class="monologue-character"><%= row.character %><br /></span>
+            <span
+              class="monologue-character"
+              alt="This is the name of the character who speaks this monologue."
+              title="This is the name of the character who speaks this monologue."
+            >
+              <%= row.character %><br />
+            </span>
             <br />
             <span class="monologue-body accent-font"><%= raw(row.body) %></span>
             <%= link to: raw(row.pdf), method: :get, target: "_blank", rel: "noopener" do %>
               <img
                 src={Routes.static_path(@conn, "/images/pdf_file_icon_16x16.png")}
-                alt="Click for a double-spaced PDF of this monologue"
-                title="Click for a double-spaced PDF of this monologue"
+                alt="👆 Click for a double-spaced PDF of this monologue"
+                title="👆 Click for a double-spaced PDF of this monologue"
               />
             <% end %>
           </td>

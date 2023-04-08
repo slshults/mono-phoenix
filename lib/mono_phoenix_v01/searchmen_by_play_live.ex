@@ -72,7 +72,7 @@ defmodule MonoPhoenixV01Web.SearchmenByPlayLive do
         <%= if !is_nil(@search_results) do %>
           <%= if length(@search_results) > 0 do %>
           <!-- Extract play title from the first result -->
-            <%= play_title = hd(@search_results).play %>
+            <% play_title = hd(@search_results).play %>
             <!-- begin results heading, text, and body toggle -->
             <h3>Search results from <%= play_title %></h3>
             <span style="font-size:11px">
@@ -85,10 +85,10 @@ defmodule MonoPhoenixV01Web.SearchmenByPlayLive do
             <img
                 src="/images/ExpandAll.png"
                 id="toggle-image"
-                alt="Click to toggle text of all monologues on the page.
-            Reload the page to reset the toggle"
-                title="Click to toggle the text of all monologues on the page.
-            Reload the page to reset the toggle."
+                alt="👆 Click to toggle text of all monologues on the page.
+        🔄️ Reload the page to reset the toggle"
+                title="👆 Click to toggle the text of all monologues on the page.
+        🔄️ Reload the page to reset the toggle."
               />
             </a>
             </span>
@@ -99,13 +99,20 @@ defmodule MonoPhoenixV01Web.SearchmenByPlayLive do
           <!-- Render each search result here -->
             <tr class="monologue_list">
               <td class="<%= if rem(index, 2) == 0, do: 'even', else: 'odd' %>">
-                <span class="monologue-playname"><%= row.play %></span>&nbsp; &middot; <span class="monologue-actscene"><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; &middot;
+                <span class="monologue-playname" alt="This is the title of the play the monologue is found in." title="This is the title of the play the monologue is found in."><%= row.play %></span>&nbsp; &middot; <span class="monologue-actscene" alt="👆 Click here to read the whole scene.
+            This link jumps you to the monologue,
+            scroll up to read from the top of the scene."
+                                title="👆 Click here to read the whole scene.
+            This link jumps you to the monologue,
+            scroll up to read from the top of the scene."><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; &middot;
                 <span class="monologue-actscene"><%= row.style %></span>
                 <br />
-                <span class="monologue-character"><%= row.character %></span>
+                <span class="monologue-character" alt="This is the name of the character who speaks this monologue." title="This is the name of the character who speaks this monologue."><%= row.character %></span>
                 <br />
                 <div
                 class="monologue-firstline-table"
+                alt="👆 Click to hide or display the full monologue"
+                title="👆 Click to hide or display the full monologue"
                 data-toggle="collapse"
                 data-target="#collapse-<%= Integer.to_string(index) %>"
                 >
