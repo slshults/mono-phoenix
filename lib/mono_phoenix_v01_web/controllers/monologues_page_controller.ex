@@ -28,6 +28,7 @@ defmodule MonoPhoenixV01Web.MonologuesPageController do
           m.pdf_link
         ],
         select: %{
+          id: p.id,
           play: p.title,
           monologues: m.id,
           location: m.location,

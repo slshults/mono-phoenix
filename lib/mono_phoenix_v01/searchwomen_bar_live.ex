@@ -93,7 +93,7 @@ defmodule MonoPhoenixV01Web.SearchwomenBarLive do
 
             <tr class="monologue_list">
               <td class="<%= if rem(index, 2) == 0, do: 'even', else: 'odd' %>">
-                <span class="monologue-playname"><%= row.play %></span>&nbsp; &middot; <span class="monologue-actscene"><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; &middot;
+                <span class="monologue-playname"><%= link to: "/women/#{row.play_id}", method: :get do %><%= row.play %><% end %></span>&nbsp; &middot; <span class="monologue-actscene"><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; &middot;
                 <span class="monologue-actscene"><%= row.style %></span>
                 <br />
                 <span class="monologue-character"><%= row.character %></span>

@@ -5,7 +5,11 @@
       <%= for row <- @rows do %>
         <tr class="monologue_list">
           <td class="monologue_preview">
-            <span class="monologue-playname"><%= row.play %></span>
+            <span class="monologue-playname">
+              <%= link to: "/play/#{row.id}", method: :get do %>
+                <%= row.play %>
+              <% end %>
+            </span>
             &nbsp; &middot;<span class="monologue-actscene"><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; &middot;
             <span class="monologue-actscene"><%= row.style %></span>
             <br />

@@ -48,6 +48,7 @@ defmodule MonoPhoenixV01Web.SearchmenBar do
           m.pdf_link
         ],
         select: %{
+          play_id: p.id,
           play: p.title,
           monologues: m.id,
           location: m.location,
