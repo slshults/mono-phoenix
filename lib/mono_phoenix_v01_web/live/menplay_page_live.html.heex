@@ -40,23 +40,43 @@
             <img
               src="/images/ExpandAll.png"
               id="toggle-image"
-              alt="Click to toggle text of all monologues on the page.
-  Reload the page to reset the toggle"
-              title="Click to toggle the text of all monologues on the page.
-  Reload the page to reset the toggle."
+              alt="👆 Click to toggle text of all monologues on the page.
+  🔄️ Reload the page to reset the toggle"
+              title="👆 Click to toggle the text of all monologues on the page.
+  🔄️ Reload the page to reset the toggle."
             />
           </a>
         </span>
         <%= for row <- @rows do %>
           <tr class="monologue_list">
             <td class="{ (index.even? ? 'even' : 'odd') }">
-              <span class="monologue-playname"><%= row.play %></span>&nbsp; &middot; <span class="monologue-actscene"><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; &middot;
+              <span
+                class="monologue-playname"
+                alt="This is the title of the play the monologue is found in."
+                title="This is the title of the play the monologue is found in."
+              ><%= row.play %></span>&nbsp; &middot; <span
+                class="monologue-actscene"
+                alt="👆 Click here to read the whole scene. 
+      This link jumps you to the monologue, 
+      scroll up to read from the top of the scene."
+                title="👆 Click here to read the whole scene. 
+      This link jumps you to the monologue, 
+      scroll up to read from the top of the scene."
+              ><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; &middot;
               <span class="monologue-actscene"><%= row.style %></span>
               <br />
-              <span class="monologue-character"><%= row.character %></span>
+              <span
+                class="monologue-character"
+                alt="This is the name of the character who speaks this monologue."
+                title="This is the name of the character who speaks this monologue."
+              >
+                <%= row.character %>
+              </span>
               <br />
               <div
                 class="monologue-firstline-table"
+                alt="👆 Click to hide or display the full monologue"
+                title="👆 Click to hide or display the full monologue"
                 data-toggle="collapse"
                 data-target={"#collapse-" <> Integer.to_string(row.monologues)}
               >
