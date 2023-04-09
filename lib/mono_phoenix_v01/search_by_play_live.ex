@@ -55,6 +55,7 @@ defmodule MonoPhoenixV01Web.SearchByPlayLive do
           value: Map.get(assigns, :query, ""),
           placeholder: "Search for monologues...",
           class: "input-group accent-font form-control monologue-list",
+          style: "width: 100%;",
           phx_input: "search_input",
           phx_debounce: "240"
           %>
@@ -95,7 +96,7 @@ defmodule MonoPhoenixV01Web.SearchByPlayLive do
           <%= for {row, index} <- Enum.with_index(@search_results) do %>
           <!-- Render each search result here -->
             <tr class="monologue_list">
-              <td class="<%= if rem(index, 2) == 0, do: 'even', else: 'odd' %>">
+              <td>
                 <span class="monologue-playname" alt="This is the title of the play the monologue is found in." title="This is the title of the play the monologue is found in."><%= row.play %></span>&nbsp; &middot; <span class="monologue-actscene" alt="👆 Click here to read the whole scene.
             This link jumps you to the monologue,
             scroll up to read from the top of the scene."

@@ -41,7 +41,9 @@ pre {
   padding: 0px;
 }  
 body {
-  margin-top: 20px; 
+  margin-top: 20px;
+  background-color: #F9F9DF;
+  background-image: url("/images/parchment.jpg"); 
 }
 @media screen and (max-width:980px) {
    body {
@@ -167,7 +169,7 @@ input#search-box {
   font-size: 150%;
   vertical-align: top;
   left: 9px;
-  width: 334px;
+  width: 95%;
   /* margin-left: -10px; */
   /* border-top-right-radius: 5px; */
   /* border-bottom-right-radius: 5px; */
@@ -541,6 +543,8 @@ th.th-pad-right {
   border-color: unset;
   -webkit-box-shadow: none;
   box-shadow: none;
+  box-sizing: border-box;
+  width: 95%;
   outline: -webkit-focus-ring-color auto 0px;
 }
 

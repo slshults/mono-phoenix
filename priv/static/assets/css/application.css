@@ -27,7 +27,7 @@ img {
 
 pre {
     background-color: #eee;
-    padding: 10px;
+    padding: 2px;
     font-size: 11px;
 }
 
@@ -42,7 +42,7 @@ html {
 
 body {
     /* Margin bottom by footer height */
-    margin-bottom: 60px;
+    margin-bottom: 40px;
     margin-left: min(2px, 600px);
     margin-right: min(2px, 600px)
 }
@@ -51,16 +51,19 @@ html,
 body {
     background-color: #F9F9DF;
     background-image: url("/images/parchment.jpg");
+    min-height: 100%;
+    width: 100%;
+    padding: 0px;
 }
 
 @media screen and (max-width:980px) {
     body {
       background-color: #F9F9DF;
-      background-image: none;
       margin-bottom: 20px;
       font-family: Georgia, "Times New Roman", Times, serif;
       font-size: 13px;
       line-height: 13px;
+      padding-left: 15px;
     }
   }
 
@@ -73,10 +76,13 @@ body .accent-font {
     max-width: 960px !important;
     position: relative;
     width: 100%;
+    height: 100%;
     margin-left: min(2px, 600px);
     margin-right: min(2px, 600px);
     padding: 0px;
     margin-top: 5px;
+    background-color: #F9F9DF;
+    background-image: none;
   }
 
 h3 {
@@ -108,6 +114,7 @@ h3 {
     padding-top: 1px;
     padding-bottom: 10px;
     max-width: 100%;
+    max-height: 80px;
 }
 
 /* Add a bit of space before each text link */
@@ -147,6 +154,7 @@ h3 {
 
 .tip_jar {
     padding-top: 20px;
+    max-height: 
 }
 
 
@@ -165,7 +173,7 @@ div.login-banner {
 
 input#search-box {
     font-size: 175%;
-    width: 100%;
+    width: 95%;
     margin-left: -10px;
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
@@ -233,7 +241,7 @@ a.categories-list:hover {
     font-size: 150%;
     /*font-style: italic;*/
     text-align: left;
-    padding-top: 60px;
+    padding-top: 20px;
     padding-left: 20px;
     vertical-align: top;
 }
@@ -259,20 +267,24 @@ monologue-list {
     margin: 0px auto;
     text-align: left;
     background-color: #F9F9DF;
-    padding-bottom: 20px;
+    padding-top: 1px;
+    padding-bottom: 10px;
+    vertical-align: top;
 }
 table.monologue-list {
     /*width: 100%;*/
+    vertical-align: top;
     max-width: 550px;
     margin: 0px auto;
     text-align: left;
     background-color: #F9F9DF;
-    padding-bottom: 20px;
-    margin-bottom: 30px
+    padding-bottom: 10px;
+    margin-bottom: 10px
 }
 
 table.monologue-list th {
     font-size: 110%;
+    vertical-align: top;
     text-align: left;
     white-space: nowrap;
     padding-left: 6px;
@@ -287,23 +299,26 @@ table.monologue-list th {
 
 table.monologue-list tr {
     vertical-align: top;
-    padding-bottom: 20px;
+    margin: 0px auto;
+    padding-top: 0px;
 }
 
 table.monologue-list td {
+    vertical-align: top;
     padding: 6px;
     margin: 0px auto;
     text-align: left;
     background-color: #F9F9DF;
-    padding-bottom: 10px;
 }
 
 tr.odd {
     background-color: #F9F9D1;
+    vertical-align: top;
 }
 
 tr.even {
     background-color: #F9F9DF;
+    vertical-align: top;
 }
 
 
@@ -382,12 +397,13 @@ h1.monologue-firstline-heading::first-letter {
 
 .monologue-show {
     margin-top: 0;
-    padding-bottom: 20px;
+    padding-bottom: 10px;
     line-height: 150%;
     font-size: 100%;
     font-size: 110%;
     font-family: 'IM Fell DW Pica', serif;
     max-width: 550px;
+    min-width: 350px;
 }
 
 .monologue-body {
@@ -395,7 +411,8 @@ h1.monologue-firstline-heading::first-letter {
     line-height: 125%;
     padding: 10px;
     width: 455px;
-    margin-bottom: 60px;
+    min-width: 350px;
+    margin-bottom: 20px;
 }
 
 .monologue-body-inline {
@@ -536,6 +553,8 @@ th.th-pad-right {
     border-color: unset;
     -webkit-box-shadow: none;
     box-shadow: none;
+    box-sizing: border-box;
+    width: 95%;
     outline: -webkit-focus-ring-color auto 0px;
 }
 
@@ -589,9 +608,11 @@ a.control-active {
 
 .center-this {
     margin: auto;
+    padding-top: 0px;
     width: 65%;
-    min-width: 350px;
+    min-width: 335px;
     background-color: #F9F9DF;
+    vertical-align: top;
 }
 
 .center-that {
@@ -611,10 +632,17 @@ span.toggle-control>a.toggle-mono>img {
 form-control{
     border-color: unset;
     -webkit-box-shadow: none;
-    box-shadow: none;
+    box-sizing: border-box;
+    width: 95%;
     outline: -webkit-focus-ring-color auto 0px;
     background-color: #F9F9DF;
+    
 }
+
+.border-box {
+    box-sizing: border-box;
+    width: 95%;
+  }
 
 .home-page div {
     margin: auto;
