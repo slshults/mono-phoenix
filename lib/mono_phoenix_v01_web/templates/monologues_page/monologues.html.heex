@@ -1,49 +1,52 @@
-<div class="center-this">
-  <br /><br />
-  <table class="monologue-list">
-    <tbody>
-      <%= for row <- @rows do %>
-        <tr class="monologue_list">
-          <td class="monologue_preview">
-            <span
-              class="monologue-playname"
-              alt="👆 Click to view all the monologues from this play"
-              title="👆 Click to view all the monologues from this play"
-            >
-              <%= link to: "/play/#{row.id}", method: :get do %>
-                <%= row.play %>
+<div class="center-this" style="position:relative;">
+  <span style="vertical-align:top; position:relative;
+  top: 0px;">
+    <br /><br />
+    <table class="monologue-list" style="vertical-align: top;">
+      <tbody>
+        <%= for row <- @rows do %>
+          <tr class="monologue_list">
+            <td class="monologue_preview">
+              <span
+                class="monologue-playname"
+                alt="👆 Click to view all the monologues from this play"
+                title="👆 Click to view all the monologues from this play"
+              >
+                <%= link to: "/play/#{row.id}", method: :get do %>
+                  <%= row.play %>
+                <% end %>
+              </span>
+              &nbsp; &middot;<span
+                class="monologue-actscene"
+                alt="👆 Click here to read the whole scene. 
+This link jumps you to the monologue, 
+scroll up to read from the top of the scene."
+                title="👆 Click here to read the whole scene. 
+This link jumps you to the monologue, 
+scroll up to read from the top of the scene."
+              ><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; &middot;
+              <span class="monologue-actscene"><%= row.style %></span>
+              <br />
+              <span
+                class="monologue-character"
+                alt="This is the name of the character who speaks this monologue."
+                title="This is the name of the character who speaks this monologue."
+              >
+                <%= row.character %><br />
+              </span>
+              <br />
+              <span class="monologue-show accent-font"><%= raw(row.body) %></span>
+              <%= link to: raw(row.pdf), method: :get, target: "_blank", rel: "noopener" do %>
+                <img
+                  src={Routes.static_path(@conn, "/images/pdf_file_icon_16x16.png")}
+                  alt="👆 Click for a double-spaced PDF of this monologue"
+                  title="👆 Click for a double-spaced PDF of this monologue"
+                />
               <% end %>
-            </span>
-            &nbsp; &middot;<span
-              class="monologue-actscene"
-              alt="👆 Click here to read the whole scene. 
-This link jumps you to the monologue, 
-scroll up to read from the top of the scene."
-              title="👆 Click here to read the whole scene. 
-This link jumps you to the monologue, 
-scroll up to read from the top of the scene."
-            ><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; &middot;
-            <span class="monologue-actscene"><%= row.style %></span>
-            <br />
-            <span
-              class="monologue-character"
-              alt="This is the name of the character who speaks this monologue."
-              title="This is the name of the character who speaks this monologue."
-            >
-              <%= row.character %><br />
-            </span>
-            <br />
-            <span class="monologue-body accent-font"><%= raw(row.body) %></span>
-            <%= link to: raw(row.pdf), method: :get, target: "_blank", rel: "noopener" do %>
-              <img
-                src={Routes.static_path(@conn, "/images/pdf_file_icon_16x16.png")}
-                alt="👆 Click for a double-spaced PDF of this monologue"
-                title="👆 Click for a double-spaced PDF of this monologue"
-              />
-            <% end %>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </span>
 </div>
