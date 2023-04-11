@@ -4,17 +4,15 @@
 <div>
   <div class="center-column-header accent-font">
     <h2>Search or browse men's monologues</h2>
-    <!-- Enter The Search Box -->
   </div>
-  <div
-    class="input-group accent-font form-control monologue-list"
-    style="background-color: #F9F9DF;"
-  >
+  <!-- Enter The Search Box -->
+  <div class="search-box-dark search-box-default  input-group accent-font form-control monologue-list">
     <%= live_render(
       @socket,
       MonoPhoenixV01Web.SearchmenBarLive,
       id: "searchmenbar",
-      class: "input-group accent-font form-control monologue-list"
+      class:
+        "search-box-dark search-box-default input-group accent-font form-control monologue-list"
     ) %>
   </div>
   <!-- Exeunt The Search Box -->
