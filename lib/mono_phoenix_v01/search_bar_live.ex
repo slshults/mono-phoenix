@@ -46,14 +46,18 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
   ## render the search form
   defp render_search_form(assigns) do
     ~L"""
-    <div class="accent-font monologue-list" style="background-color: #F9F9DF;">
-      <%= form_for :search, "#", [phx_submit: "search", phx_change: "search", phx_page_loading: :prevent], fn f -> %>
+    <div class="search-box-dark search-box-default accent-font monologue-list">
+      <%= form_for :search, "#",
+      [phx_submit: "search",
+      phx_change: "search",
+      class: "search-box-dark search-box-default",
+      phx_page_loading: :prevent], fn f -> %>
         <%= label f, :query, "" %>
 
         <%= text_input f, :query,
           value: Map.get(assigns, :query, ""),
           placeholder: "Search for monologues...",
-          class: "input-group accent-font form-control monologue-list",
+          class: "input-group accent-font form-control monologue-list search-box-dark search-box-default",
           phx_input: "search_input",
           phx_debounce: "240"
           %>
@@ -65,8 +69,8 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
   ## render the search results
   def render_search_bar(assigns) do
     ~L"""
-    <div class="center-this monologue-list">
-      <table class="monologue-list">
+    <div class="center-this monologue-list search-box-dark search-box-default">
+      <table class="monologue-list search-box-dark search-box-default">
         <tbody>
         <%= if !is_nil(@search_results) do %>
         <%= if length(@search_results) > 0 do %>

@@ -47,7 +47,6 @@ body {
 }
 @media screen and (max-width:980px) {
    body {
-    background-color: #F9F9DF;
     background-image: none;
     margin-bottom: 20px;
     font-family: Georgia, "Times New Roman", Times, serif;
@@ -325,13 +324,6 @@ table.monologue-list td {
   padding: 6px;
 }
 
-tr.odd {
-  background-color: #F9F9D1;
-}
-
-tr.even {
-  background-color: #F9F9DF;
-}
 
 h1.monologue-firstline-heading {
   font-size: 200%;
@@ -496,13 +488,6 @@ input.googlesearch {
   list-style: square;
 }
 
-#odd-row {
-  background-color: #F9F9DF;
-}
-
-#even-row {
-  background-color: #F9F9D1;
-}
 
 a.tip-jar {
   background: #3498db;

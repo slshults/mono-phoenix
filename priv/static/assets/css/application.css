@@ -26,7 +26,7 @@ img {
 }
 
 pre {
-    background-color: #eee;
+    background-color: #111;
     padding: 2px;
     font-size: 11px;
 }
@@ -58,7 +58,6 @@ body {
 
 @media screen and (max-width:980px) {
     body {
-      background-color: #F9F9DF;
       margin-bottom: 20px;
       font-family: Georgia, "Times New Roman", Times, serif;
       font-size: 13px;
@@ -81,8 +80,6 @@ body .accent-font {
     margin-right: min(2px, 600px);
     padding: 0px;
     margin-top: 5px;
-    background-color: #F9F9DF;
-    background-image: none;
   }
 
 h3 {
@@ -177,7 +174,6 @@ input#search-box {
     margin-left: -10px;
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
-    background-color: #F9F9DF;
 }
 
 div.search-links {
@@ -266,7 +262,6 @@ monologue-list {
     max-width: 550px;
     margin: 0px auto;
     text-align: left;
-    background-color: #F9F9DF;
     padding-top: 1px;
     padding-bottom: 10px;
     vertical-align: top;
@@ -277,7 +272,6 @@ table.monologue-list {
     max-width: 550px;
     margin: 0px auto;
     text-align: left;
-    background-color: #F9F9DF;
     padding-bottom: 10px;
     margin-bottom: 10px
 }
@@ -308,17 +302,7 @@ table.monologue-list td {
     padding: 6px;
     margin: 0px auto;
     text-align: left;
-    background-color: #F9F9DF;
-}
-
-tr.odd {
-    background-color: #F9F9D1;
-    vertical-align: top;
-}
-
-tr.even {
-    background-color: #F9F9DF;
-    vertical-align: top;
+    
 }
 
 
@@ -335,7 +319,7 @@ h1.monologue-firstline-heading::first-letter {
 }
 
 .monologue-firstline-table:hover {
-    color: #555;
+    color: #c9c9d2;
     font-size: 127%;
 }
 
@@ -497,13 +481,6 @@ input.googlesearch {
     list-style: square;
 }
 
-#odd-row {
-    background-color: #F9F9DF;
-}
-
-#even-row {
-    background-color: #F9F9D1;
-}
 
 
 /*
@@ -556,6 +533,8 @@ th.th-pad-right {
     box-sizing: border-box;
     width: 95%;
     outline: -webkit-focus-ring-color auto 0px;
+    background-color: #F9F9DF;
+    color: #222222;
 }
 
 .monologue-controls {
@@ -611,7 +590,7 @@ a.control-active {
     padding-top: 0px;
     width: 65%;
     min-width: 335px;
-    background-color: #F9F9DF;
+    
     vertical-align: top;
 }
 
@@ -619,7 +598,6 @@ a.control-active {
     margin: auto;
     width: 85%;
     min-width: 350px;
-    background-color: #F9F9DF;
     vertical-align: top;
 }
 span.toggle-control>a.toggle-mono>img {
@@ -629,14 +607,18 @@ span.toggle-control>a.toggle-mono>img {
     padding-bottom: 6px;
 }
 
-form-control{
+.form-control{
     border-color: unset;
     -webkit-box-shadow: none;
     box-sizing: border-box;
     width: 95%;
-    outline: -webkit-focus-ring-color auto 0px;
+    outline: -webkit-focus-ring-color auto 0px; 
     background-color: #F9F9DF;
-    
+    color: #222222;
+}
+.input-group {
+    background-color: #F9F9DF;
+    color: #222222;
 }
 
 .border-box {
@@ -697,3 +679,55 @@ form-control{
     font-family: Arial;
     z-index: 0;
 }
+
+.search-box-default {
+    background-color: #F9F9DF;
+    color: #222222;
+  }
+
+.dark-mode {
+    background-color: #222222;
+    color: #F9F9DF;
+    background-image: none; /* Remove the background image in dark mode */
+  }  
+  
+  .dark-mode a {
+    color: #afafaf;
+  }
+  
+  .dark-mode a:hover {
+    color: #c9c9d2;
+    text-decoration: underline;
+  }
+
+ .dark-mode .search-box-dark {
+    background-color: #2b2a2a;
+    color: #F9F9DF; 
+}
+
+.dark-mode .form-control:focus {
+    border-color: unset;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    box-sizing: border-box;
+    width: 95%;
+    outline: -webkit-focus-ring-color auto 0px;
+    background-color: #2b2a2a;
+    color: #F9F9DF;
+  }
+
+  .dark-mode .form-control {
+    border-color: unset;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    box-sizing: border-box;
+    width: 95%;
+    outline: -webkit-focus-ring-color auto 0px;
+    background-color: #2b2a2a;
+    color: #F9F9DF;
+  }
+  
+  .dark-mode .input-group {
+    background-color: #2b2a2a;
+    color: #F9F9DF;
+  }
