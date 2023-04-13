@@ -80,6 +80,8 @@ body .accent-font {
     margin-right: min(2px, 600px);
     padding: 0px;
     margin-top: 5px;
+    min-height: 100vh;
+    overflow: auto; 
   }
 
 h3 {
