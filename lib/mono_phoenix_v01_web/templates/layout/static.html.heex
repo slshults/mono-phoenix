@@ -12,16 +12,35 @@
 <!-- begin left column -->
 <div
   class="left-column col-md-2 col-xs-12"
-  style="display: inline; text-align: center; margin: 0 auto; padding-left: 0;"
+  style="display: block; text-align: center; margin: 0 auto; padding-left: 0;"
 >
   <div
     class="link-menu-left accent-font"
     style="display: inline; text-align: center; margin: 0 auto;"
   >
-    <div>
-      <!-- Dark Mode Toggle  -->
-      <i id="dark-mode-icon" class="dark-mode-icon-class">🌙</i>
+    <!-- Dark Mode Toggle -->
+    <div id="dark-mode-icon" class="dark-mode-icon-class" style="text-align: center;">
+      <center>
+        <img
+          id="light-mode-toggle"
+          height="30px"
+          width="60px"
+          src="/images/lightmodetoggle.png"
+          alt="Light Mode"
+        />
+      </center>
+      <center>
+        <img
+          id="dark-mode-toggle"
+          height="30px"
+          width="60px"
+          src="/images/darkmodetoggle.png"
+          alt="Dark Mode"
+          style="display:none;"
+        />
+      </center>
     </div>
+
     <%= if @conn.request_path != "/home" do %>
       <!-- left column menu -->
       <a href="/mens">Men</a>&nbsp; · <a href="/womens">Women</a>&nbsp; · <a href="/plays">All</a>
@@ -125,12 +144,4 @@
   </div>
   <!-- begin right column -->
   <br />
-  <%= if @conn.request_path != "/home" do %>
-    <div
-      class="right-column col-md-2 col-xs-12"
-      style="display: inline; text-align: center; margin: 0 auto; padding-left: 10px; padding-right: 5px;"
-    >
-      &nbsp;
-    </div>
-  <% end %>
 </div>

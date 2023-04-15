@@ -3,6 +3,17 @@
   <head>
  <meta name="csrf-token" content={Plug.CSRFProtection.get_csrf_token()} />
 <script defer type="text/javascript" src={ Routes.static_path(@conn, "/assets/app.js")}></script>
+
+<script>
+  // Immediately set dark mode if the user's preference is stored in localStorage
+  (function() {
+    var isDarkMode = localStorage.getItem('darkMode') === 'true';
+    if (isDarkMode) {
+      document.body.classList.add('dark-mode');
+    }
+  })();
+</script>
+
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -155,7 +166,8 @@
 <!-- end header goodies copied from an old static page after migration -->
 
   </head>
-  <body id="body-element" bgcolor="#F9F9DF" background="/images/parchment.jpg" style="margin: auto 0;padding-top:5px;height:100vh;" >
+ 
+  <body id="body-element">
 
     <!-- header>
       <section class="">
