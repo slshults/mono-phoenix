@@ -3,26 +3,25 @@
     do: "#{hd(@rows).play} &middot; Shakespeare's Monologues",
     else: "Shakespeare's Monologues" %>
 </.live_title>
-<div>
-  <div class="center-column-header accent-font">
-    <h3>Search or browse monologues from</h3>
-    <h2>
-      &nbsp; &nbsp; &nbsp; <%= if length(@rows) > 0, do: hd(@rows).play, else: "" %>
-    </h2>
-  </div>
-  <!-- Enter The Search Box -->
-  <div class="search-box-dark search-box-default input-group accent-font form-control monologue-list">
-    <%= live_render(
-      @socket,
-      MonoPhoenixV01Web.SearchByPlayLive,
-      id: "searchbyplay",
-      class:
-        "search-box-dark search-box-default input-group accent-font form-control monologue-list",
-      session: %{"play_id" => @play_id}
-    ) %>
-  </div>
-  <!-- Exeunt The Search Box -->
+
+<div class="center-column-header accent-font">
+  <h3>Search or browse monologues from</h3>
+  <h2>
+    &nbsp; &nbsp; &nbsp; <%= if length(@rows) > 0, do: hd(@rows).play, else: "" %>
+  </h2>
 </div>
+<!-- Enter The Search Box -->
+<div class="search-box-dark search-box-default input-group accent-font form-control monologue-list center-this">
+  <%= live_render(
+    @socket,
+    MonoPhoenixV01Web.SearchByPlayLive,
+    id: "searchbyplay",
+    class:
+      "search-box-dark search-box-default input-group accent-font form-control monologue-list",
+    session: %{"play_id" => @play_id}
+  ) %>
+</div>
+<!-- Exeunt The Search Box -->
 <div>
   <div class="center-this monologue-list">
     <table class="monologue-list">

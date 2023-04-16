@@ -38,13 +38,18 @@ pre {
 html {
     position: relative;
     min-height: 100%;
+    margin: auto 0;
+    padding-left: 2px;
+    margin-left: 0px;
 }
 
 body {
     /* Margin bottom by footer height */
-    margin-bottom: 40px;
+    margin-bottom: 10px;
     margin-left: min(2px, 600px);
-    margin-right: min(2px, 600px)
+    margin-right: min(2px, 600px);
+    margin-left: 0px;
+    padding-left: 2px;
 }
 
 html,
@@ -55,6 +60,8 @@ body {
     width: 100%;
     padding: 0px;
     margin: auto 0;
+    margin-left: 0px;
+    padding-left: 2px;
 }
 
 html,body.dark-mode {
@@ -69,7 +76,7 @@ html,body.dark-mode {
       font-family: Georgia, "Times New Roman", Times, serif;
       font-size: 13px;
       line-height: 13px;
-      padding-left: 15px;
+      padding-left: 2px;
     }
   }
 
@@ -86,9 +93,8 @@ body .accent-font {
     margin-left: min(2px, 600px);
     margin-right: min(2px, 600px);
     padding: 0px;
-    margin-top: 5px;
+    margin-top: 0px;
     min-height: 100vh;
-
   }
 
 h3 {
@@ -99,6 +105,7 @@ h3 {
 
 .center-column-list {
     min-height: 300px;
+    width: 100%;
     padding-bottom: 10px;
 }
 
@@ -180,7 +187,6 @@ div.login-banner {
 input#search-box {
     font-size: 175%;
     width: 95%;
-    margin-left: -10px;
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
 }
@@ -207,8 +213,7 @@ table.categories-list th {
     font-size: 150%;
     line-height: 110%;
     font-weight: bold;
-   
-    padding-left: 15px;
+    padding-left: 5px;
     padding-top: 2px;
     padding-bottom: 2px;
     border: 1px solid black;
