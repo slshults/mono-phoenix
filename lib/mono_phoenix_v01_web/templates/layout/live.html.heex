@@ -1,38 +1,43 @@
 <!-- The site heading, or banner, or title or whatso'er shall please you -->
 <div class="col-md-12 text-center accent-font" style="padding-top: 0; padding-bottom: 0;">
-  <h1 class="custom-h1" style="margin-top: 0; margin-bottom: 0;">Shakespeare's Monologues</h1>
+  <!-- Dark Mode Toggle -->
+  <div
+    id="dark-mode-icon"
+    class="dark-mode-icon-class"
+    style="text-align: left; padding-left: 0; padding-top: 10px;"
+  >
+    <img
+      id="light-mode-toggle"
+      height="30px"
+      width="60px"
+      src="/images/lightmodetoggle.png"
+      alt="Light Mode"
+    />
+
+    <img
+      id="dark-mode-toggle"
+      height="30px"
+      width="60px"
+      src="/images/darkmodetoggle.png"
+      alt="Dark Mode"
+      style="display:none;"
+    />
+  </div>
+  <div style="vertical-align: top;">
+    <h1 class="custom-h1" style="margin-top: 0; margin-bottom: 0;">
+      Shakespeare's Monologues
+    </h1>
+  </div>
 </div>
 <!-- begin left column -->
 <div
   class="left-column col-md-2 col-xs-12"
-  style="display: inline; text-align: center; margin: 0 auto; padding-left: 0;"
+  style="display: inline; text-align: center; margin: 0 auto; padding-left: 0; padding-right: 30px;  padding-top: 68px;"
 >
   <div
     class="link-menu-left accent-font"
     style="display: inline; text-align: center; margin: 0 auto;"
   >
-    <!-- Dark Mode Toggle -->
-    <div id="dark-mode-icon" class="dark-mode-icon-class" style="text-align: center;">
-      <center>
-        <img
-          id="light-mode-toggle"
-          height="30px"
-          width="60px"
-          src="/images/lightmodetoggle.png"
-          alt="Light Mode"
-        />
-      </center>
-      <center>
-        <img
-          id="dark-mode-toggle"
-          height="30px"
-          width="60px"
-          src="/images/darkmodetoggle.png"
-          alt="Dark Mode"
-          style="display:none;"
-        />
-      </center>
-    </div>
     <!-- left column menu -->
     <a href="/mens">Men</a>&nbsp; · <a href="/womens">Women</a>&nbsp; · <a href="/plays">All</a>
     <br />
@@ -54,7 +59,7 @@
 <!-- end left column -->
 
   <!-- begin center column -->
-<div class="center-column col-md-8 col-xs-12" style="padding-left:0px;">
+<div class="center-column col-md-8 col-xs-12" style="padding-left:8px; padding-right:10px;">
   <!-- begin dynamic inner inner content -->
   <%= @inner_content %>
   <!-- end dynamic inner inner content -->
@@ -70,42 +75,7 @@
       <a href="/home">Home</a>&nbsp; · <a href="/faq">FAQ &nbsp;</a>&nbsp; · <a href="/aboutus">About</a>&nbsp; · <a href="/privacy">Privacy</a>&nbsp; ·
       <a href="http://shults.org/shakes/contact.php">Contact</a>
     </div>
-    <!-- Everbutton Tip Jar Button BEGIN -->
-    <div class="tip_jar">
-      <!-- begin donation button -->
-      <a
-        id="everbutton-693-1398040059-85"
-        class="everbutton everbutton-693-1398040059-85 everbutton-blue"
-        href="https://www.everbutton.com/donate/693"
-        style="height:20px;width:49px;min-width:45px;padding:0px;"
-      >
-        Tip Jar
-      </a>
-      <!-- end donation button -->
-    </div>
-    <!-- Everbutton Tip Jar Button END -->
-    <br />
-    <div id="fb-root"></div>
-    <div
-      class="fb-like"
-      data-action="like"
-      data-href="//www.shakespeare-monologues.org/"
-      data-layout="button_count"
-      data-share="false"
-      data-show-faces="true"
-    >
-    </div>
-    <div class="mastodon">
-      <a href="https://mastodon.social/@shakesmonos" target="_blank">
-        <img
-          src={Routes.static_path(@socket, "/images/mastodon16x16.png")}
-          alt="Mastodon"
-          width="20"
-          height="20"
-          border="0"
-        />
-      </a>
-    </div>
+
     <hr size="1" width="75" noshade />
     <!-- begin embedded google search box -- disabled until the rebuild is complete and the site has been recrawled  
                      <script async src="https://cse.google.com/cse.js?cx=c24610b5fdc28455e">
@@ -156,7 +126,7 @@
                 <!-- begin right column -->
 <div
   class="right-column col-md-2 col-xs-12"
-  style="display: inline; text-align: center; margin: 0 auto; padding-left: 50px; padding-right: 5px;"
+  style="display: inline; text-align: center; margin: 0 auto; padding-left: 20px; padding-right: 5px; padding-top: 70px;"
 >
   <!-- /.link-menu-right -->
         
@@ -177,13 +147,30 @@
       border="0"
       width="78"
       height="20"
+      style="background-color: #F9F9DF; border-radius: 15px;"
       src={Routes.static_path(@socket, "/images/zazzlebutton.png")}
     />
   </a>
   <!-- Zazzle Button END -->
-  <br /><br />
-  <div class="addthis_inline_share_toolbox"></div>
+  <br />
+  <div id="fb-root"></div>
+  <div
+    class="fb-like"
+    data-action="like"
+    data-href="//www.shakespeare-monologues.org/"
+    data-layout="button_count"
+    data-share="false"
+    data-show-faces="true"
+    style="padding-top: 10px;"
+  >
+  </div>
+  <div
+    class="addthis_inline_share_toolbox"
+    style="display: inline; text-align: center; margin: 0 auto; padding-right: 0;"
+  >
+  </div>
   <!-- AddThis Button END -->
+  <br /><br />
   <div style="display: inline; text-align: center; margin: 0 auto; padding-right: 0;">
     <span class="small">
       <font face="verdana" size="-1">

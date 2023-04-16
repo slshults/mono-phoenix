@@ -1,4 +1,26 @@
 <!-- The site heading, or banner, or title or whatso'er shall please you -->
+    <!-- Dark Mode Toggle -->
+<div
+  id="dark-mode-icon"
+  class="dark-mode-icon-class"
+  style="text-align: center; padding-left: 5px; padding-top: 5px;"
+>
+  <img
+    id="light-mode-toggle"
+    height="30px"
+    width="60px"
+    src="/images/lightmodetoggle.png"
+    alt="Light Mode"
+  />
+  <img
+    id="dark-mode-toggle"
+    height="30px"
+    width="60px"
+    src="/images/darkmodetoggle.png"
+    alt="Dark Mode"
+    style="display:none;"
+  />
+</div>
 <div
   class="col-md-12 text-center accent-font"
   style="padding-top: 15px; padding-bottom: 0; vertical-align: top"
@@ -18,29 +40,6 @@
     class="link-menu-left accent-font"
     style="display: inline; text-align: center; margin: 0 auto;"
   >
-    <!-- Dark Mode Toggle -->
-    <div id="dark-mode-icon" class="dark-mode-icon-class" style="text-align: center;">
-      <center>
-        <img
-          id="light-mode-toggle"
-          height="30px"
-          width="60px"
-          src="/images/lightmodetoggle.png"
-          alt="Light Mode"
-        />
-      </center>
-      <center>
-        <img
-          id="dark-mode-toggle"
-          height="30px"
-          width="60px"
-          src="/images/darkmodetoggle.png"
-          alt="Dark Mode"
-          style="display:none;"
-        />
-      </center>
-    </div>
-
     <%= if @conn.request_path != "/home" do %>
       <!-- left column menu -->
       <a href="/mens">Men</a>&nbsp; · <a href="/womens">Women</a>&nbsp; · <a href="/plays">All</a>
