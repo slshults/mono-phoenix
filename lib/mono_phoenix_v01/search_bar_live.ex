@@ -87,6 +87,7 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
           <img
               src="/images/ExpandAll.png"
               id="toggle-image"
+              style="background-color: #F9F9DF; border-radius: 5px;"
               alt="👆 Click to toggle text of all monologues on the page.
           Reload the page to reset the toggle"
               title="👆 Click to toggle the text of all monologues on the page.
