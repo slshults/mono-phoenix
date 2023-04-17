@@ -1,116 +1,201 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
- <meta name="csrf-token" content={Plug.CSRFProtection.get_csrf_token()} />
-<script defer type="text/javascript" src={ Routes.static_path(@conn, "/assets/app.js")}></script>
+    <meta name="csrf-token" content={Plug.CSRFProtection.get_csrf_token()} />
+    <script defer type="text/javascript" src={Routes.static_path(@conn, "/assets/app.js")}>
+    </script>
 
-<script>
-  // Immediately set dark mode if the user's preference is stored in localStorage
-  (function() {
-    var isDarkMode = localStorage.getItem('darkMode') === 'true';
-    if (isDarkMode) {
-      document.body.classList.add('dark-mode');
-    }
-  })();
-</script>
+    <script>
+      // Immediately set dark mode if the user's preference is stored in localStorage
+      (function() {
+        var isDarkMode = localStorage.getItem('darkMode') === 'true';
+        if (isDarkMode) {
+          document.body.classList.add('dark-mode');
+        }
+      })();
+    </script>
 
-    <meta charset="utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <link rel="icon" href={Routes.static_path(@conn, "/favicon.ico")}>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href={Routes.static_path(@conn, "/favicon.ico")} />
 
-    <link rel="icon" href={Routes.static_path(@conn, "/favicon.ico")}>
+    <link rel="icon" href={Routes.static_path(@conn, "/favicon.ico")} />
 
-    <link phx-track-static rel="stylesheet" href={ Routes.static_path(@conn, "/assets/css/normalize.css")}> 
-  
+    <link
+      phx-track-static
+      rel="stylesheet"
+      href={Routes.static_path(@conn, "/assets/css/normalize.css")}
+    />
     <!-- link phx-track-static rel="stylesheet" href={ Routes.static_path(@conn, "/assets/css/bootstrap.css.map")} -->
 
     <!-- link phx-track-static rel="stylesheet" href={ Routes.static_path(@conn, "/assets/css/bootstrap.min.css")} -->
 
     <!-- link phx-track-static rel="stylesheet" href={ Routes.static_path(@conn, "/assets/css/bootstrap-theme.min.css")} -->
+    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")} />
 
-
-    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")}>
-  
-    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/css/application.css")}>
-
+    <link
+      phx-track-static
+      rel="stylesheet"
+      href={Routes.static_path(@conn, "/assets/css/application.css")}
+    />
     <!-- link phx-track-static rel="stylesheet" href={ Routes.static_path(@conn, "/assets/css/application.withmobile.css")} -->
 
     <!--script defer phx-track-static type="text/javascript"  src={ Routes.static_path(@conn, "/assets/js/jquery.min.js")}></script -->
 
     <!--script defer phx-track-static type="text/javascript"  src={ Routes.static_path(@conn, "/assets/js/bootstrap.min.js")}></script -->
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js">
+    </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js">
+    </script>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=IM+Fell+English" type="text/css" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=IM+Fell+DW+Pica:400,400italic" type="text/css" rel="stylesheet">
-
-
-<!-- begin header goodies copied from an old static page after migration -->
-
-  <script type="text/javascript">
-    jQuery.noConflict()
-  </script>
-
-<!-- addThis -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=IM+Fell+English"
+      type="text/css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=IM+Fell+DW+Pica:400,400italic"
+      type="text/css"
+      rel="stylesheet"
+    />
+    <!-- begin header goodies copied from an old static page after migration -->
+    <script type="text/javascript">
+      jQuery.noConflict()
+    </script>
+    <!-- addThis -->
 
   <!-- Mobile OS add to homescreen and web app goodies -->
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="mobile-web-app-capable" content="yes">
-  <link rel="apple-touch-icon" sizes="196x196" href={ Routes.static_path(@conn, "/images/icon-196x196.png")}>
-  <link rel="shortcut icon" sizes="196x196" href={ Routes.static_path(@conn, "/images/icon-196x196.png")}>
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="ShakesMonos">
-  <meta name="msapplication-tap-highlight" content="no">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="apple-touch-icon" sizes="144x144" href={ Routes.static_path(@conn, "/images/icon-144x144.png")}>
-  <link rel="apple-touch-icon" sizes="120x120" href={ Routes.static_path(@conn, "/images/icon-120x120.png")}>
-  <link rel="apple-touch-icon" sizes="114x114" href={ Routes.static_path(@conn, "/images/icon-114x114.png")}>
-  <link rel="apple-touch-icon" sizes="76x76" href={ Routes.static_path(@conn, "/images/icon-76x76.png")}>
-  <link rel="apple-touch-icon" sizes="72x72" href={ Routes.static_path(@conn, "/images/icon-72x72.png")}>
-
-  <!-- iPhone Splash Screen-->
-    <link href="/img/apple-touch-startup-image-320x460.png" media="(device-width: 320px)" rel="apple-touch-startup-image">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <link
+      rel="apple-touch-icon"
+      sizes="196x196"
+      href={Routes.static_path(@conn, "/images/icon-196x196.png")}
+    />
+    <link
+      rel="shortcut icon"
+      sizes="196x196"
+      href={Routes.static_path(@conn, "/images/icon-196x196.png")}
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="ShakesMonos" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link
+      rel="apple-touch-icon"
+      sizes="144x144"
+      href={Routes.static_path(@conn, "/images/icon-144x144.png")}
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="120x120"
+      href={Routes.static_path(@conn, "/images/icon-120x120.png")}
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="114x114"
+      href={Routes.static_path(@conn, "/images/icon-114x114.png")}
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="76x76"
+      href={Routes.static_path(@conn, "/images/icon-76x76.png")}
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="72x72"
+      href={Routes.static_path(@conn, "/images/icon-72x72.png")}
+    />
+    <!-- iPhone Splash Screen-->
+    <link
+      href="/img/apple-touch-startup-image-320x460.png"
+      media="(device-width: 320px)"
+      rel="apple-touch-startup-image"
+    />
     <!-- iPhone (Retina) Splash Screen-->
-    <link href="/img/apple-touch-startup-image-640x920.png" media="(device-width: 320px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
+    <link
+      href="/img/apple-touch-startup-image-640x920.png"
+      media="(device-width: 320px) and (-webkit-device-pixel-ratio: 2)"
+      rel="apple-touch-startup-image"
+    />
     <!-- iPhone (5) Splash Screen-->
-    <link href="/img/Default-568h@2x.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" sizes="640x1096">
+    <link
+      href="/img/Default-568h@2x.png"
+      media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"
+      rel="apple-touch-startup-image"
+      sizes="640x1096"
+    />
     <!-- iPad (portrait) Splash Screen-->
-    <link href="/img/apple-touch-startup-image-768x1004.png" media="(device-width: 768px) and (orientation: portrait)" rel="apple-touch-startup-image">
+    <link
+      href="/img/apple-touch-startup-image-768x1004.png"
+      media="(device-width: 768px) and (orientation: portrait)"
+      rel="apple-touch-startup-image"
+    />
     <!-- iPad (landscape) Splash Screen-->
-    <link href="/img/apple-touch-startup-image-1024x1024.png" media="(device-width: 768px) and (orientation: landscape)" rel="apple-touch-startup-image">
+    <link
+      href="/img/apple-touch-startup-image-1024x1024.png"
+      media="(device-width: 768px) and (orientation: landscape)"
+      rel="apple-touch-startup-image"
+    />
     <!-- iPad (Retina, portrait) Splash Screen-->
-    <link href="/img/apple-touch-startup-image-1536x2008.png" media="(device-width: 1536px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
+    <link
+      href="/img/apple-touch-startup-image-1536x2008.png"
+      media="(device-width: 1536px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2)"
+      rel="apple-touch-startup-image"
+    />
     <!-- iPad (Retina, landscape) Splash Screen-->
-    <link href="/img/apple-touch-startup-image-2048x1496.png" media="(device-width: 1536px)  and (orientation: landscape) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
-    <link rel="apple-touch-icon-precomposed" href="/img/icon-152x152.png">
+    <link
+      href="/img/apple-touch-startup-image-2048x1496.png"
+      media="(device-width: 1536px)  and (orientation: landscape) and (-webkit-device-pixel-ratio: 2)"
+      rel="apple-touch-startup-image"
+    />
+    <link rel="apple-touch-icon-precomposed" href="/img/icon-152x152.png" />
 
-  
-
-    <link rel="icon" sizes="196x196" href={ Routes.static_path(@conn, "/images/icon-196x196.png")}>
-    <link rel="apple-touch-icon" sizes="196x196" href={ Routes.static_path(@conn, "/images/icon-196x196.png")}>
-    <link rel="shortcut icon" sizes="196x196" href={ Routes.static_path(@conn, "/images/icon-196x196.png")}>
-
-      <!-- iOS - keep internal links in web app, don't break out to safari -->
-      <script>(function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^(a|html)$/i;a.addEventListener("click",function(a){d=a.target;while(!f.test(d.nodeName))d=d.parentNode;"href"in d&&(d.href.indexOf("http")||~d.href.indexOf(e.host))&&(a.preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone")</script>
-      <!-- end iOS - keep internal links in web app, don't break out to safari -->
+    <link rel="icon" sizes="196x196" href={Routes.static_path(@conn, "/images/icon-196x196.png")} />
+    <link
+      rel="apple-touch-icon"
+      sizes="196x196"
+      href={Routes.static_path(@conn, "/images/icon-196x196.png")}
+    />
+    <link
+      rel="shortcut icon"
+      sizes="196x196"
+      href={Routes.static_path(@conn, "/images/icon-196x196.png")}
+    />
+    <!-- iOS - keep internal links in web app, don't break out to safari -->
+    <script>
+      (function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^(a|html)$/i;a.addEventListener("click",function(a){d=a.target;while(!f.test(d.nodeName))d=d.parentNode;"href"in d&&(d.href.indexOf("http")||~d.href.indexOf(e.host))&&(a.preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone")
+    </script>
+    <!-- end iOS - keep internal links in web app, don't break out to safari -->
     <!-- end Mobile OS add to homescreen and web app goodies -->
 
-    <!-- I'm not an seo-bro, but I do want to help people find their next monologue --> 
-    <meta name="description" content="Making it easier to find monologues since 1997. A complete database of Shakespeare's Monologues. All of them. The monologues are organized by play, then categorized by comedy, history and tragedy. You can browse and/or search. Each monologue entry includes the character's name, the first line of the speech, whether it is verse or prose, and shows the act, scene & line number. Each entry provides a link to the full text of the scene. You can download each monologue for printing, already double-spaced for scansion and transcription.">
+    <!-- I'm not an seo-bro, but I do want to help people find their next monologue -->
+    <meta
+      name="description"
+      content="Making it easier to find monologues since 1997. A complete database of Shakespeare's Monologues. All of them. The monologues are organized by play, then categorized by comedy, history and tragedy. You can browse and/or search. Each monologue entry includes the character's name, the first line of the speech, whether it is verse or prose, and shows the act, scene & line number. Each entry provides a link to the full text of the scene. You can download each monologue for printing, already double-spaced for scansion and transcription."
+    />
 
-    <meta name="keywords" content="William Shakespeare, shakespeare, monologues, shakespeare monologues, shakespeare's monologues, shakespearean, monologue, speech, speeches, soliloquy, soliloquies, database, find, search, browse, index, quotes, quotations, Comedies, Histories, Tragedies, A Midsummer Night's Dream, All's Well That Ends Well, As You Like It, Cymbeline, Love's Labour's Lost, Measure for Measure, Merry Wives of Windsor, Much Ado About Nothing, Pericles, Prince of Tyre, The Comedy of Errors, The Merchant of Venice, The Taming of the Shrew, The Tempest, The Winter's Tale, Troilus and Cressida, Twelfth Night Or What You Will, 12th Night, TWelfth Night, Two Gentlemen of Verona, Henry IV i, Henry IV ii, Henry V, Henry VI i, Henry VI ii, Henry VI iii, Henry VIII, King John, Richard II, Richard III, Antony & Cleopatra, Coriolanus, Hamlet, Julius Caesar, King Lear, Macbeth, Othello, Romeo and Juliet, Timon of Athens, Titus Andronicus">
+    <meta
+      name="keywords"
+      content="William Shakespeare, shakespeare, monologues, shakespeare monologues, shakespeare's monologues, shakespearean, monologue, speech, speeches, soliloquy, soliloquies, database, find, search, browse, index, quotes, quotations, Comedies, Histories, Tragedies, A Midsummer Night's Dream, All's Well That Ends Well, As You Like It, Cymbeline, Love's Labour's Lost, Measure for Measure, Merry Wives of Windsor, Much Ado About Nothing, Pericles, Prince of Tyre, The Comedy of Errors, The Merchant of Venice, The Taming of the Shrew, The Tempest, The Winter's Tale, Troilus and Cressida, Twelfth Night Or What You Will, 12th Night, TWelfth Night, Two Gentlemen of Verona, Henry IV i, Henry IV ii, Henry V, Henry VI i, Henry VI ii, Henry VI iii, Henry VIII, King John, Richard II, Richard III, Antony & Cleopatra, Coriolanus, Hamlet, Julius Caesar, King Lear, Macbeth, Othello, Romeo and Juliet, Timon of Athens, Titus Andronicus"
+    />
 
-
-    <meta name="verify-v1"
-    content="43Tfyc84pBq4LxJ6S3NHue3NJt2M+oKCcoiN41SEKB8=">
-    <style fprolloverstyle="">a:hover {color: #5E2612; text-decoration: underline; font-weight: bold;}
+    <meta name="verify-v1" content="43Tfyc84pBq4LxJ6S3NHue3NJt2M+oKCcoiN41SEKB8=" />
+    <style fprolloverstyle="">
+      a:hover {color: #5E2612; text-decoration: underline; font-weight: bold;}
+          
     </style>
-    <style>a {text-decoration: none; color: #696969; font-style: bold;  }
+    <style>
+      a {text-decoration: none; color: #696969; font-style: bold;  }
+          
     </style>
     <script type="text/javascript">
       var _gaq = _gaq || [];
@@ -123,54 +208,63 @@
       })();
     </script>
 
-    <link rel="search" type="application/opensearchdescription+xml" title="Search Shakespare's Monologues" href={ Routes.static_path(@conn, "/opensearch.xml")} />
-
-
+    <link
+      rel="search"
+      type="application/opensearchdescription+xml"
+      title="Search Shakespare's Monologues"
+      href={Routes.static_path(@conn, "/opensearch.xml")}
+    />
     <!-- begin google adsense ad blocking recovery -->
+    <script
+      async
+      src="https://fundingchoicesmessages.google.com/i/pub-5236095389905910?ers=1"
+      nonce="Cqg6qqrr7k8MXu_awI0TVw"
+    >
+    </script>
+    <script nonce="Cqg6qqrr7k8MXu_awI0TVw">
+      (function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();
+    </script>
 
-    <script async src="https://fundingchoicesmessages.google.com/i/pub-5236095389905910?ers=1" nonce="Cqg6qqrr7k8MXu_awI0TVw"></script><script nonce="Cqg6qqrr7k8MXu_awI0TVw">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+    <script>
+      (function(){/*
 
-    <script>(function(){/*
+       Copyright The Closure Library Authors.
+       SPDX-License-Identifier: Apache-2.0
+      */
+      'use strict';var aa=function(a){var b=0;return function(){return b<a.length?{done:!1,value:a[b++]}:{done:!0}}},ba="function"==typeof Object.create?Object.create:function(a){var b=function(){};b.prototype=a;return new b},k;if("function"==typeof Object.setPrototypeOf)k=Object.setPrototypeOf;else{var m;a:{var ca={a:!0},n={};try{n.__proto__=ca;m=n.a;break a}catch(a){}m=!1}k=m?function(a,b){a.__proto__=b;if(a.__proto__!==b)throw new TypeError(a+" is not extensible");return a}:null}
+      var p=k,q=function(a,b){a.prototype=ba(b.prototype);a.prototype.constructor=a;if(p)p(a,b);else for(var c in b)if("prototype"!=c)if(Object.defineProperties){var d=Object.getOwnPropertyDescriptor(b,c);d&&Object.defineProperty(a,c,d)}else a[c]=b[c];a.v=b.prototype},r=this||self,da=function(){},t=function(a){return a};var u;var w=function(a,b){this.g=b===v?a:""};w.prototype.toString=function(){return this.g+""};var v={},x=function(a){if(void 0===u){var b=null;var c=r.trustedTypes;if(c&&c.createPolicy){try{b=c.createPolicy("goog#html",{createHTML:t,createScript:t,createScriptURL:t})}catch(d){r.console&&r.console.error(d.message)}u=b}else u=b}a=(b=u)?b.createScriptURL(a):a;return new w(a,v)};var A=function(){return Math.floor(2147483648*Math.random()).toString(36)+Math.abs(Math.floor(2147483648*Math.random())^Date.now()).toString(36)};var B={},C=null;var D="function"===typeof Uint8Array;function E(a,b,c){return"object"===typeof a?D&&!Array.isArray(a)&&a instanceof Uint8Array?c(a):F(a,b,c):b(a)}function F(a,b,c){if(Array.isArray(a)){for(var d=Array(a.length),e=0;e<a.length;e++){var f=a[e];null!=f&&(d[e]=E(f,b,c))}Array.isArray(a)&&a.s&&G(d);return d}d={};for(e in a)Object.prototype.hasOwnProperty.call(a,e)&&(f=a[e],null!=f&&(d[e]=E(f,b,c)));return d}
+      function ea(a){return F(a,function(b){return"number"===typeof b?isFinite(b)?b:String(b):b},function(b){var c;void 0===c&&(c=0);if(!C){C={};for(var d="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".split(""),e=["+/=","+/","-_=","-_.","-_"],f=0;5>f;f++){var h=d.concat(e[f].split(""));B[f]=h;for(var g=0;g<h.length;g++){var l=h[g];void 0===C[l]&&(C[l]=g)}}}c=B[c];d=Array(Math.floor(b.length/3));e=c[64]||"";for(f=h=0;h<b.length-2;h+=3){var y=b[h],z=b[h+1];l=b[h+2];g=c[y>>2];y=c[(y&3)<<
+      4|z>>4];z=c[(z&15)<<2|l>>6];l=c[l&63];d[f++]=""+g+y+z+l}g=0;l=e;switch(b.length-h){case 2:g=b[h+1],l=c[(g&15)<<2]||e;case 1:b=b[h],d[f]=""+c[b>>2]+c[(b&3)<<4|g>>4]+l+e}return d.join("")})}var fa={s:{value:!0,configurable:!0}},G=function(a){Array.isArray(a)&&!Object.isFrozen(a)&&Object.defineProperties(a,fa);return a};var H;var J=function(a,b,c){var d=H;H=null;a||(a=d);d=this.constructor.u;a||(a=d?[d]:[]);this.j=d?0:-1;this.h=null;this.g=a;a:{d=this.g.length;a=d-1;if(d&&(d=this.g[a],!(null===d||"object"!=typeof d||Array.isArray(d)||D&&d instanceof Uint8Array))){this.l=a-this.j;this.i=d;break a}void 0!==b&&-1<b?(this.l=Math.max(b,a+1-this.j),this.i=null):this.l=Number.MAX_VALUE}if(c)for(b=0;b<c.length;b++)a=c[b],a<this.l?(a+=this.j,(d=this.g[a])?G(d):this.g[a]=I):(d=this.l+this.j,this.g[d]||(this.i=this.g[d]={}),(d=this.i[a])?
+      G(d):this.i[a]=I)},I=Object.freeze(G([])),K=function(a,b){if(-1===b)return null;if(b<a.l){b+=a.j;var c=a.g[b];return c!==I?c:a.g[b]=G([])}if(a.i)return c=a.i[b],c!==I?c:a.i[b]=G([])},M=function(a,b){var c=L;if(-1===b)return null;a.h||(a.h={});if(!a.h[b]){var d=K(a,b);d&&(a.h[b]=new c(d))}return a.h[b]};J.prototype.toJSON=function(){var a=N(this,!1);return ea(a)};
+      var N=function(a,b){if(a.h)for(var c in a.h)if(Object.prototype.hasOwnProperty.call(a.h,c)){var d=a.h[c];if(Array.isArray(d))for(var e=0;e<d.length;e++)d[e]&&N(d[e],b);else d&&N(d,b)}return a.g},O=function(a,b){H=b=b?JSON.parse(b):null;a=new a(b);H=null;return a};J.prototype.toString=function(){return N(this,!1).toString()};var P=function(a){J.call(this,a)};q(P,J);function ha(a){var b,c=(a.ownerDocument&&a.ownerDocument.defaultView||window).document,d=null===(b=c.querySelector)||void 0===b?void 0:b.call(c,"script[nonce]");(b=d?d.nonce||d.getAttribute("nonce")||"":"")&&a.setAttribute("nonce",b)};var Q=function(a,b){b=String(b);"application/xhtml+xml"===a.contentType&&(b=b.toLowerCase());return a.createElement(b)},R=function(a){this.g=a||r.document||document};R.prototype.appendChild=function(a,b){a.appendChild(b)};var S=function(a,b,c,d,e,f){try{var h=a.g,g=Q(a.g,"SCRIPT");g.async=!0;g.src=b instanceof w&&b.constructor===w?b.g:"type_error:TrustedResourceUrl";ha(g);h.head.appendChild(g);g.addEventListener("load",function(){e();d&&h.head.removeChild(g)});g.addEventListener("error",function(){0<c?S(a,b,c-1,d,e,f):(d&&h.head.removeChild(g),f())})}catch(l){f()}};var ia=r.atob("aHR0cHM6Ly93d3cuZ3N0YXRpYy5jb20vaW1hZ2VzL2ljb25zL21hdGVyaWFsL3N5c3RlbS8xeC93YXJuaW5nX2FtYmVyXzI0ZHAucG5n"),ja=r.atob("WW91IGFyZSBzZWVpbmcgdGhpcyBtZXNzYWdlIGJlY2F1c2UgYWQgb3Igc2NyaXB0IGJsb2NraW5nIHNvZnR3YXJlIGlzIGludGVyZmVyaW5nIHdpdGggdGhpcyBwYWdlLg=="),ka=r.atob("RGlzYWJsZSBhbnkgYWQgb3Igc2NyaXB0IGJsb2NraW5nIHNvZnR3YXJlLCB0aGVuIHJlbG9hZCB0aGlzIHBhZ2Uu"),la=function(a,b,c){this.h=a;this.j=new R(this.h);this.g=null;this.i=[];this.l=!1;this.o=b;this.m=c},V=function(a){if(a.h.body&&!a.l){var b=
+      function(){T(a);r.setTimeout(function(){return U(a,3)},50)};S(a.j,a.o,2,!0,function(){r[a.m]||b()},b);a.l=!0}},T=function(a){for(var b=W(1,5),c=0;c<b;c++){var d=X(a);a.h.body.appendChild(d);a.i.push(d)}b=X(a);b.style.bottom="0";b.style.left="0";b.style.position="fixed";b.style.width=W(100,110).toString()+"%";b.style.zIndex=W(2147483544,2147483644).toString();b.style["background-color"]=ma(249,259,242,252,219,229);b.style["box-shadow"]="0 0 12px #888";b.style.color=ma(0,10,0,10,0,10);b.style.display=
+      "flex";b.style["justify-content"]="center";b.style["font-family"]="Roboto, Arial";c=X(a);c.style.width=W(80,85).toString()+"%";c.style.maxWidth=W(750,775).toString()+"px";c.style.margin="24px";c.style.display="flex";c.style["align-items"]="flex-start";c.style["justify-content"]="center";d=Q(a.j.g,"IMG");d.className=A();d.src=ia;d.style.height="24px";d.style.width="24px";d.style["padding-right"]="16px";var e=X(a),f=X(a);f.style["font-weight"]="bold";f.textContent=ja;var h=X(a);h.textContent=ka;Y(a,
+      e,f);Y(a,e,h);Y(a,c,d);Y(a,c,e);Y(a,b,c);a.g=b;a.h.body.appendChild(a.g);b=W(1,5);for(c=0;c<b;c++)d=X(a),a.h.body.appendChild(d),a.i.push(d)},Y=function(a,b,c){for(var d=W(1,5),e=0;e<d;e++){var f=X(a);b.appendChild(f)}b.appendChild(c);c=W(1,5);for(d=0;d<c;d++)e=X(a),b.appendChild(e)},W=function(a,b){return Math.floor(a+Math.random()*(b-a))},ma=function(a,b,c,d,e,f){return"rgb("+W(Math.max(a,0),Math.min(b,255)).toString()+","+W(Math.max(c,0),Math.min(d,255)).toString()+","+W(Math.max(e,0),Math.min(f,
+      255)).toString()+")"},X=function(a){a=Q(a.j.g,"DIV");a.className=A();return a},U=function(a,b){0>=b||null!=a.g&&0!=a.g.offsetHeight&&0!=a.g.offsetWidth||(na(a),T(a),r.setTimeout(function(){return U(a,b-1)},50))},na=function(a){var b=a.i;var c="undefined"!=typeof Symbol&&Symbol.iterator&&b[Symbol.iterator];b=c?c.call(b):{next:aa(b)};for(c=b.next();!c.done;c=b.next())(c=c.value)&&c.parentNode&&c.parentNode.removeChild(c);a.i=[];(b=a.g)&&b.parentNode&&b.parentNode.removeChild(b);a.g=null};var pa=function(a,b,c,d,e){var f=oa(c),h=function(l){l.appendChild(f);r.setTimeout(function(){f?(0!==f.offsetHeight&&0!==f.offsetWidth?b():a(),f.parentNode&&f.parentNode.removeChild(f)):a()},d)},g=function(l){document.body?h(document.body):0<l?r.setTimeout(function(){g(l-1)},e):b()};g(3)},oa=function(a){var b=document.createElement("div");b.className=a;b.style.width="1px";b.style.height="1px";b.style.position="absolute";b.style.left="-10000px";b.style.top="-10000px";b.style.zIndex="-10000";return b};var L=function(a){J.call(this,a)};q(L,J);var qa=function(a){J.call(this,a)};q(qa,J);var ra=function(a,b){this.l=a;this.m=new R(a.document);this.g=b;this.i=K(this.g,1);b=M(this.g,2);this.o=x(K(b,4)||"");this.h=!1;b=M(this.g,13);b=x(K(b,4)||"");this.j=new la(a.document,b,K(this.g,12))};ra.prototype.start=function(){sa(this)};
+      var sa=function(a){ta(a);S(a.m,a.o,3,!1,function(){a:{var b=a.i;var c=r.btoa(b);if(c=r[c]){try{var d=O(P,r.atob(c))}catch(e){b=!1;break a}b=b===K(d,1)}else b=!1}b?Z(a,K(a.g,14)):(Z(a,K(a.g,8)),V(a.j))},function(){pa(function(){Z(a,K(a.g,7));V(a.j)},function(){return Z(a,K(a.g,6))},K(a.g,9),K(a.g,10),K(a.g,11))})},Z=function(a,b){a.h||(a.h=!0,a=new a.l.XMLHttpRequest,a.open("GET",b,!0),a.send())},ta=function(a){var b=r.btoa(a.i);a.l[b]&&Z(a,K(a.g,5))};(function(a,b){r[a]=function(c){for(var d=[],e=0;e<arguments.length;++e)d[e-0]=arguments[e];r[a]=da;b.apply(null,d)}})("__h82AlnkH6D91__",function(a){"function"===typeof window.atob&&(new ra(window,O(qa,window.atob(a)))).start()});}).call(this);
 
- Copyright The Closure Library Authors.
- SPDX-License-Identifier: Apache-2.0
-*/
-'use strict';var aa=function(a){var b=0;return function(){return b<a.length?{done:!1,value:a[b++]}:{done:!0}}},ba="function"==typeof Object.create?Object.create:function(a){var b=function(){};b.prototype=a;return new b},k;if("function"==typeof Object.setPrototypeOf)k=Object.setPrototypeOf;else{var m;a:{var ca={a:!0},n={};try{n.__proto__=ca;m=n.a;break a}catch(a){}m=!1}k=m?function(a,b){a.__proto__=b;if(a.__proto__!==b)throw new TypeError(a+" is not extensible");return a}:null}
-var p=k,q=function(a,b){a.prototype=ba(b.prototype);a.prototype.constructor=a;if(p)p(a,b);else for(var c in b)if("prototype"!=c)if(Object.defineProperties){var d=Object.getOwnPropertyDescriptor(b,c);d&&Object.defineProperty(a,c,d)}else a[c]=b[c];a.v=b.prototype},r=this||self,da=function(){},t=function(a){return a};var u;var w=function(a,b){this.g=b===v?a:""};w.prototype.toString=function(){return this.g+""};var v={},x=function(a){if(void 0===u){var b=null;var c=r.trustedTypes;if(c&&c.createPolicy){try{b=c.createPolicy("goog#html",{createHTML:t,createScript:t,createScriptURL:t})}catch(d){r.console&&r.console.error(d.message)}u=b}else u=b}a=(b=u)?b.createScriptURL(a):a;return new w(a,v)};var A=function(){return Math.floor(2147483648*Math.random()).toString(36)+Math.abs(Math.floor(2147483648*Math.random())^Date.now()).toString(36)};var B={},C=null;var D="function"===typeof Uint8Array;function E(a,b,c){return"object"===typeof a?D&&!Array.isArray(a)&&a instanceof Uint8Array?c(a):F(a,b,c):b(a)}function F(a,b,c){if(Array.isArray(a)){for(var d=Array(a.length),e=0;e<a.length;e++){var f=a[e];null!=f&&(d[e]=E(f,b,c))}Array.isArray(a)&&a.s&&G(d);return d}d={};for(e in a)Object.prototype.hasOwnProperty.call(a,e)&&(f=a[e],null!=f&&(d[e]=E(f,b,c)));return d}
-function ea(a){return F(a,function(b){return"number"===typeof b?isFinite(b)?b:String(b):b},function(b){var c;void 0===c&&(c=0);if(!C){C={};for(var d="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".split(""),e=["+/=","+/","-_=","-_.","-_"],f=0;5>f;f++){var h=d.concat(e[f].split(""));B[f]=h;for(var g=0;g<h.length;g++){var l=h[g];void 0===C[l]&&(C[l]=g)}}}c=B[c];d=Array(Math.floor(b.length/3));e=c[64]||"";for(f=h=0;h<b.length-2;h+=3){var y=b[h],z=b[h+1];l=b[h+2];g=c[y>>2];y=c[(y&3)<<
-4|z>>4];z=c[(z&15)<<2|l>>6];l=c[l&63];d[f++]=""+g+y+z+l}g=0;l=e;switch(b.length-h){case 2:g=b[h+1],l=c[(g&15)<<2]||e;case 1:b=b[h],d[f]=""+c[b>>2]+c[(b&3)<<4|g>>4]+l+e}return d.join("")})}var fa={s:{value:!0,configurable:!0}},G=function(a){Array.isArray(a)&&!Object.isFrozen(a)&&Object.defineProperties(a,fa);return a};var H;var J=function(a,b,c){var d=H;H=null;a||(a=d);d=this.constructor.u;a||(a=d?[d]:[]);this.j=d?0:-1;this.h=null;this.g=a;a:{d=this.g.length;a=d-1;if(d&&(d=this.g[a],!(null===d||"object"!=typeof d||Array.isArray(d)||D&&d instanceof Uint8Array))){this.l=a-this.j;this.i=d;break a}void 0!==b&&-1<b?(this.l=Math.max(b,a+1-this.j),this.i=null):this.l=Number.MAX_VALUE}if(c)for(b=0;b<c.length;b++)a=c[b],a<this.l?(a+=this.j,(d=this.g[a])?G(d):this.g[a]=I):(d=this.l+this.j,this.g[d]||(this.i=this.g[d]={}),(d=this.i[a])?
-G(d):this.i[a]=I)},I=Object.freeze(G([])),K=function(a,b){if(-1===b)return null;if(b<a.l){b+=a.j;var c=a.g[b];return c!==I?c:a.g[b]=G([])}if(a.i)return c=a.i[b],c!==I?c:a.i[b]=G([])},M=function(a,b){var c=L;if(-1===b)return null;a.h||(a.h={});if(!a.h[b]){var d=K(a,b);d&&(a.h[b]=new c(d))}return a.h[b]};J.prototype.toJSON=function(){var a=N(this,!1);return ea(a)};
-var N=function(a,b){if(a.h)for(var c in a.h)if(Object.prototype.hasOwnProperty.call(a.h,c)){var d=a.h[c];if(Array.isArray(d))for(var e=0;e<d.length;e++)d[e]&&N(d[e],b);else d&&N(d,b)}return a.g},O=function(a,b){H=b=b?JSON.parse(b):null;a=new a(b);H=null;return a};J.prototype.toString=function(){return N(this,!1).toString()};var P=function(a){J.call(this,a)};q(P,J);function ha(a){var b,c=(a.ownerDocument&&a.ownerDocument.defaultView||window).document,d=null===(b=c.querySelector)||void 0===b?void 0:b.call(c,"script[nonce]");(b=d?d.nonce||d.getAttribute("nonce")||"":"")&&a.setAttribute("nonce",b)};var Q=function(a,b){b=String(b);"application/xhtml+xml"===a.contentType&&(b=b.toLowerCase());return a.createElement(b)},R=function(a){this.g=a||r.document||document};R.prototype.appendChild=function(a,b){a.appendChild(b)};var S=function(a,b,c,d,e,f){try{var h=a.g,g=Q(a.g,"SCRIPT");g.async=!0;g.src=b instanceof w&&b.constructor===w?b.g:"type_error:TrustedResourceUrl";ha(g);h.head.appendChild(g);g.addEventListener("load",function(){e();d&&h.head.removeChild(g)});g.addEventListener("error",function(){0<c?S(a,b,c-1,d,e,f):(d&&h.head.removeChild(g),f())})}catch(l){f()}};var ia=r.atob("aHR0cHM6Ly93d3cuZ3N0YXRpYy5jb20vaW1hZ2VzL2ljb25zL21hdGVyaWFsL3N5c3RlbS8xeC93YXJuaW5nX2FtYmVyXzI0ZHAucG5n"),ja=r.atob("WW91IGFyZSBzZWVpbmcgdGhpcyBtZXNzYWdlIGJlY2F1c2UgYWQgb3Igc2NyaXB0IGJsb2NraW5nIHNvZnR3YXJlIGlzIGludGVyZmVyaW5nIHdpdGggdGhpcyBwYWdlLg=="),ka=r.atob("RGlzYWJsZSBhbnkgYWQgb3Igc2NyaXB0IGJsb2NraW5nIHNvZnR3YXJlLCB0aGVuIHJlbG9hZCB0aGlzIHBhZ2Uu"),la=function(a,b,c){this.h=a;this.j=new R(this.h);this.g=null;this.i=[];this.l=!1;this.o=b;this.m=c},V=function(a){if(a.h.body&&!a.l){var b=
-function(){T(a);r.setTimeout(function(){return U(a,3)},50)};S(a.j,a.o,2,!0,function(){r[a.m]||b()},b);a.l=!0}},T=function(a){for(var b=W(1,5),c=0;c<b;c++){var d=X(a);a.h.body.appendChild(d);a.i.push(d)}b=X(a);b.style.bottom="0";b.style.left="0";b.style.position="fixed";b.style.width=W(100,110).toString()+"%";b.style.zIndex=W(2147483544,2147483644).toString();b.style["background-color"]=ma(249,259,242,252,219,229);b.style["box-shadow"]="0 0 12px #888";b.style.color=ma(0,10,0,10,0,10);b.style.display=
-"flex";b.style["justify-content"]="center";b.style["font-family"]="Roboto, Arial";c=X(a);c.style.width=W(80,85).toString()+"%";c.style.maxWidth=W(750,775).toString()+"px";c.style.margin="24px";c.style.display="flex";c.style["align-items"]="flex-start";c.style["justify-content"]="center";d=Q(a.j.g,"IMG");d.className=A();d.src=ia;d.style.height="24px";d.style.width="24px";d.style["padding-right"]="16px";var e=X(a),f=X(a);f.style["font-weight"]="bold";f.textContent=ja;var h=X(a);h.textContent=ka;Y(a,
-e,f);Y(a,e,h);Y(a,c,d);Y(a,c,e);Y(a,b,c);a.g=b;a.h.body.appendChild(a.g);b=W(1,5);for(c=0;c<b;c++)d=X(a),a.h.body.appendChild(d),a.i.push(d)},Y=function(a,b,c){for(var d=W(1,5),e=0;e<d;e++){var f=X(a);b.appendChild(f)}b.appendChild(c);c=W(1,5);for(d=0;d<c;d++)e=X(a),b.appendChild(e)},W=function(a,b){return Math.floor(a+Math.random()*(b-a))},ma=function(a,b,c,d,e,f){return"rgb("+W(Math.max(a,0),Math.min(b,255)).toString()+","+W(Math.max(c,0),Math.min(d,255)).toString()+","+W(Math.max(e,0),Math.min(f,
-255)).toString()+")"},X=function(a){a=Q(a.j.g,"DIV");a.className=A();return a},U=function(a,b){0>=b||null!=a.g&&0!=a.g.offsetHeight&&0!=a.g.offsetWidth||(na(a),T(a),r.setTimeout(function(){return U(a,b-1)},50))},na=function(a){var b=a.i;var c="undefined"!=typeof Symbol&&Symbol.iterator&&b[Symbol.iterator];b=c?c.call(b):{next:aa(b)};for(c=b.next();!c.done;c=b.next())(c=c.value)&&c.parentNode&&c.parentNode.removeChild(c);a.i=[];(b=a.g)&&b.parentNode&&b.parentNode.removeChild(b);a.g=null};var pa=function(a,b,c,d,e){var f=oa(c),h=function(l){l.appendChild(f);r.setTimeout(function(){f?(0!==f.offsetHeight&&0!==f.offsetWidth?b():a(),f.parentNode&&f.parentNode.removeChild(f)):a()},d)},g=function(l){document.body?h(document.body):0<l?r.setTimeout(function(){g(l-1)},e):b()};g(3)},oa=function(a){var b=document.createElement("div");b.className=a;b.style.width="1px";b.style.height="1px";b.style.position="absolute";b.style.left="-10000px";b.style.top="-10000px";b.style.zIndex="-10000";return b};var L=function(a){J.call(this,a)};q(L,J);var qa=function(a){J.call(this,a)};q(qa,J);var ra=function(a,b){this.l=a;this.m=new R(a.document);this.g=b;this.i=K(this.g,1);b=M(this.g,2);this.o=x(K(b,4)||"");this.h=!1;b=M(this.g,13);b=x(K(b,4)||"");this.j=new la(a.document,b,K(this.g,12))};ra.prototype.start=function(){sa(this)};
-var sa=function(a){ta(a);S(a.m,a.o,3,!1,function(){a:{var b=a.i;var c=r.btoa(b);if(c=r[c]){try{var d=O(P,r.atob(c))}catch(e){b=!1;break a}b=b===K(d,1)}else b=!1}b?Z(a,K(a.g,14)):(Z(a,K(a.g,8)),V(a.j))},function(){pa(function(){Z(a,K(a.g,7));V(a.j)},function(){return Z(a,K(a.g,6))},K(a.g,9),K(a.g,10),K(a.g,11))})},Z=function(a,b){a.h||(a.h=!0,a=new a.l.XMLHttpRequest,a.open("GET",b,!0),a.send())},ta=function(a){var b=r.btoa(a.i);a.l[b]&&Z(a,K(a.g,5))};(function(a,b){r[a]=function(c){for(var d=[],e=0;e<arguments.length;++e)d[e-0]=arguments[e];r[a]=da;b.apply(null,d)}})("__h82AlnkH6D91__",function(a){"function"===typeof window.atob&&(new ra(window,O(qa,window.atob(a)))).start()});}).call(this);
-
-window.__h82AlnkH6D91__("WyJwdWItNTIzNjA5NTM4OTkwNTkxMCIsW251bGwsbnVsbCxudWxsLCJodHRwczovL2Z1bmRpbmdjaG9pY2VzbWVzc2FnZXMuZ29vZ2xlLmNvbS9iL3B1Yi01MjM2MDk1Mzg5OTA1OTEwIl0sbnVsbCxudWxsLCJodHRwczovL2Z1bmRpbmdjaG9pY2VzbWVzc2FnZXMuZ29vZ2xlLmNvbS9lbC9BR1NLV3hXMkIzOXR1RTY5UWhDMEhyYnR1cnYtb21abkd4YTNMSGJqMVlhU2dkcmhWaHRqelpWa01JWFVkQkh4VUhhLTVsTEZRamFDWm16ekVCdm9PNTVvTjlYaGFnXHUwMDNkXHUwMDNkP3RlXHUwMDNkVE9LRU5fRVhQT1NFRCIsImh0dHBzOi8vZnVuZGluZ2Nob2ljZXNtZXNzYWdlcy5nb29nbGUuY29tL2VsL0FHU0tXeFhIYkdiblRWd3lqZnBxd1ZwMVI1LXNqUTU1MVFrUkNYN3JGUWg2cFpyQTh6ekZvSW85bVVSRFRVMWJOUlo2ZzZWTHA0SjNwMkNKcTV6YlRRSXNKZnA2WmdcdTAwM2RcdTAwM2Q/YWJcdTAwM2QxXHUwMDI2c2JmXHUwMDNkMSIsImh0dHBzOi8vZnVuZGluZ2Nob2ljZXNtZXNzYWdlcy5nb29nbGUuY29tL2VsL0FHU0tXeFU0aC1ad0FPS0V1RHd5bkpveXdFbENubHEzWG1odTBCV1Q0V0RhWXFTelU0SnhDTmdId3VDRHZBZnFIRWhxRFFwSTRxc3RIblFFNzl0TlFRWXk4dXl0ZmdcdTAwM2RcdTAwM2Q/YWJcdTAwM2QyXHUwMDI2c2JmXHUwMDNkMSIsImh0dHBzOi8vZnVuZGluZ2Nob2ljZXNtZXNzYWdlcy5nb29nbGUuY29tL2VsL0FHU0tXeFdXZC1JSGhGcnBOYUN6X1dKZkhmajItVW9adnVvNlRVRm9nQW44dW1nNFFVQXplbXo2eURFdHFRaE1sbHBYLVN5dklQZEpQSHFrRjdNMFpxcWEybXByREFcdTAwM2RcdTAwM2Q/c2JmXHUwMDNkMiIsImRpdi1ncHQtYWQiLDIwLDEwMCwiY0hWaUxUVXlNell3T1RVek9EazVNRFU1TVRBXHUwMDNkIixbbnVsbCxudWxsLG51bGwsImh0dHBzOi8vd3d3LmdzdGF0aWMuY29tLzBlbW4vZi9wL3B1Yi01MjM2MDk1Mzg5OTA1OTEwLmpzP3VzcXBcdTAwM2RDQWsiXSwiaHR0cHM6Ly9mdW5kaW5nY2hvaWNlc21lc3NhZ2VzLmdvb2dsZS5jb20vZWwvQUdTS1d4VldyblVKRmJuLU9GaHhzQVdvLUM0MjRPUEdGbFhjbXJWNmtiVC0zVy1HTUJSYzhxS2NCV0FpVmlpYm5vb3VJNmxoWVVLTlRaU2VBZU53dkt0Q2NZSm1kd1x1MDAzZFx1MDAzZCJd");</script>
-
+      window.__h82AlnkH6D91__("WyJwdWItNTIzNjA5NTM4OTkwNTkxMCIsW251bGwsbnVsbCxudWxsLCJodHRwczovL2Z1bmRpbmdjaG9pY2VzbWVzc2FnZXMuZ29vZ2xlLmNvbS9iL3B1Yi01MjM2MDk1Mzg5OTA1OTEwIl0sbnVsbCxudWxsLCJodHRwczovL2Z1bmRpbmdjaG9pY2VzbWVzc2FnZXMuZ29vZ2xlLmNvbS9lbC9BR1NLV3hXMkIzOXR1RTY5UWhDMEhyYnR1cnYtb21abkd4YTNMSGJqMVlhU2dkcmhWaHRqelpWa01JWFVkQkh4VUhhLTVsTEZRamFDWm16ekVCdm9PNTVvTjlYaGFnXHUwMDNkXHUwMDNkP3RlXHUwMDNkVE9LRU5fRVhQT1NFRCIsImh0dHBzOi8vZnVuZGluZ2Nob2ljZXNtZXNzYWdlcy5nb29nbGUuY29tL2VsL0FHU0tXeFhIYkdiblRWd3lqZnBxd1ZwMVI1LXNqUTU1MVFrUkNYN3JGUWg2cFpyQTh6ekZvSW85bVVSRFRVMWJOUlo2ZzZWTHA0SjNwMkNKcTV6YlRRSXNKZnA2WmdcdTAwM2RcdTAwM2Q/YWJcdTAwM2QxXHUwMDI2c2JmXHUwMDNkMSIsImh0dHBzOi8vZnVuZGluZ2Nob2ljZXNtZXNzYWdlcy5nb29nbGUuY29tL2VsL0FHU0tXeFU0aC1ad0FPS0V1RHd5bkpveXdFbENubHEzWG1odTBCV1Q0V0RhWXFTelU0SnhDTmdId3VDRHZBZnFIRWhxRFFwSTRxc3RIblFFNzl0TlFRWXk4dXl0ZmdcdTAwM2RcdTAwM2Q/YWJcdTAwM2QyXHUwMDI2c2JmXHUwMDNkMSIsImh0dHBzOi8vZnVuZGluZ2Nob2ljZXNtZXNzYWdlcy5nb29nbGUuY29tL2VsL0FHU0tXeFdXZC1JSGhGcnBOYUN6X1dKZkhmajItVW9adnVvNlRVRm9nQW44dW1nNFFVQXplbXo2eURFdHFRaE1sbHBYLVN5dklQZEpQSHFrRjdNMFpxcWEybXByREFcdTAwM2RcdTAwM2Q/c2JmXHUwMDNkMiIsImRpdi1ncHQtYWQiLDIwLDEwMCwiY0hWaUxUVXlNell3T1RVek9EazVNRFU1TVRBXHUwMDNkIixbbnVsbCxudWxsLG51bGwsImh0dHBzOi8vd3d3LmdzdGF0aWMuY29tLzBlbW4vZi9wL3B1Yi01MjM2MDk1Mzg5OTA1OTEwLmpzP3VzcXBcdTAwM2RDQWsiXSwiaHR0cHM6Ly9mdW5kaW5nY2hvaWNlc21lc3NhZ2VzLmdvb2dsZS5jb20vZWwvQUdTS1d4VldyblVKRmJuLU9GaHhzQVdvLUM0MjRPUEdGbFhjbXJWNmtiVC0zVy1HTUJSYzhxS2NCV0FpVmlpYm5vb3VJNmxoWVVLTlRaU2VBZU53dkt0Q2NZSm1kd1x1MDAzZFx1MDAzZCJd");
+    </script>
     <!-- begin google adsense ad code -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5236095389905910"
-     crossorigin="anonymous"></script>
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5236095389905910"
+      crossorigin="anonymous"
+    >
+    </script>
     <!-- begin google adsense page-level mobile ads -->
 
     <!-- when the rest of the page has loaded, load the social.js-one-script-to-rule-them-all -->
-        <script>
-        (function($) {
-          $(window).bind("load", function() {
-          $.getScript('/assets/js/social.js', function() {});
-          });
-        })(jQuery);
-        </script>
-
-
-
-
-
+    <script>
+      (function($) {
+        $(window).bind("load", function() {
+        $.getScript('/assets/js/social.js', function() {});
+        });
+      })(jQuery);
+    </script>
   </head>
- 
-  <body id="body-element">
 
+  <body id="body-element">
     <!-- header>
       <section class="">
         <nav>
@@ -182,43 +276,26 @@ window.__h82AlnkH6D91__("WyJwdWItNTIzNjA5NTM4OTkwNTkxMCIsW251bGwsbnVsbCxudWxsLCJ
         </nav>
       </section>
     </header -->
-<div class="container" style="padding: 0px;">
-<!-- begin dynamic inner content -->
-
-    <%= @inner_content %>
-
-<!-- end dynamic inner content -->
-
-</div>
-                <script type="text/javascript">
-                  var addthis_config = {
-                    services_compact: 'facebook, reddit, link',
-                    services_exclude: 'twitter',
-                    services_custom:
-                      {name: "mastodon",
-                      url: "https://mastodonshare.com/share?url={{URL}}&title={{TITLE}}",
-                      icon: "/images/mastodon.16x16.png"
-                  }
-                  };
-                  </script>
-               <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-532e2d3068288ec1">
-                </script>
+    <div class="container" style="padding: 0px;">
+      <!-- begin dynamic inner content -->
+      <%= @inner_content %>
+      <!-- end dynamic inner content -->
+    </div>
+    <script type="text/javascript">
+      var addthis_config = {
+        services_compact: 'facebook, reddit, link',
+        services_exclude: 'twitter',
+        services_custom:
+          {name: "mastodon",
+          url: "https://mastodonshare.com/share?url={{URL}}&title={{TITLE}}",
+          icon: "/images/mastodon.16x16.png"
+      }
+      };
+    </script>
+    <script
+      type="text/javascript"
+      src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-532e2d3068288ec1"
+    >
+    </script>
   </body>
-
-    <script>
-<!--
-	var adblock = true;
-//-->
-  </script>
-  <script src={ Routes.static_path(@conn, "/assets/js/ad/adframe.js")} type="text/javascript"></script>
-  <script type="text/javascript">
-    if(adblock) { 
-      document.getElementById("a1").innerHTML = '<center><img src="/images/scrollthing.gif" width="57" height="150" align="center" /><br><a id="everbutton-693-1398040059-85" class="everbutton everbutton-693-1398040059-85 everbutton-blue" href="https://www.everbutton.com/donate/693" style="height:20px;width:49px;min-width:45px;padding:0px;">Tip Jar</a><br><a href="//www.zazzle.com/shakesmonosstuff*" rel="nofollow" target="_blank"><img border="0" width="95" height="20" src="/images/zazzlebutton.png"</a></center>';
-
-      document.getElementById("a2").innerHTML = '<center><img src="/images/scrollthing.gif" width="57" height="150" align="center" /><br><a id="everbutton-693-1398040059-85" class="everbutton everbutton-693-1398040059-85 everbutton-blue" href="https://www.everbutton.com/donate/693" style="height:20px;width:49px;min-width:45px;padding:0px;">Tip Jar</a><br><a href="//www.zazzle.com/shakesmonosstuff*" rel="nofollow" target="_blank"><img border="0" width="95" height="20" src="/images/zazzlebutton.png"></a></center>';
-     }
-
-// https://detect-ad-blocking-software.webconrad.com/
-//-->
-</script>
 </html>
