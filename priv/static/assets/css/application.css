@@ -706,11 +706,11 @@ span.toggle-control>a.toggle-mono>img {
   }  
   
   .dark-mode a {
-    color: #afafaf;
+    color: #F9F9DF;
   }
   
   .dark-mode a:hover {
-    color: #c9c9d2;
+    color:  #79b3ff;
     text-decoration: underline;
   }
 
