@@ -2,17 +2,8 @@
 <html lang="en">
   <head>
     <meta name="csrf-token" content={Plug.CSRFProtection.get_csrf_token()} />
-    <script defer type="text/javascript" src={Routes.static_path(@conn, "/assets/app.js")}>
-    </script>
 
-    <script>
-      // Immediately set dark mode if the user's preference is stored in localStorage
-      (function() {
-        var isDarkMode = localStorage.getItem('darkMode') === 'true';
-        if (isDarkMode) {
-          document.body.classList.add('dark-mode');
-        }
-      })();
+    <script defer type="text/javascript" src={Routes.static_path(@conn, "/assets/app.js")}>
     </script>
 
     <meta charset="utf-8" />
@@ -264,18 +255,12 @@
     </script>
   </head>
 
-  <body id="body-element">
-    <!-- header>
-      <section class="">
-        <nav>
-          <ul>
-            <%= if function_exported?(Routes, :live_dashboard_path, 2) do %>
-              <li><%= link "LiveDashboard", to: Routes.live_dashboard_path(@conn, :home) %> · <%= link "Home", to: Routes.static_path(@conn, "/home") %></li>
-            <% end %>
-          </ul>
-        </nav>
-      </section>
-    </header -->
+  <body id="body-element" class={fetch_dark_mode_class(@conn)}>
+    <div
+      id="dark-mode-overlay"
+      style="display: none; background-color: #222222; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 99999;"
+    >
+    </div>
     <div class="container" style="padding: 0px;">
       <!-- begin dynamic inner content -->
       <%= @inner_content %>

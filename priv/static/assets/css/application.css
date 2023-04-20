@@ -746,40 +746,6 @@ span.toggle-control>a.toggle-mono>img {
     color: #F9F9DF;
   }
 
-  .theme-switch {
-    position: relative;
-    width: 60px;
-    height: 30px;
-    background: #E0E0E0;
-    border-radius: 15px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    padding: 4px;
-    box-sizing: border-box;
-  }
-  
-  .theme-switch .sun-icon,
-  .theme-switch .moon-icon {
-    fill: #333333; /* Black color for the sun and moon */
-    height: 20px;
-    width: 20px;
-    transition: transform 0.5s ease;
-  }
-  
-  .theme-switch.dark-mode {
-    background: #333333; /* Black background for the switch in dark mode */
-  }
-  
-  .theme-switch.dark-mode .sun-icon {
-    transform: scale(0); /* Hide the sun icon in dark mode */
-  }
-  
-  .theme-switch.dark-mode .moon-icon {
-    fill: #FFFFFF; /* White color for the moon in dark mode */
-    transform: scale(1); /* Show the moon icon in dark mode */
-  }
   
   
   
