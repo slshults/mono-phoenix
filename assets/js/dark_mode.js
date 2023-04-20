@@ -1,6 +1,16 @@
+// Function to read the value of a cookie by its name
+function getCookie(name) {
+  const value = '; ' + document.cookie;
+  const parts = value.split('; ' + name + '=');
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
+}
+
 // Function to set dark mode based on the user's preference
 function setDarkModePreference(isDarkMode) {
   localStorage.setItem('darkMode', isDarkMode ? 'true' : 'false');
+  // Set a cookie for the dark mode preference
+  document.cookie = 'darkModePreference=' + (isDarkMode ? 'true' : 'false') + ';path=/';
   var bodyElement = document.body; // Use 'document.body' instead of 'getElementById'
   var lightModeToggle = document.getElementById('light-mode-toggle');
   var darkModeToggle = document.getElementById('dark-mode-toggle');
@@ -32,3 +42,10 @@ if (darkModeIcon) {
 // Set the initial dark mode preference based on localStorage
 var initialDarkMode = localStorage.getItem('darkMode') === 'true';
 setDarkModePreference(initialDarkMode);
+
+window.getCookie = function(name) {
+  const value = '; ' + document.cookie;
+  const parts = value.split('; ' + name + '=');
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
+};
