@@ -41,8 +41,19 @@
     <!-- left column menu -->
     <a href="/mens">Men</a>&nbsp; · <a href="/womens">Women</a>&nbsp; · <a href="/plays">All</a>
     <br />
-    <a href="/home">Home</a>&nbsp; · <a href="/faq">Help</a>&nbsp; ·
-    <span class="link-menu-left accent-font" style="font-size: 14px">
+    <div align="center">
+      <a href="/home">Home</a>&nbsp; · <a href="/faq">Help</a>&nbsp; ·
+      <div style="display: inline; height:0px;width:0px;min-width:0px;padding:0px;accent-font;">
+        <a
+          class="a2a_dd"
+          href="https://www.addtoany.com/share"
+          style="display: inline; height:0px;width:0px;min-width:0px;padding:0px;accent-font;"
+        >
+          Share
+        </a>
+      </div>
+    </div>
+    <div class="link-menu-left accent-font" style="font-size: 14px">
       <a
         id="everbutton-693-1398040059-85"
         class="everbutton-693-1398040059-85"
@@ -51,10 +62,10 @@
       >
         Tip Jar
       </a>
-    </span>
+    </div>
   </div>
   <!-- left_column_ads -->
-  <br /><br />
+  <br />
 </div>
 <!-- end left column -->
 
@@ -72,8 +83,29 @@
       >Mastodon</a>&nbsp; ·
       <a href="https://www.facebook.com/ShakespearesMonologues" target="_blank">FB</a>
       <br />
-      <a href="/home">Home</a>&nbsp; · <a href="/faq">FAQ &nbsp;</a>&nbsp; · <a href="/aboutus">About</a>&nbsp; · <a href="/privacy">Privacy</a>&nbsp; ·
-      <a href="http://shults.org/shakes/contact.php">Contact</a>
+      <a href="/home">Home</a>&nbsp; · <a href="/faq">FAQ &nbsp;</a>&nbsp; · <a href="/aboutus">About</a>&nbsp; · <a href="/privacy">Privacy</a>&nbsp; · <a href="http://shults.org/shakes/contact.php">Contact</a>&nbsp; ·
+      <div style="display: inline; height:0px;width:0px;min-width:0px;padding:0px;accent-font;">
+        <a
+          class="a2a_dd"
+          href="https://www.addtoany.com/share"
+          style="display: inline; height:0px;width:0px;min-width:0px;padding:0px;accent-font;"
+        >
+          Share
+        </a>
+      </div>
+      <!-- Everbutton Tip Jar Button BEGIN -->
+      <div class="tip_jar">
+        <!-- begin donation button -->
+        <a
+          id="everbutton-693-1398040059-85"
+          class="everbutton everbutton-693-1398040059-85 everbutton-blue"
+          href="https://www.everbutton.com/donate/693"
+          style="height:20px;width:49px;min-width:45px;padding:0px;"
+        >
+          Tip Jar
+        </a>
+        <!-- end donation button -->
+      </div>
     </div>
 
     <hr size="1" width="75" noshade />
@@ -110,7 +142,7 @@
             <!-- /Creative Commons License -->
                   &copy; 1997
             <script>
-              new Date().getFullYear()>2010&&document.write("-"+new Date().getFullYear());
+              new Date().getFullYear()>2020&&document.write("-"+new Date().getFullYear());
             </script>
             Steven Shults &amp; Brandon Faloona
             <br />Contact linked sites regarding their copyrights.
@@ -126,21 +158,60 @@
                 <!-- begin right column -->
 <div
   class="right-column col-md-2 col-xs-12"
-  style="display: inline; text-align: center; margin: 0 auto; padding-left: 20px; padding-right: 5px; padding-top: 70px;"
+  style="display: inline; text-align: center; margin: 0 auto; padding-left: 10px; padding-right: 5px; padding-top: 70px;"
 >
   <!-- /.link-menu-right -->
-        
+  <!-- begin AddToAny share button -->
+  <style type="text/css">
+    .my_centered_addtoany { display: flex; justify-content: center; }
+  </style>
+  <center>
+    <div
+      class="a2a_kit a2a_kit_size_32"
+      style="display: block; text-align: center; margin: 0 auto; padding-right: 0; padding-top: 8px; padding-bottom: 4px;"
+      id="my_centered_addtoany"
+    >
+      <a class="a2a_dd" href="https://www.addtoany.com/share">
+        <img
+          src={Routes.static_path(@socket, "/images/addToAny-share.png")}
+          border="0"
+          alt="Share"
+          title="Share"
+          width="20"
+          height="20"
+          style="background-color: #F9F9DF; border-radius: 2px;"
+        />
+      </a>
+    </div>
+  </center>
+  <script>
+    var a2a_config = a2a_config || {};
+    a2a_config.icon_color = "#F9F9DF,#222222";
+    a2a_config.onclick = false;
+    a2a_config.delay = 300;
+    a2a_config.prioritize = [ 'facebook', 'mastodon', 'reddit', 'linkedin', 'copy_link', 'print', 'sms', 'email', 'google_gmail', 'facebook_messenger', 'pocket', 'evernote', 'google_classroom', 'wordpress', 'wechat', 'tumblr', 'microsoft_teams', 'livejournal', 'twitter', ];
+    a2a_config.exclude_services = [ 'telegram', 'amazon_wish_list', 'whatsapp', 'mail_ru', 'diary_ru',];
+    a2a_config.thanks = {
+    postShare: false,
+    ad: false,
+                        };
+  </script>
+  <script async src="https://static.addtoany.com/menu/page.js">
+  </script>
+  <!-- End AddToAny share button -->
               <!-- begin tip jar button -->
-  <a
-    id="everbutton-693-1398040059-85"
-    class="everbutton everbutton-693-1398040059-85 everbutton-blue"
-    href="https://www.everbutton.com/donate/693"
-    style="height:20px;width:49px;min-width:45px;padding:0px;"
-  >
-    Tip Jar
-  </a>
+  <div style="display: block; text-align: center; margin: 0 auto; padding-right: 0; padding-top: 4px; padding-bottom: 8px">
+    <a
+      id="everbutton-693-1398040059-85"
+      class="everbutton everbutton-693-1398040059-85 everbutton-blue"
+      href="https://www.everbutton.com/donate/693"
+      style="height:20px;width:49px;min-width:45px;padding:0px;"
+    >
+      Tip Jar
+    </a>
+  </div>
   <!-- end tip jar button -->
-  <br /><br />
+  
   <!-- Zazzle Button BEGIN -->
   <a href="https://www.zazzle.com/shakesmonosstuff*" rel="nofollow" target="_blank">
     <img
@@ -152,40 +223,7 @@
     />
   </a>
   <!-- Zazzle Button END -->
-  <br />
-  <div id="fb-root"></div>
-  <div
-    class="fb-like"
-    data-action="like"
-    data-href="//www.shakespeare-monologues.org/"
-    data-layout="button_count"
-    data-share="false"
-    data-show-faces="true"
-    style="padding-top: 10px;"
-  >
-  </div>
-  <div
-    class="addthis_inline_share_toolbox"
-    style="display: inline; text-align: center; margin: 0 auto; padding-right: 0;"
-  >
-  </div>
-  <!-- AddThis Button END -->
-  <br /><br />
   <div style="display: inline; text-align: center; margin: 0 auto; padding-right: 0;">
-    <span class="small">
-      <font face="verdana" size="-1">
-        <a rel="me" href="https://mastodon.social/@shakesmonos" target="_blank">
-          <img
-            src="/images/mastodon16x16.png"
-            alt="Mastodon"
-            title="Mastodon"
-            width="16"
-            height="16"
-            border="0"
-          />
-        </a>
-      </font>
-    </span>
     <hr style="width:75px;  noshade;" />
   </div>
   <!-- begin rightcol google graphic ad -->

@@ -60,9 +60,7 @@
     <script type="text/javascript">
       jQuery.noConflict()
     </script>
-    <!-- addThis -->
-
-  <!-- Mobile OS add to homescreen and web app goodies -->
+    <!-- Mobile OS add to homescreen and web app goodies -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="mobile-web-app-capable" content="yes" />
     <link
@@ -261,26 +259,11 @@
       style="display: none; background-color: #222222; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 99999;"
     >
     </div>
+
     <div class="container" style="padding: 0px;">
       <!-- begin dynamic inner content -->
       <%= @inner_content %>
       <!-- end dynamic inner content -->
     </div>
-    <script type="text/javascript">
-      var addthis_config = {
-        services_compact: 'facebook, reddit, link',
-        services_exclude: 'twitter',
-        services_custom:
-          {name: "mastodon",
-          url: "https://mastodonshare.com/share?url={{URL}}&title={{TITLE}}",
-          icon: "/images/mastodon.16x16.png"
-      }
-      };
-    </script>
-    <script
-      type="text/javascript"
-      src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-532e2d3068288ec1"
-    >
-    </script>
   </body>
 </html>
