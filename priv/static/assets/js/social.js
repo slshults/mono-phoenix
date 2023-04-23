@@ -1,4 +1,4 @@
-
+/* used to have several scripts here, hence the name, but now it's just the everbutton script, not bothering with renaming it because I don't wanna. So there, future self. 😜 */
 /* begin everbutton script */
 var EB = EB || {};
 EB.button_stack = EB.button_stack || [];
@@ -26,31 +26,3 @@ s.parentNode.insertBefore(EB.script, s);
 EB.load_buttons();
 }
 /* end everbutton script */
-
-
-/* begin AddThis button script */
-
-var addthis_share = {
-      url_transforms : {
-          shorten: {
-               twitter: 'bitly',
-               facebook: 'bitly'
-          }
-     },
-     shorteners : {
-          bitly : {}
-     }
-}
-
-/* end AddThis button script */
-
-
-/* Begin FB Like button script */
-(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&appId=38794938300&version=v2.0";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));
-/* End FB Like button script */
