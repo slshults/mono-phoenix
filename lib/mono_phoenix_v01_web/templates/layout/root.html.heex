@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- begin Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQSJ2NECLQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-ZQSJ2NECLQ');
+</script>
+    <!-- end Google tag (gtag.js) -->
     <meta name="csrf-token" content={Plug.CSRFProtection.get_csrf_token()} />
 
     <script defer type="text/javascript" src={Routes.static_path(@conn, "/assets/app.js")}>
