@@ -46,14 +46,16 @@ defmodule MonoPhoenixV01Web.SearchwomenBarLive do
   ## render the search form
   defp render_search_form(assigns) do
     ~L"""
-    <div class="accent-font monologue-list" style="background-color: #F9F9DF;">
-      <%= form_for :search, "#", [phx_submit: "search", phx_change: "search", phx_page_loading: :prevent], fn f -> %>
+    <div class="search-box-dark search-box-default accent-font monologue-list" >
+      <%= form_for :search, "#", [phx_submit: "search", phx_change: "search",
+      class: "search-box-dark search-box-default",
+      phx_page_loading: :prevent], fn f -> %>
         <%= label f, :query, "" %>
 
         <%= text_input f, :query,
           value: Map.get(assigns, :query, ""),
           placeholder: "Search for monologues...",
-          class: "input-group accent-font form-control monologue-list",
+          class: "search-box-dark search-box-default input-group accent-font form-control monologue-list",
           phx_input: "search_input",
           phx_debounce: "240"
           %>
@@ -65,33 +67,15 @@ defmodule MonoPhoenixV01Web.SearchwomenBarLive do
   ## render the search results
   def render_searchwomen_bar(assigns) do
     ~L"""
-    <div class="center-this monologue-list">
-    <!-- hidden until I figure out how to make it display only with search results <h3>Search results</h3>
-    <span font-size: 10px;>
-    Click on the 1st line, under the character's name, to see the full monologue. &nbsp;<a
-      href="#"
-      data-toggle="collapse"
-      data-target=".multi-collapse"
-      id="toggle-button"
-    >
-    <img
-        src="/images/ExpandAll.png"
-        id="toggle-image"
-        alt="Click to toggle text of all monologues on the page.
-    Reload the page to reset the toggle"
-        title="Click to toggle the text of all monologues on the page.
-    Reload the page to reset the toggle."
-      />
-    </a>
-    </span> -->
-      <table class="monologue-list">
+    <div class="search-box-dark search-box-default center-this monologue-list">
+      <table class="search-box-dark search-box-default monologue-list">
         <tbody>
         <%= if !is_nil(@search_results) do %>
         <%= if length(@search_results) > 0 do %>
           <!-- begin results heading, text, and body toggle -->
-          <h3>Search results</h3>
+          <h3>Search results from all the plays...</h3>
           <span style="font-size:11px">
-          Click on the 1st line, under the character's name, to see the full monologue. <a
+          Click on the 1st line, under the character's name, to see the full monologue.<br/><a
             href="#"
             data-toggle="collapse"
             data-target=".multi-collapse"
@@ -99,9 +83,10 @@ defmodule MonoPhoenixV01Web.SearchwomenBarLive do
           ><img
               src="/images/ExpandAll.png"
               id="toggle-image"
-              alt="Click to toggle text of all monologues on the page.
+              style="background-color: #F9F9DF; border-radius: 5px;"
+              alt="👆 Click to toggle text of all monologues on the page.
           Reload the page to reset the toggle"
-              title="Click to toggle the text of all monologues on the page.
+              title="👆 Click to toggle the text of all monologues on the page.
           Reload the page to reset the toggle."
             /></a>
           </span>
@@ -111,13 +96,21 @@ defmodule MonoPhoenixV01Web.SearchwomenBarLive do
 
             <tr class="monologue_list">
               <td class="<%= if rem(index, 2) == 0, do: 'even', else: 'odd' %>">
-                <span class="monologue-playname"><%= row.play %></span>&nbsp; &middot; <span class="monologue-actscene"><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; &middot;
+                <span class="monologue-playname" alt="👆 Click to view all the women's monologues from this play"
+                title="👆 Click to view all the women's monologues from this play"><%= link to: "/women/#{row.play_id}", method: :get do %><%= row.play %><% end %></span>&nbsp; &middot; <span class="monologue-actscene" alt="👆 Click here to read the whole scene.
+                This link jumps you to the monologue,
+                scroll up to read from the top of the scene."
+                                title="👆 Click here to read the whole scene.
+          This link jumps you to the monologue,
+          scroll up to read from the top of the scene."><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; &middot;
                 <span class="monologue-actscene"><%= row.style %></span>
                 <br />
-                <span class="monologue-character"><%= row.character %></span>
+                <span class="monologue-character" alt="This is the name of the character who speaks this monologue." title="This is the name of the character who speaks this monologue."><%= row.character %></span>
                 <br />
                 <div
                 class="monologue-firstline-table"
+                alt="👆 Click to hide or display the full monologue"
+                title="👆 Click to hide or display the full monologue"
                 data-toggle="collapse"
                 data-target="#collapse-<%= Integer.to_string(index) %>"
                 >

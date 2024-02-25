@@ -39,18 +39,25 @@ pre {
   min-height: 100%;
   width: 100%;
   padding: 0px;
+  margin-left: 0px;
+  padding-left: 2px;
 }  
 body {
-  margin-top: 20px; 
+  margin-top: 20px;
+  background-color: #F9F9DF;
+  background-image: url("/images/parchment.jpg"); 
+  margin-left: 0px;
+  padding-left: 2px;
 }
 @media screen and (max-width:980px) {
    body {
-    background-color: #F9F9DF;
     background-image: none;
     margin-bottom: 20px;
     font-family: Georgia, "Times New Roman", Times, serif;
     font-size: 13px;
     line-height: 13px;
+    margin-left: 0px;
+    padding-left: 2px;
   }
 }
 
@@ -65,6 +72,7 @@ body .accent-font {
   position: relative;
   width: 100%;
   padding: 0px;
+  margin-left: 2px;
 }
 
 
@@ -167,7 +175,7 @@ input#search-box {
   font-size: 150%;
   vertical-align: top;
   left: 9px;
-  width: 334px;
+  width: 95%;
   /* margin-left: -10px; */
   /* border-top-right-radius: 5px; */
   /* border-bottom-right-radius: 5px; */
@@ -197,7 +205,7 @@ div.search-links {
   .center-column.col-md-8.col-xs-12 {
     margin: 2px;
     padding-bottom: 100px;
-    padding-left: 20px;
+    padding-left: 10px;
 }
   .right-column.col-md-2.col-xs-12 {
     top: 10;
@@ -323,13 +331,6 @@ table.monologue-list td {
   padding: 6px;
 }
 
-tr.odd {
-  background-color: #F9F9D1;
-}
-
-tr.even {
-  background-color: #F9F9DF;
-}
 
 h1.monologue-firstline-heading {
   font-size: 200%;
@@ -494,13 +495,6 @@ input.googlesearch {
   list-style: square;
 }
 
-#odd-row {
-  background-color: #F9F9DF;
-}
-
-#even-row {
-  background-color: #F9F9D1;
-}
 
 a.tip-jar {
   background: #3498db;
@@ -541,6 +535,8 @@ th.th-pad-right {
   border-color: unset;
   -webkit-box-shadow: none;
   box-shadow: none;
+  box-sizing: border-box;
+  width: 95%;
   outline: -webkit-focus-ring-color auto 0px;
 }
 

@@ -6,11 +6,12 @@
     <h3>Monologues from</h3>
     <h2>&nbsp; &nbsp; &nbsp;<%= hd(@rows).play %></h2>
     <!-- Enter The Search Box -->
-    <div class="input-group accent-font">
+    <div class="search-box-dark search-box-default input-group accent-font">
       <%= live_render(
         @socket,
         MonoPhoenixV01Web.SearchBarLive,
-        id: "searchbar"
+        id: "searchbar",
+        class: "search-box-dark search-box-default"
       ) %>
     </div>
     <!-- Exeunt The Search Box -->
