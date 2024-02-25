@@ -22,8 +22,18 @@ config :mono_phoenix_v01, MonoPhoenixV01.Repo,
 config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
   url: [
     scheme: "https",
-    host: "mono-phoenix-staging.herokuapp.com",
-    port: 443
+    host: "experimental-narwhal-d8n46nst3i1yfpjw0f94xg25.herokudns.com",
+    port: 443,
+    check_origin: [
+      "https://www.shakespeare-monologues.org",
+      "//www.shakespeare-monologues.org",
+      "www.shakespeare-monologues.org",
+      "//shakespeare-monologues.org",
+      "//experimental-narwhal-d8n46nst3i1yfpjw0f94xg25.herokudns.com",
+      "//mono-phoenix.herokuapp.com",
+      "https://mono-phoenix.herokuapp.com",
+      "https://experimental-narwhal-d8n46nst3i1yfpjw0f94xg25.herokudns.com"
+    ]
   ],
   force_ssl: [rewrite_on: [:x_forwarded_proto]]
 

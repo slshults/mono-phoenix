@@ -19,7 +19,6 @@ defmodule MonoPhoenixV01Web.Router do
   scope "/", MonoPhoenixV01Web do
     pipe_through(:browser)
 
-    get("/", StaticPageController, :home)
     live("/plays", PlaysPageLive)
     live("/play/:playid", PlayPageLive)
     live("/mens", MenplaysPageLive, :mens)
@@ -44,6 +43,7 @@ defmodule MonoPhoenixV01Web.Router do
   ## redirects for deep links from other sites. Will not work inside a scope.
   # redirect from /men/plays/123 to /men/123
   # redirect from /men/plays/123 to /men/123
+  redirect("/", "/home", :permanent, preserve_query_string: true)
   redirect("/men", "/mens", :permanent, preserve_query_string: true)
   redirect("/women", "/womens", :permanent, preserve_query_string: true)
   redirect("/men/plays/13", "/men/13", :permanent, preserve_query_string: true)
