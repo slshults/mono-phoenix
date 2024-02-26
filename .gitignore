@@ -32,6 +32,11 @@ npm-debug.log
 # Visual Studio Code Elixir LS build artifacts
 .elixir_ls/
 
+# Secrets, creds, n such
+config/prod.secret.txt
+config/test.exs
+config/.env
+
 # my misc backup habits
 *.bak
 *.2023*
