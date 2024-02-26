@@ -33,9 +33,10 @@ npm-debug.log
 .elixir_ls/
 
 # Secrets, creds, n such
-config/prod.secret.txt
-config/test.exs
-config/.env
+/config/prod.secret.txt
+/config/dev.exs
+/config/test.exs
+/config/.env
 
 # my misc backup habits
 *.bak
