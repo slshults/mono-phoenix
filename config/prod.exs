@@ -13,7 +13,7 @@ import Config
 # Configure your database
 config :mono_phoenix_v01, MonoPhoenixV01.Repo,
   username: System.get_env("DATABASE_USERNAME"),
-  password: "System.get_env("DATABASE_PASSWORD"),
+  password: System.get_env("DATABASE_PASSWORD"),
   hostname: "ec2-44-196-223-128.compute-1.amazonaws.com",
   database: "d6d0qn3kc71hi0",
   port: 5432,
