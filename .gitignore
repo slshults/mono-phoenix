@@ -20,7 +20,7 @@ erl_crash.dump
 /priv/static/assets/py
 
 # Don't upload the test dir
-/priv/static/assets/test
+/test
 
 # Also ignore archive artifacts (built via "mix archive.build").
 *.ez
