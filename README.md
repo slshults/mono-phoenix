@@ -3,7 +3,7 @@
 #### This is the repo for the code of the current version of the [Shakespeare's Monologues website](https://www.shakespeare-monologues.org/).
 
 The code for the site is licensed under a [Creative Commons License](https://creativecommons.org/licenses/by-nc-sa/4.0/).
-© 1997-2024 Steven Shults & Brandon Faloona
+© 1997-2024 Steven Shults & Brandon Faloona.
 The content of Shakespeare's plays is in the public domain.
 
 ---
@@ -14,14 +14,14 @@ If you need to set up a new local environment for contributing to this site (or 
 
 Do this stuff, in this order:
 
-* **Use asdf** to install and maintain versions for elixir and erlang. 
+* **Use `asdf`** to install and maintain versions for elixir and erlang. 
 	(Helps solve the version-pairing special needs, see:  https://hexdocs.pm/elixir/compatibility-and-deprecations.html#compatibility-between-elixir-and-erlang-otp )
 
-1. Install asdf (dependencies, install commands for your machine, etc): https://asdf-vm.com/guide/getting-started.html
+1. Install `asdf` (dependencies, install commands for your machine, etc): https://asdf-vm.com/guide/getting-started.html
 
-	* Use asdf to install erlang  : https://github.com/asdf-vm/asdf-erlang
+	* Use `asdf` to install `erlang`  : https://github.com/asdf-vm/asdf-erlang
 
-	* Use asdf to install elixir  :  https://github.com/asdf-vm/asdf-elixir 
+	* Use `asdf` to install `elixir`  :  https://github.com/asdf-vm/asdf-elixir 
 	
 	You'll want to start with the install instructions on the git hub pages of course, but in case there are bumps on that route, this was a good resource for me: https://www.coletiv.com/blog/how-to-correctly-install-erlang-and-elixir/ 
 
@@ -29,13 +29,13 @@ Do this stuff, in this order:
 
 2. Your goal for this next step is to install `Erlang/OTP 24.3.4.7`, then `Elixir 1.12.2` compiled with `Erlang/OTP 24`.
 
-	(I didn't make a note of the asdf command I installed with, but I think recall it involved using a commit id, or maybe a git-url)
+	(I didn't make a note of the `asdf` command I installed with, but I think recall it involved using a commit id, or maybe a git-url)
 
 	* `Erlang/OTP 24.3.4.7`: https://github.com/erlang/otp/releases/tag/OTP-24.3.4.7
 
 	* `Elixir 1.12.2` : https://github.com/elixir-lang/elixir/releases/tag/v1.12.2
 
-3. Install Phoenix
+3. Install `Phoenix`
 		https://hexdocs.pm/phoenix/installation.html
 
 4. Create an empty site with these instructions at the link below. Instead of the example site name `hello`, use: `mono_phoenix_v01` (or your own project name if you are getting set up to borrow code, rather than contribute): https://hexdocs.pm/phoenix/up_and_running.html
