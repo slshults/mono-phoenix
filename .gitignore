@@ -16,6 +16,12 @@
 # If the VM crashes, it generates a dump, let's ignore it too.
 erl_crash.dump
 
+# Don't upload the py dir until the API key has been made a secret
+/priv/static/assets/py
+
+# Don't upload the test dir
+/test
+
 # Also ignore archive artifacts (built via "mix archive.build").
 *.ez
 
