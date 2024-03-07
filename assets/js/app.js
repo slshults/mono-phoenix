@@ -36,6 +36,25 @@ import topbar from "../vendor/topbar"
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}})
 
+// Capture searches for PostHog custom event
+let searchTimeout;
+
+// Attach event listener to the search input for PostHog custom event
+document.addEventListener('input', function (event) {
+  if (event.target.matches('.search-box-default')) {
+    const searchQuery = event.target.value;
+    
+    // Clear the previous timeout
+    clearTimeout(searchTimeout);
+    
+    // Set a new timeout to capture the event after 5 seconds of inactivity
+    searchTimeout = setTimeout(function() {
+      posthog.capture('used_search', { query: searchQuery });
+    }, 5000);
+  }
+}, false);
+
+
 // Show progress bar on live navigation and form submits, if still loading after 500ms
 topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
 let topBarScheduled = undefined
