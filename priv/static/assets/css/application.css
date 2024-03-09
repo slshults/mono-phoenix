@@ -652,6 +652,9 @@ span.toggle-control>a.toggle-mono>img {
     margin-bottom: 10px; /* Adjust the value as needed */
   }
   
+.survey-h1 {
+    margin: auto; /* special element for triggering PostHog surveys*/
+}
 
 .glyphicon-refresh.searching {
     /*display: none;*/

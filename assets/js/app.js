@@ -54,6 +54,17 @@ document.addEventListener('input', function (event) {
   }
 }, false);
 
+// Trigger for PostHog surveys:
+
+document.addEventListener('DOMContentLoaded', function () {
+  setTimeout(function () {
+    const surveyH1 = document.querySelector('.survey-h1');
+    if (surveyH1) {
+      surveyH1.classList.add('delayed-survey');
+    }
+  }, 120000); // 2 minutes
+});
+
 
 // Show progress bar on live navigation and form submits, if still loading after 500ms
 topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
