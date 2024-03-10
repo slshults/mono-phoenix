@@ -388,7 +388,6 @@ h1.monologue-firstline-heading::first-letter {
     font-family: 'IM Fell DW Pica', serif;
 }
 
-
 /*
     Monologues show view modifies above classes
 */
@@ -434,6 +433,9 @@ h1.monologue-firstline-heading::first-letter {
     width: 32px;
 }
 
+.monologue-pdflink {
+    text-decoration: none;
+}
 
 
 /*

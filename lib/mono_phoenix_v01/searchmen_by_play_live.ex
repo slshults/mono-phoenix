@@ -132,6 +132,7 @@ defmodule MonoPhoenixV01Web.SearchmenByPlayLive do
                   src="<%= Routes.static_path(@socket, "/images/pdf_file_icon_16x16.png") %>"
                   alt="Click for a double-spaced PDF of this monologue"
                   title="Click for a double-spaced PDF of this monologue"
+                  class="monologue-pdflink"
                 />
                   <% end %>
                 </div>
