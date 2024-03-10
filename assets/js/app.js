@@ -61,6 +61,13 @@ document.addEventListener('click', function (event) {
   }
 }, false);
 
+// Attach event listener to the TipJar buttons for PostHog custom event
+document.addEventListener('click', function (event) {
+  if (event.target.matches('.tip_jar')) {
+    posthog.capture('clicked_tipjar');
+  }
+}, false);
+
 // Trigger for PostHog surveys:
 
 document.addEventListener('DOMContentLoaded', function () {
