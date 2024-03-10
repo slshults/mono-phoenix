@@ -27,9 +27,7 @@ Do this stuff, in this order:
 
 	(If you get stuck, https://elixirforum.com are your friends.)
 
-2. Your goal for this next step is to install `Erlang/OTP 24.3.4.7`, then `Elixir 1.12.2` compiled with `Erlang/OTP 24`.
-
-	(I didn't make a note of the `asdf` command I installed with, but I think recall it involved using a commit id, or maybe a git-url)
+2. Your goal for this next step is to use `asdf` to install `Erlang/OTP 24.3.4.7`, then `Elixir 1.12.2` compiled with `Erlang/OTP 24`.
 
 	* `Erlang/OTP 24.3.4.7`: https://github.com/erlang/otp/releases/tag/OTP-24.3.4.7
 
@@ -38,7 +36,7 @@ Do this stuff, in this order:
 3. Install `Phoenix`
 		https://hexdocs.pm/phoenix/installation.html
 
-4. Create an empty site with these instructions at the link below. Instead of the example site name `hello`, use: `mono_phoenix_v01` (or your own project name if you are getting set up to borrow code, rather than contribute): https://hexdocs.pm/phoenix/up_and_running.html
+4. Create an empty site with these instructions at the link below. Instead of the example site name `hello`, use: `mono_phoenix_v01` (or `your_project_name` if you are getting set up to borrow code instead of work on mono-phoenix.): https://hexdocs.pm/phoenix/up_and_running.html
 
 You'll be ready to grab the repo now, but this page is a good quick orientation for how the data flows. If you are accustomed to Ruby, a lot of this will seem familiar, yet easier: https://hexdocs.pm/phoenix/request_lifecycle.html
 
