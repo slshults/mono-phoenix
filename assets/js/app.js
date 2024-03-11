@@ -57,7 +57,13 @@ document.addEventListener('input', function (event) {
 // Attach event listener to the PDF links for PostHog custom event
 document.addEventListener('click', function (event) {
   if (event.target.matches('.monologue-pdflink')) {
-    posthog.capture('clicked_pdflink');
+    const linkElement = event.target.closest('a');
+    if (linkElement) {
+      const clicked_3rdPartyUrl = linkElement.getAttribute('href');
+      posthog.capture('clicked_3rdPartyUrl', {
+        url: clicked_3rdPartyUrl
+      });
+    }
   }
 }, false);
 
