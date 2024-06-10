@@ -4,10 +4,9 @@ import "../css/app.css"
 // Import the dark mode toggle script
 import "./dark_mode"
 
-// Adding PostHog js library goodies
-import posthog from "posthog-js"
-
-posthog.init('phc_Byagoba6TS6UBZ4AAMOSY5NZpbaEUJltMKH9CsZkv4l', { api_host: 'https://app.posthog.com' })
+// commented out posthog-js for now, relying on the self-updating PostHog snippet in lib/mono_phoenix_v01_web/templates/layout/root.html.heex
+// import posthog from "posthog-js"
+// posthog.init('phc_Byagoba6TS6UBZ4AAMOSY5NZpbaEUJltMKH9CsZkv4l', { api_host: 'https://app.posthog.com' })
 
 // If you want to use Phoenix channels, run `mix help phx.gen.channel`
 // to get started and then uncomment the line below.
