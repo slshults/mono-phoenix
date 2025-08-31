@@ -12,28 +12,20 @@ import Config
 
 # Configure your database
 config :mono_phoenix_v01, MonoPhoenixV01.Repo,
-  username: System.get_env("DATABASE_USERNAME"),
-  password: System.get_env("DATABASE_PASSWORD"),
-  hostname: "ec2-44-196-223-128.compute-1.amazonaws.com",
-  database: "d6d0qn3kc71hi0",
-  port: 5432,
-  pool_size: 18
+  url: System.get_env("DATABASE_URL"),
+  pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
 
 config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
   url: [
     scheme: "https",
-    host: "experimental-narwhal-d8n46nst3i1yfpjw0f94xg25.herokudns.com",
-    port: 443,
-    check_origin: [
-      "https://www.shakespeare-monologues.org",
-      "//www.shakespeare-monologues.org",
-      "www.shakespeare-monologues.org",
-      "//shakespeare-monologues.org",
-      "//experimental-narwhal-d8n46nst3i1yfpjw0f94xg25.herokudns.com",
-      "//mono-phoenix.herokuapp.com",
-      "https://mono-phoenix.herokuapp.com",
-      "https://experimental-narwhal-d8n46nst3i1yfpjw0f94xg25.herokudns.com"
-    ]
+    host: System.get_env("PHX_HOST") || "shakespeare-monologues.org",
+    port: 443
+  ],
+  check_origin: [
+    "https://www.shakespeare-monologues.org",
+    "//www.shakespeare-monologues.org", 
+    "https://shakespeare-monologues.org",
+    "//shakespeare-monologues.org"
   ],
   force_ssl: [rewrite_on: [:x_forwarded_proto]]
 

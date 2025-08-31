@@ -36,7 +36,7 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
 
   @impl true
   def render(assigns) do
-    ~L"""
+    ~H"""
 
       <%= render_search_form(assigns) %> <%# added %>
       <%= render_search_bar(assigns) %>
@@ -45,7 +45,7 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
 
   ## render the search form
   defp render_search_form(assigns) do
-    ~L"""
+    ~H"""
     <div class="search-box-dark search-box-default accent-font monologue-list">
       <%= form_for :search, "#",
       [phx_submit: "search",
@@ -68,7 +68,7 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
 
   ## render the search results
   def render_search_bar(assigns) do
-    ~L"""
+    ~H"""
     <div class="center-this monologue-list search-box-dark search-box-default">
       <table class="monologue-list search-box-dark search-box-default">
         <tbody>
@@ -89,7 +89,7 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
               id="toggle-image"
               style="background-color: #F9F9DF; border-radius: 5px;"
               alt="👆 Click to toggle text of all monologues on the page.
-          Reload the page to reset the toggle"
+          Reload the page to reset the toggle."
               title="👆 Click to toggle the text of all monologues on the page.
           Reload the page to reset the toggle."
             />
@@ -100,14 +100,10 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
         <%= for {row, index} <- Enum.with_index(@search_results) do %>
 
             <tr class="monologue_list">
-              <td class="<%= if rem(index, 2) == 0, do: 'even', else: 'odd' %>">
+              <td class={if rem(index, 2) == 0, do: "even", else: "odd"}>
                 <span class="monologue-playname" alt="👆 Click to view all the monologues from this play"
-                title="👆 Click to view all the monologues from this play"><%= link to: "/play/#{row.play_id}", method: :get do %><%= row.play %><% end %></span>&nbsp; &middot; <span class="monologue-actscene"                 alt="👆 Click here to read the whole scene.
-          This link jumps you to the monologue,
-          scroll up to read from the top of the scene."
-                                title="👆 Click here to read the whole scene.
-          This link jumps you to the monologue,
-          scroll up to read from the top of the scene."><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; &middot;
+                title="👆 Click to view all the monologues from this play"><%= link to: "/play/#{row.play_id}", method: :get do %><%= row.play %><% end %></span>&nbsp; &middot; <span class="monologue-actscene"                 alt="👆 Click here to read the whole scene. This link jumps you to the monologue, scroll up to read from the top of the scene."
+                                title="👆 Click here to read the whole scene. This link jumps you to the monologue, scroll up to read from the top of the scene."><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; &middot;
                 <span class="monologue-actscene"><%= row.style %></span>
                 <br />
                 <span class="monologue-character" alt="This is the name of the character who speaks this monologue." title="This is the name of the character who speaks this monologue."><%= row.character %></span>
@@ -117,20 +113,20 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
                 alt="👆 Click to hide or display the full monologue"
                 title="👆 Click to hide or display the full monologue"
                 data-toggle="collapse"
-                data-target="#collapse-<%= Integer.to_string(index) %>"
+                data-target={"#collapse-#{index}"}
                 >
                   <%= row.firstline %>
                 </div>
 
                 <div
                 class="collapse multi-collapse monologue-show"
-                id="collapse-<%= Integer.to_string(index) %>"
+                id={"collapse-#{index}"}
                 >
                   <br />
                   <%= raw(row.body) %>&nbsp;
                   <%= link to: raw(row.pdf), method: :get, target: "_blank", rel: "noopener" do %>
                   <img
-                  src="<%= Routes.static_path(@socket, "/images/pdf_file_icon_16x16.png") %>"
+                  src={Routes.static_path(@socket, "/images/pdf_file_icon_16x16.png")}
                   alt="Click for a double-spaced PDF of this monologue"
                   title="Click for a double-spaced PDF of this monologue"
                   class="monologue-pdflink"
