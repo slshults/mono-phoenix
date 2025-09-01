@@ -32,6 +32,11 @@ if config_env() == :prod do
 
   config :mono_phoenix_v01, MonoPhoenixV01.Repo,
     ssl: true,
+    ssl_opts: [
+      verify: :verify_none,
+      cacerts: :public_key.cacerts_get()
+    ],
+    allowed_tls_versions: [:"tlsv1.2"],
     url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "2"),
     socket_options: maybe_ipv6
