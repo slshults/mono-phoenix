@@ -17,9 +17,9 @@ defmodule MonoPhoenixV01Web.Endpoint do
       "//www.shakespeare-monologues.org",
       "www.shakespeare-monologues.org",
       "//shakespeare-monologues.org",
-      # Add Gigalixir app URL for WebSocket connections
-      "//shakespeare-monologues.gigalixirapp.com",
+      # Gigalixir app URLs - exact format from logs
       "https://shakespeare-monologues.gigalixirapp.com",
+      "//shakespeare-monologues.gigalixirapp.com",
       # Old Heroku URLs (kept for reference)
       "//experimental-narwhal-d8n46nst3i1yfpjw0f94xg25.herokudns.com",
       "//mono-phoenix.herokuapp.com",
