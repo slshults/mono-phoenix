@@ -4,7 +4,9 @@ This file provides guidance to Claude Code when working with code in this reposi
 
 ## Project Overview
 
-This is a Phoenix 1.7 application for Shakespeare's Monologues website (shakespeare-monologues.org), built with Elixir and using PostgreSQL as the database. The application serves monologues from Shakespeare's plays with gender-specific browsing (mens/womens/both) and search functionality.
+This is a Phoenix 1.8.1 application for Shakespeare's Monologues website (shakespeare-monologues.org), built with Elixir 1.18.4 + OTP 27.3.4 and using PostgreSQL as the database. The application serves monologues from Shakespeare's plays with gender-specific browsing (mens/womens/both) and search functionality.
+
+**MIGRATION STATUS:** Successfully migrated from Heroku to Gigalixir on August 31, 2025. Site is fully operational at shakespeare-monologues.org.
 
 ## Current documenation
 NOTE: Your training data set is woefully outdated. We're starting this revival project on 08/31/2025 at 2:40 PM PDT. NEVER make assumptions based on your outdated training data set. ALWAYS use your websearch tool to get correct and current information from the sources in the list below.
@@ -184,6 +186,27 @@ Handled by `StaticPageController`:
 - When Steven shakes screenshots or other files with you, you'll find them in `D:\Users\Steven\Documents\Shakes\2025revival\screenshots_etc` (You'll need to translate that Windows directory to a WSL2 directory path in order to access the contents.)
 
 
+
+### Migration Success Notes (August 2025)
+
+**Key Technical Solutions for Future Reference:**
+
+**WebSocket/LiveView Issues:**
+- Problem: WebSocket origin checking failures with custom domains
+- Solution: Use `check_origin: :conn` in config/prod.exs (not endpoint.ex)
+- This automatically matches request's host, port, and scheme
+
+**Gigalixir SSL Certificates:**
+- Fully automatic via cert-manager and Let's Encrypt
+- No manual certificate upload needed
+- Typical provisioning time: 15 minutes to 24 hours after DNS propagation
+- Temporary "Kubernetes Ingress Controller Fake Certificate" is normal during provisioning
+
+**Deployment Process:**
+1. Set PHX_HOST environment variable to match your custom domain
+2. Ensure DNS CNAMEs point to *.gigalixirdns.com endpoints  
+3. SSL certificates provision automatically via cert-manager
+4. Use `assets/package.json` with deploy script for proper asset compilation
 
 ### Current Status
 
