@@ -21,12 +21,7 @@ config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
     host: System.get_env("PHX_HOST") || "shakespeare-monologues.org",
     port: 443
   ],
-  check_origin: [
-    "https://www.shakespeare-monologues.org",
-    "//www.shakespeare-monologues.org", 
-    "https://shakespeare-monologues.org",
-    "//shakespeare-monologues.org"
-  ],
+  check_origin: :conn,
   force_ssl: [rewrite_on: [:x_forwarded_proto]]
 
 # config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
