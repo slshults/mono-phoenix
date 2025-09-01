@@ -11,21 +11,7 @@ defmodule MonoPhoenixV01Web.Endpoint do
   ]
 
   socket("/live", Phoenix.LiveView.Socket,
-    websocket: [connect_info: [session: @session_options], timeout: 45_000],
-    check_origin: [
-      "https://www.shakespeare-monologues.org",
-      "//www.shakespeare-monologues.org",
-      "www.shakespeare-monologues.org",
-      "//shakespeare-monologues.org",
-      # Gigalixir app URLs - exact format from logs
-      "https://shakespeare-monologues.gigalixirapp.com",
-      "//shakespeare-monologues.gigalixirapp.com",
-      # Old Heroku URLs (kept for reference)
-      "//experimental-narwhal-d8n46nst3i1yfpjw0f94xg25.herokudns.com",
-      "//mono-phoenix.herokuapp.com",
-      "https://mono-phoenix.herokuapp.com",
-      "https://experimental-narwhal-d8n46nst3i1yfpjw0f94xg25.herokudns.com"
-    ]
+    websocket: [connect_info: [session: @session_options], timeout: 45_000]
   )
 
   # Serve at "/" the static files from "priv/static" directory.
