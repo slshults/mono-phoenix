@@ -176,70 +176,20 @@ Handled by `StaticPageController`:
 
 ## Important Notes
 
-- This is a migration from Ruby to Elixir/Phoenix
+- Be security conscious. Do not make suggestions which compromise security. Call me out if I make choices which compromise security.
 - The application uses PostHog for analytics tracking
 - Database contains production data copy for development
 - No formal test suite currently exists (test directory not present)
 - Focus on gender-specific content organization (mens/womens/both categorization)
 - When Steven shakes screenshots or other files with you, you'll find them in `D:\Users\Steven\Documents\Shakes\2025revival\screenshots_etc` (You'll need to translate that Windows directory to a WSL2 directory path in order to access the contents.)
 
-### Development Environment Updates (Aug 31, 2025)
 
-**Elixir Installation:** Successfully installed Elixir 1.18.4 + OTP 27.3.4 via official install script due to asdf having persistent 404 errors with Hex.pm builds for newer versions. PATH exports added to ~/.bashrc:
-```bash
-export PATH=$HOME/.elixir-install/installs/otp/27.3.4/bin:$PATH
-export PATH=$HOME/.elixir-install/installs/elixir/1.18.4-otp-27/bin:$PATH
-```
-
-**Phoenix Upgrade Status:** Requires Elixir 1.15+ for Phoenix 1.8.1 (no workarounds exist for `Macro.inspect_atom/2` introduced in Elixir 1.14.0). All ~L → ~H sigil deprecations fixed.
 
 ### Current Status
 
 Hey Claude 👋, 
 
-Welcome to our project for bringing shakespeare-monologues.org back online. Most of our work will be handled in Claude Code, but we'll be using this claude.ai interface for initial research and planning.
-
-Background: I was using Heroku for hosting. Thanks to their near-constant cadence of marketing and system maintenance emails, I had disabled notifications for emails from Heroku.
-
-So, I didn't notice when they started emailing me after the credit card I had on file with them expired. Nor did I notice the emails threatening to delete my account. So, I was surprised recently when I went to look at my site for the first time in 3 months (I've been busy, moved from the US to Canada) and found that the site was down, hard, and my Heroku account is gone.
-
-The files for the site are still on GitHub. I have a backup of the production DB on my local (in WSL2 / Ubuntu.)
-
-I've selected Gigapixel as the new host, and have set up an account there, but haven't installed their stuff locally yet.
-
-This is where things stood when I last worked on the site a couple of years ago:
-
-```
-Erlang/OTP 24
-Elixir 1.14.1 (compiled with Erlang/OTP 24)
-Phoenix 1.7.1
-psql (PostgreSQL) 14.6
-
-These are my deps:
-      {:phoenix, "~> 1.7.1", override: true},
-      {:phoenix_ecto, "~> 4.4"},
-      {:ecto_sql, "~> 3.6"},
-      {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 3.0"},
-      {:phoenix_view, "~> 2.0"},
-      {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 0.18.15"},
-      {:phoenix_live_dashboard, "~> 0.7.2"},
-      {:esbuild, "~> 0.4", runtime: Mix.env() == :dev},
-      {:swoosh, "~> 1.3"},
-          {:tailwind, "~> 0.1.9", runtime: Mix.env() == :dev}
-      {:telemetry_metrics, "~> 0.6"},
-      {:telemetry_poller, "~> 1.0"},
-      {:gettext, "~> 0.18"},
-      {:jason, "~> 1.2"},
-      {:plug_cowboy, "~> 2.5"},
-      {:redirect, "~> 0.4.0"},
-      {:html_assertion, "0.1.5", only: :test},
-      {:floki, ">= 0.30.0", only: :test},
-      {:credo, "~> 1.6", only: [:dev, :test], runtime: false}
-
-The name of my app is 'MonoPhoenixV01'
-```
+Welcome to our project for working on shakespeare-monologues.org back online.
 
 My local computing and development environment includes:  
 - Windows 11 Pro, v24H2, OS Build 26120.5770, Windows Feature Experience Pack 1000.26100.240.0
