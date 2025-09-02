@@ -42,11 +42,15 @@ defmodule MonoPhoenixV01Web.PosthogProxyController do
            timeout: 30_000
          ) do
       {:ok, %HTTPoison.Response{status_code: status, body: response_body, headers: response_headers}} ->
-        # Filter response headers
+        # Debug: Log headers to see what we're getting from PostHog
+        require Logger
+        Logger.info("PostHog response headers: #{inspect(response_headers)}")
+        
+        # Filter response headers (keep content-encoding for proper decompression)
         filtered_headers = 
           response_headers
           |> Enum.reject(fn {key, _} -> 
-            String.downcase(key) in ["transfer-encoding", "connection", "content-encoding"]
+            String.downcase(key) in ["transfer-encoding", "connection"]
           end)
         
         conn
