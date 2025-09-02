@@ -52,7 +52,8 @@ defmodule MonoPhoenixV01.MixProject do
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:redirect, "~> 0.4.0"},
-      {:httpoison, "~> 2.0"},
+      {:tesla, "~> 1.8"},
+      {:hackney, "~> 1.18"},
       {:html_assertion, "0.1.5", only: :test},
       {:floki, ">= 0.34.2", only: :test},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false}
