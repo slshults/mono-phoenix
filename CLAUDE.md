@@ -183,7 +183,8 @@ Handled by `StaticPageController`:
 - Database contains production data copy for development
 - No formal test suite currently exists (test directory not present)
 - Focus on gender-specific content organization (mens/womens/both categorization)
-- When Steven shakes screenshots or other files with you, you'll find them in `D:\Users\Steven\Documents\Shakes\2025revival\screenshots_etc` (You'll need to translate that Windows directory to a WSL2 directory path in order to access the contents.)
+- DO NOT run git commands. Ask me to run them in an external terminal (This is primarily for `commit` and `push`. There may be scenarious where you'll need to use git (diff, etc), but let's discuss first, please)
+- When Steven shares screenshots or other files with you, you'll find them in `D:\Users\Steven\Documents\Shakes\2025revival\screenshots_etc` (You'll need to translate that Windows directory to a WSL2 directory path in order to access the contents.)
 
 
 

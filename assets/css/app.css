@@ -35,12 +35,10 @@ pre {
  */
 
  html {
-  position: relative;
-  min-height: 100%;
+  height: 100%;
   width: 100%;
   padding: 0px;
-  margin-left: 0px;
-  padding-left: 2px;
+  margin: 0px;
 }  
 body {
   margin-top: 20px;
@@ -50,7 +48,7 @@ body {
   padding-left: 2px;
 }
 @media screen and (max-width:980px) {
-   body {
+  body {
     background-image: none;
     margin-bottom: 20px;
     font-family: Georgia, "Times New Roman", Times, serif;
@@ -525,6 +523,58 @@ a.tip-jar:hover {
   text-decoration: none;
 }
 
+/* Ko-fi Widget_2.js Button Styling */
+.btn-container {
+  display: inline-block !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: unset !important;
+  min-height: unset !important;
+}
+
+.kofi-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 1px 4px !important; /* Further reduced for compact size */
+  background-color: #E8E8C8 !important; /* Slightly darker than page background #F9F9DF */
+  color: #111 !important; /* Same color as page links */
+  border: 1px solid #D0D0B0 !important;
+  border-radius: 3px !important;
+  text-decoration: none !important;
+  font-family: inherit !important;
+  font-size: 13px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.kofi-button:hover {
+  background-color: #DCDCBC !important;
+  color: #5E2612 !important; /* Same as link hover color */
+  text-decoration: underline !important;
+}
+
+/* More specific selectors to override Ko-fi's default styles */
+.kofi-button .kofitext,
+.kofi-button span.kofitext,
+a.kofi-button .kofitext {
+  color: #111 !important; /* Same color as page links */
+  font-size: 13px !important;
+  font-family: inherit !important;
+  font-weight: normal !important;
+}
+
+.kofi-button:hover .kofitext,
+.kofi-button:hover span.kofitext,
+a.kofi-button:hover .kofitext {
+  color: #5E2612 !important; /* Same as link hover color */
+}
+
+.kofiimg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
 th.th-pad-right {
   padding-right: 50px;
 }
@@ -632,4 +682,69 @@ span.toggle-control>a.toggle-mono>img {
   padding: 5px;
   font-family: Arial;
   z-index: 0;
+}
+
+/* Custom Ko-fi Button Styles */
+.custom-kofi-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: #F9F9DF; /* Match page background */
+  color: #111;
+  border: none;
+  border-radius: 6px;
+  text-decoration: none;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.custom-kofi-button:hover {
+  background-color: #F0F0D0;
+  color: #5E2612;
+  text-decoration: underline;
+}
+
+.custom-kofi-button:visited {
+  color: #111;
+}
+
+.custom-kofi-button:hover:visited {
+  color: #5E2612;
+}
+
+/* Sidebar version - smaller size */
+.custom-kofi-sidebar {
+  font-size: 12px;
+  padding: 6px 10px;
+  gap: 6px;
+}
+
+/* Coffee cup wiggle animation */
+.kofi-coffee-cup {
+  width: 18px;
+  height: 18px;
+  animation: kofi-wiggle 3s ease-in-out infinite;
+}
+
+.custom-kofi-sidebar .kofi-coffee-cup {
+  width: 16px;
+  height: 16px;
+}
+
+@keyframes kofi-wiggle {
+  0% { transform: rotate(0deg); }
+  80% { transform: rotate(0deg); }
+  85% { transform: rotate(5deg); }
+  90% { transform: rotate(-5deg); }
+  95% { transform: rotate(3deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Ko-fi text styling */
+.kofi-text {
+  font-weight: normal;
+  color: inherit;
 }

@@ -53,15 +53,27 @@
         </a>
       </div>
     </div>
-    <div class="link-menu-left accent-font" style="font-size: 14px">
-      <a
-        id="everbutton-693-1398040059-85"
-        class="everbutton-693-1398040059-85 tip_jar"
-        href="https://www.everbutton.com/donate/693"
-        style="height:0px;width:0px;min-width:0px;padding:0px;accent-font;"
-      >
-        Tip Jar
-      </a>
+    <div class="link-menu-left accent-font" style="font-size: 14px; position: relative;">
+      <button id="kofi-left-toggle-btn" style="background-color: #F9F9DF; border: 1px solid #E0E0C0; border-radius: 3px; padding: 4px 6px; cursor: pointer; color: #111; font-size: 12px;">
+        <img src="https://storage.ko-fi.com/cdn/cup-border.png" alt="Tip Jar" style="width: 14px; height: 12px; vertical-align: middle; margin-right: 3px; animation: kofi-wiggle 3s infinite;">Tip Jar
+      </button>
+      <div id="kofi-left-iframe-container" style="display: none; position: relative; margin-top: 10px; width: 350px; height: 600px; background: white; border: 2px solid #ccc; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 1000; visibility: hidden;">
+        <iframe src="https://ko-fi.com/shakespearesmonologues/?hidefeed=true&widget=true&embed=true&preview=true" style="width: 100%; height: 100%; border: 0; border-radius: 6px;" allowfullscreen></iframe>
+        <button id="kofi-left-close-btn" style="position: absolute; top: 10px; right: 10px; background: #fff; border: 1px solid #ccc; padding: 5px 8px; cursor: pointer; border-radius: 3px; z-index: 1001; font-size: 14px; font-weight: bold;">X</button>
+      </div>
+      <style>
+        @keyframes kofi-wiggle {
+          0% { transform: rotate(0) scale(1) }
+          60% { transform: rotate(0) scale(1) }
+          75% { transform: rotate(0) scale(1.12) }
+          80% { transform: rotate(0) scale(1.1) }
+          84% { transform: rotate(-10deg) scale(1.1) }
+          88% { transform: rotate(10deg) scale(1.1) }
+          92% { transform: rotate(-10deg) scale(1.1) }
+          96% { transform: rotate(10deg) scale(1.1) }
+          100% { transform: rotate(0) scale(1) }
+        }
+      </style>
     </div>
   </div>
   <!-- left_column_ads -->
@@ -93,19 +105,29 @@
           Share
         </a>
       </div>
-      <!-- Everbutton Tip Jar Button BEGIN -->
-      <div class="tip_jar">
-        <!-- begin donation button -->
-        <a
-          id="everbutton-693-1398040059-85"
-          class="everbutton everbutton-693-1398040059-85 everbutton-blue tip_jar"
-          href="https://www.everbutton.com/donate/693"
-          style="height:20px;width:49px;min-width:45px;padding:0px;"
-        >
+      <!-- Ko-fi Tip Jar Button BEGIN -->
+      <div class="tip_jar" style="position: relative; display: inline-block; text-align: center; width: 100%;">
+        <button id="kofi-footer-toggle-btn" style="display: inline-block; background-color: #F9F9DF; border: 1px solid #E0E0C0; border-radius: 4px; padding: 6px 10px; cursor: pointer; color: #111; font-size: 12px;">
+          <img src="https://storage.ko-fi.com/cdn/cup-border.png" alt="Coffee" style="width: 16px; height: 13px; vertical-align: middle; margin-right: 5px; animation: wiggle 3s infinite;">
           Tip Jar
-        </a>
-        <!-- end donation button -->
+        </button>
+        <div id="kofi-footer-iframe-container" style="display: none; position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); width: 400px; height: 712px; z-index: 1000; background: white; border: 2px solid #ccc; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); visibility: hidden;">
+          <iframe src="https://ko-fi.com/shakespearesmonologues/?hidefeed=true&widget=true&embed=true&preview=true" style="width: 100%; height: 100%; border: 0; border-radius: 6px;" allowfullscreen></iframe>
+          <button id="kofi-footer-close-btn" style="position: absolute; top: 10px; right: 10px; background: #fff; border: 1px solid #ccc; padding: 5px 8px; cursor: pointer; border-radius: 3px; z-index: 1001; font-size: 14px; font-weight: bold;">X</button>
+        </div>
+        <style>
+          @keyframes wiggle {
+            0%, 60% { transform: rotate(0) scale(1); }
+            75% { transform: rotate(0) scale(1.1); }
+            84% { transform: rotate(-8deg) scale(1.1); }
+            88% { transform: rotate(8deg) scale(1.1); }
+            92% { transform: rotate(-8deg) scale(1.1); }
+            96% { transform: rotate(8deg) scale(1.1); }
+            100% { transform: rotate(0) scale(1); }
+          }
+        </style>
       </div>
+      <!-- Ko-fi Tip Jar Button END -->
     </div>
 
     <hr size="1" width="75" noshade />
@@ -199,18 +221,7 @@
   <script async src="https://static.addtoany.com/menu/page.js">
   </script>
   <!-- End AddToAny share button -->
-              <!-- begin tip jar button -->
-  <div style="display: block; text-align: center; margin: 0 auto; padding-right: 0; padding-top: 4px; padding-bottom: 8px">
-    <a
-      id="everbutton-693-1398040059-85"
-      class="everbutton everbutton-693-1398040059-85 everbutton-blue tip_jar"
-      href="https://www.everbutton.com/donate/693"
-      style="height:20px;width:49px;min-width:45px;padding:0px;"
-    >
-      Tip Jar
-    </a>
-  </div>
-  <!-- end tip jar button -->
+              <!-- tip jar button removed - using left column and footer only -->
   
   <!-- Zazzle Button BEGIN -->
   <a href="https://www.zazzle.com/shakesmonosstuff*" rel="nofollow" target="_blank">

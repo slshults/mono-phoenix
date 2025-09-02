@@ -1,0 +1,904 @@
+    warning: <%# is deprecated, use <%!-- or add a space between <% and # instead
+    │
+ 42 │       <%= render_search_form(assigns) %> <%# added %>
+    │                                          ~
+    │
+    └─ lib/mono_phoenix_v01/searchmen_by_play_live.ex:42: (file)
+
+warning: use MonoPhoenixV01Web.MensPageController must receive the :formats option with the formats you intend to render. To keep compatibility within your app, you can list it as:
+
+    formats: [html: "View", json: "View", ...]
+
+Listing all formats your application renders.
+
+
+warning: the :namespace option given to MonoPhoenixV01Web.MensPageController is deprecated.
+Set "plug :put_layout, html: MonoPhoenixV01Web.LayoutView" instead
+
+    warning: unused alias Routes
+    │
+  3 │   alias MonoPhoenixV01Web.Router.Helpers, as: Routes
+    │   ~
+    │
+    └─ lib/mono_phoenix_v01_web/live/menplays_page_live.ex:3:3
+
+warning: use MonoPhoenixV01Web.WomenplayPageController must receive the :formats option with the formats you intend to render. To keep compatibility within your app, you can list it as:
+
+    formats: [html: "View", json: "View", ...]
+
+Listing all formats your application renders.
+
+
+warning: the :namespace option given to MonoPhoenixV01Web.WomenplayPageController is deprecated.
+Set "plug :put_layout, html: MonoPhoenixV01Web.LayoutView" instead
+
+    warning: unused import Phoenix.HTML
+    │
+  6 │   import Phoenix.HTML
+    │   ~
+    │
+    └─ lib/mono_phoenix_v01_web/views/error_helpers.ex:6:3
+
+warning: use MonoPhoenixV01Web.MenplayPageController must receive the :formats option with the formats you intend to render. To keep compatibility within your app, you can list it as:
+
+    formats: [html: "View", json: "View", ...]
+
+Listing all formats your application renders.
+
+
+warning: the :namespace option given to MonoPhoenixV01Web.MenplayPageController is deprecated.
+Set "plug :put_layout, html: MonoPhoenixV01Web.LayoutView" instead
+
+    warning: <%# is deprecated, use <%!-- or add a space between <% and # instead
+    │
+ 41 │       <%= render_search_form(assigns) %> <%# added %>
+    │                                          ~
+    │
+    └─ lib/mono_phoenix_v01/searchmen_bar_live.ex:41: (file)
+
+warning: use MonoPhoenixV01Web.StaticPageController must receive the :formats option with the formats you intend to render. To keep compatibility within your app, you can list it as:
+
+    formats: [html: "View", json: "View", ...]
+
+Listing all formats your application renders.
+
+
+warning: the :namespace option given to MonoPhoenixV01Web.StaticPageController is deprecated.
+Set "plug :put_layout, html: MonoPhoenixV01Web.LayoutView" instead
+
+warning: use MonoPhoenixV01Web.WomensPageController must receive the :formats option with the formats you intend to render. To keep compatibility within your app, you can list it as:
+
+    formats: [html: "View", json: "View", ...]
+
+Listing all formats your application renders.
+
+
+warning: the :namespace option given to MonoPhoenixV01Web.WomensPageController is deprecated.
+Set "plug :put_layout, html: MonoPhoenixV01Web.LayoutView" instead
+
+warning: use MonoPhoenixV01Web.PlayPageController must receive the :formats option with the formats you intend to render. To keep compatibility within your app, you can list it as:
+
+    formats: [html: "View", json: "View", ...]
+
+Listing all formats your application renders.
+
+
+warning: the :namespace option given to MonoPhoenixV01Web.PlayPageController is deprecated.
+Set "plug :put_layout, html: MonoPhoenixV01Web.LayoutView" instead
+
+warning: use MonoPhoenixV01Web.PlaysPageController must receive the :formats option with the formats you intend to render. To keep compatibility within your app, you can list it as:
+
+    formats: [html: "View", json: "View", ...]
+
+Listing all formats your application renders.
+
+
+warning: the :namespace option given to MonoPhoenixV01Web.PlaysPageController is deprecated.
+Set "plug :put_layout, html: MonoPhoenixV01Web.LayoutView" instead
+
+    warning: unused alias Routes
+    │
+  3 │   alias MonoPhoenixV01Web.Router.Helpers, as: Routes
+    │   ~
+    │
+    └─ lib/mono_phoenix_v01_web/live/womenplays_page_live.ex:3:3
+
+    warning: <%# is deprecated, use <%!-- or add a space between <% and # instead
+    │
+ 41 │       <%= render_search_form(assigns) %> <%# added %>
+    │                                          ~
+    │
+    └─ lib/mono_phoenix_v01/searchwomen_bar_live.ex:41: (file)
+
+    warning: <%# is deprecated, use <%!-- or add a space between <% and # instead
+    │
+ 42 │       <%= render_search_form(assigns) %> <%# added %>
+    │                                          ~
+    │
+    └─ lib/mono_phoenix_v01/searchwomen_by_play_live.ex:42: (file)
+
+    warning: unused alias Routes
+    │
+  3 │   alias MonoPhoenixV01Web.Router.Helpers, as: Routes
+    │   ~
+    │
+    └─ lib/mono_phoenix_v01_web/live/plays_page_live.ex:3:3
+
+    warning: <%# is deprecated, use <%!-- or add a space between <% and # instead
+    │
+ 42 │       <%= render_search_form(assigns) %> <%# added %>
+    │                                          ~
+    │
+    └─ lib/mono_phoenix_v01/search_by_play_live.ex:42: (file)
+
+    warning: <%# is deprecated, use <%!-- or add a space between <% and # instead
+    │
+ 41 │       <%= render_search_form(assigns) %> <%# added %>
+    │                                          ~
+    │
+    └─ lib/mono_phoenix_v01/search_bar_live.ex:41: (file)
+
+warning: use MonoPhoenixV01Web.PageController must receive the :formats option with the formats you intend to render. To keep compatibility within your app, you can list it as:
+
+    formats: [html: "View", json: "View", ...]
+
+Listing all formats your application renders.
+
+
+warning: the :namespace option given to MonoPhoenixV01Web.PageController is deprecated.
+Set "plug :put_layout, html: MonoPhoenixV01Web.LayoutView" instead
+
+warning: use MonoPhoenixV01Web.MonologuesPageController must receive the :formats option with the formats you intend to render. To keep compatibility within your app, you can list it as:
+
+    formats: [html: "View", json: "View", ...]
+
+Listing all formats your application renders.
+
+
+warning: the :namespace option given to MonoPhoenixV01Web.MonologuesPageController is deprecated.
+Set "plug :put_layout, html: MonoPhoenixV01Web.LayoutView" instead
+
+[notice]     :alarm_handler: {:set, {{:disk_almost_full, ~c"/usr/lib/wsl/drivers"}, []}}
+[info] Running MonoPhoenixV01Web.Endpoint with cowboy 2.13.0 at 0.0.0.0:4000 (http)
+[info] Access MonoPhoenixV01Web.Endpoint at http://localhost:4000
+[watch] build finished, watching for changes...
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+[info] GET /home
+[debug] Processing with MonoPhoenixV01Web.StaticPageController.home/2
+  Parameters: %{}
+  Pipelines: [:browser]
+[info] Sent 200 in 66ms
+[debug] Live reload: lib/mono_phoenix_v01_web/templates/layout/static.html.heex
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+Compiling 1 file (.ex)
+Generated mono_phoenix_v01 app
+[info] GET /home
+[debug] Processing with MonoPhoenixV01Web.StaticPageController.home/2
+  Parameters: %{}
+  Pipelines: [:browser]
+[info] Sent 200 in 6ms
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+[debug] Live reload: lib/mono_phoenix_v01_web/templates/layout/live.html.heex
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+Compiling 1 file (.ex)
+Generated mono_phoenix_v01 app
+[info] GET /home
+[debug] Processing with MonoPhoenixV01Web.StaticPageController.home/2
+  Parameters: %{}
+  Pipelines: [:browser]
+[info] Sent 200 in 9ms
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+[info] GET /home
+[debug] Processing with MonoPhoenixV01Web.StaticPageController.home/2
+  Parameters: %{}
+  Pipelines: [:browser]
+[info] Sent 200 in 11ms
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+[info] GET /plays
+[debug] Processing with MonoPhoenixV01Web.PlaysPageLive.__live__/0
+  Parameters: %{}
+  Pipelines: [:browser]
+[debug] QUERY OK source="monologues" db=4.7ms queue=2.4ms idle=1207.0ms
+SELECT p1."title", p1."id", m0."id", m0."location", m0."style", m0."character", m0."first_line", m0."body", m0."body_link", m0."pdf_link" FROM "monologues" AS m0 INNER JOIN "plays" AS p1 ON m0."play_id" = p1."id" WHERE (p1."id" = m0."play_id") AND (m0."character" ILIKE $1) GROUP BY p1."id", p1."title", m0."id", m0."location", m0."character", m0."first_line", m0."style", m0."body", m0."body_link", m0."pdf_link" ["%search_value%"]
+[info] Sent 200 in 82ms
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+[info] GET /faq
+[debug] Processing with MonoPhoenixV01Web.StaticPageController.faq/2
+  Parameters: %{}
+  Pipelines: [:browser]
+[info] Sent 200 in 7ms
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+[info] GET /home
+[debug] Processing with MonoPhoenixV01Web.StaticPageController.home/2
+  Parameters: %{}
+  Pipelines: [:browser]
+[info] Sent 200 in 4ms
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+[info] GET /plays/
+[debug] Processing with MonoPhoenixV01Web.PlaysPageLive.__live__/0
+  Parameters: %{}
+  Pipelines: [:browser]
+[debug] QUERY OK source="monologues" db=3.5ms queue=0.1ms idle=1858.4ms
+SELECT p1."title", p1."id", m0."id", m0."location", m0."style", m0."character", m0."first_line", m0."body", m0."body_link", m0."pdf_link" FROM "monologues" AS m0 INNER JOIN "plays" AS p1 ON m0."play_id" = p1."id" WHERE (p1."id" = m0."play_id") AND (m0."character" ILIKE $1) GROUP BY p1."id", p1."title", m0."id", m0."location", m0."character", m0."first_line", m0."style", m0."body", m0."body_link", m0."pdf_link" ["%search_value%"]
+[info] Sent 200 in 11ms
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+[info] CONNECTED TO Phoenix.LiveView.Socket in 68µs
+  Transport: :websocket
+  Serializer: Phoenix.Socket.V2.JSONSerializer
+  Parameters: %{"_csrf_token" => "AG0eNzcGOwUYBS18Cyw-IEVPAUobGhMpQ5Ooyp_uJHh6yagK76F9tBPe", "_live_referer" => "undefined", "_mount_attempts" => "0", "_mounts" => "0", "_track_static" => %{"0" => "http://localhost:4000/assets/css/normalize.css", "1" => "http://localhost:4000/assets/app.css", "2" => "http://localhost:4000/assets/css/application.css"}, "vsn" => "2.0.0"}
+[debug] MOUNT MonoPhoenixV01Web.PlaysPageLive
+  Parameters: %{}
+  Session: %{"_csrf_token" => "QXQXNvdpRMEJrMYkryGsoXCL"}
+[debug] QUERY OK source="monologues" db=2.9ms idle=696.0ms
+SELECT p1."title", p1."id", m0."id", m0."location", m0."style", m0."character", m0."first_line", m0."body", m0."body_link", m0."pdf_link" FROM "monologues" AS m0 INNER JOIN "plays" AS p1 ON m0."play_id" = p1."id" WHERE (p1."id" = m0."play_id") AND (m0."character" ILIKE $1) GROUP BY p1."id", p1."title", m0."id", m0."location", m0."character", m0."first_line", m0."style", m0."body", m0."body_link", m0."pdf_link" ["%search_value%"]
+[debug] Replied in 8ms
+[debug] MOUNT MonoPhoenixV01Web.SearchBarLive
+  Parameters: :not_mounted_at_router
+  Session: %{"_csrf_token" => "QXQXNvdpRMEJrMYkryGsoXCL"}
+[debug] Replied in 194µs
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+[debug] Live reload: lib/mono_phoenix_v01_web/templates/layout/app.html.heex
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+Compiling 1 file (.ex)
+Generated mono_phoenix_v01 app
+[info] GET /plays/
+[debug] Processing with MonoPhoenixV01Web.PlaysPageLive.__live__/0
+  Parameters: %{}
+  Pipelines: [:browser]
+[debug] QUERY OK source="monologues" db=4.4ms idle=110.8ms
+SELECT p1."title", p1."id", m0."id", m0."location", m0."style", m0."character", m0."first_line", m0."body", m0."body_link", m0."pdf_link" FROM "monologues" AS m0 INNER JOIN "plays" AS p1 ON m0."play_id" = p1."id" WHERE (p1."id" = m0."play_id") AND (m0."character" ILIKE $1) GROUP BY p1."id", p1."title", m0."id", m0."location", m0."character", m0."first_line", m0."style", m0."body", m0."body_link", m0."pdf_link" ["%search_value%"]
+[info] Sent 200 in 14ms
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+[info] CONNECTED TO Phoenix.LiveView.Socket in 31µs
+  Transport: :websocket
+  Serializer: Phoenix.Socket.V2.JSONSerializer
+  Parameters: %{"_csrf_token" => "NhknGggCNUYTIHN6JxwIJBgQPQY7LDF6gAvBFtQ6Am60UQQOjizuTtr6", "_live_referer" => "undefined", "_mount_attempts" => "0", "_mounts" => "0", "_track_static" => %{"0" => "http://localhost:4000/assets/css/normalize.css", "1" => "http://localhost:4000/assets/app.css", "2" => "http://localhost:4000/assets/css/application.css"}, "vsn" => "2.0.0"}
+[debug] MOUNT MonoPhoenixV01Web.PlaysPageLive
+  Parameters: %{}
+  Session: %{"_csrf_token" => "QXQXNvdpRMEJrMYkryGsoXCL"}
+[debug] QUERY OK source="monologues" db=3.1ms idle=766.4ms
+SELECT p1."title", p1."id", m0."id", m0."location", m0."style", m0."character", m0."first_line", m0."body", m0."body_link", m0."pdf_link" FROM "monologues" AS m0 INNER JOIN "plays" AS p1 ON m0."play_id" = p1."id" WHERE (p1."id" = m0."play_id") AND (m0."character" ILIKE $1) GROUP BY p1."id", p1."title", m0."id", m0."location", m0."character", m0."first_line", m0."style", m0."body", m0."body_link", m0."pdf_link" ["%search_value%"]
+[debug] Replied in 7ms
+[debug] MOUNT MonoPhoenixV01Web.SearchBarLive
+  Parameters: :not_mounted_at_router
+  Session: %{"_csrf_token" => "QXQXNvdpRMEJrMYkryGsoXCL"}
+[debug] Replied in 93µs
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+[debug] Live reload: lib/mono_phoenix_v01_web/templates/layout/app.html.heex
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+Compiling 1 file (.ex)
+Generated mono_phoenix_v01 app
+[info] GET /plays/
+[debug] Processing with MonoPhoenixV01Web.PlaysPageLive.__live__/0
+  Parameters: %{}
+  Pipelines: [:browser]
+[debug] QUERY OK source="monologues" db=1.3ms idle=1783.0ms
+SELECT p1."title", p1."id", m0."id", m0."location", m0."style", m0."character", m0."first_line", m0."body", m0."body_link", m0."pdf_link" FROM "monologues" AS m0 INNER JOIN "plays" AS p1 ON m0."play_id" = p1."id" WHERE (p1."id" = m0."play_id") AND (m0."character" ILIKE $1) GROUP BY p1."id", p1."title", m0."id", m0."location", m0."character", m0."first_line", m0."style", m0."body", m0."body_link", m0."pdf_link" ["%search_value%"]
+[info] Sent 200 in 7ms
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+[info] CONNECTED TO Phoenix.LiveView.Socket in 26µs
+  Transport: :websocket
+  Serializer: Phoenix.Socket.V2.JSONSerializer
+  Parameters: %{"_csrf_token" => "YhYFbAYaJTYcAnAiX3wcPyM-dSwfDhF43NT4HlAFNO5h-1ETQG2_pVR4", "_live_referer" => "undefined", "_mount_attempts" => "0", "_mounts" => "0", "_track_static" => %{"0" => "http://localhost:4000/assets/css/normalize.css", "1" => "http://localhost:4000/assets/app.css", "2" => "http://localhost:4000/assets/css/application.css"}, "vsn" => "2.0.0"}
+[debug] MOUNT MonoPhoenixV01Web.PlaysPageLive
+  Parameters: %{}
+  Session: %{"_csrf_token" => "QXQXNvdpRMEJrMYkryGsoXCL"}
+[debug] QUERY OK source="monologues" db=6.2ms idle=606.6ms
+SELECT p1."title", p1."id", m0."id", m0."location", m0."style", m0."character", m0."first_line", m0."body", m0."body_link", m0."pdf_link" FROM "monologues" AS m0 INNER JOIN "plays" AS p1 ON m0."play_id" = p1."id" WHERE (p1."id" = m0."play_id") AND (m0."character" ILIKE $1) GROUP BY p1."id", p1."title", m0."id", m0."location", m0."character", m0."first_line", m0."style", m0."body", m0."body_link", m0."pdf_link" ["%search_value%"]
+[debug] Replied in 13ms
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+[debug] MOUNT MonoPhoenixV01Web.SearchBarLive
+  Parameters: :not_mounted_at_router
+  Session: %{"_csrf_token" => "QXQXNvdpRMEJrMYkryGsoXCL"}
+[debug] Replied in 212µs
+[debug] Live reload: lib/mono_phoenix_v01_web/templates/layout/app.html.heex
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+Compiling 1 file (.ex)
+Generated mono_phoenix_v01 app
+[info] GET /plays/
+[debug] Processing with MonoPhoenixV01Web.PlaysPageLive.__live__/0
+  Parameters: %{}
+  Pipelines: [:browser]
+[debug] QUERY OK source="monologues" db=3.5ms idle=1104.8ms
+SELECT p1."title", p1."id", m0."id", m0."location", m0."style", m0."character", m0."first_line", m0."body", m0."body_link", m0."pdf_link" FROM "monologues" AS m0 INNER JOIN "plays" AS p1 ON m0."play_id" = p1."id" WHERE (p1."id" = m0."play_id") AND (m0."character" ILIKE $1) GROUP BY p1."id", p1."title", m0."id", m0."location", m0."character", m0."first_line", m0."style", m0."body", m0."body_link", m0."pdf_link" ["%search_value%"]
+[info] Sent 200 in 10ms
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+[info] CONNECTED TO Phoenix.LiveView.Socket in 65µs
+  Transport: :websocket
+  Serializer: Phoenix.Socket.V2.JSONSerializer
+  Parameters: %{"_csrf_token" => "HC0gFwIsChMEJiNnABpoESUJDTA-CgomMuqOLZncVkf-rW1zWpJCQRIj", "_live_referer" => "undefined", "_mount_attempts" => "0", "_mounts" => "0", "_track_static" => %{"0" => "http://localhost:4000/assets/css/normalize.css", "1" => "http://localhost:4000/assets/app.css", "2" => "http://localhost:4000/assets/css/application.css"}, "vsn" => "2.0.0"}
+[debug] MOUNT MonoPhoenixV01Web.PlaysPageLive
+  Parameters: %{}
+  Session: %{"_csrf_token" => "QXQXNvdpRMEJrMYkryGsoXCL"}
+[debug] QUERY OK source="monologues" db=1.3ms idle=1771.6ms
+SELECT p1."title", p1."id", m0."id", m0."location", m0."style", m0."character", m0."first_line", m0."body", m0."body_link", m0."pdf_link" FROM "monologues" AS m0 INNER JOIN "plays" AS p1 ON m0."play_id" = p1."id" WHERE (p1."id" = m0."play_id") AND (m0."character" ILIKE $1) GROUP BY p1."id", p1."title", m0."id", m0."location", m0."character", m0."first_line", m0."style", m0."body", m0."body_link", m0."pdf_link" ["%search_value%"]
+[debug] Replied in 6ms
+[debug] MOUNT MonoPhoenixV01Web.SearchBarLive
+  Parameters: :not_mounted_at_router
+  Session: %{"_csrf_token" => "QXQXNvdpRMEJrMYkryGsoXCL"}
+[debug] Replied in 145µs
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+[debug] Live reload: lib/mono_phoenix_v01_web/templates/layout/static.html.heex
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+Compiling 1 file (.ex)
+Generated mono_phoenix_v01 app
+[info] GET /plays/
+[debug] Processing with MonoPhoenixV01Web.PlaysPageLive.__live__/0
+  Parameters: %{}
+  Pipelines: [:browser]
+[debug] QUERY OK source="monologues" db=3.6ms idle=1119.8ms
+SELECT p1."title", p1."id", m0."id", m0."location", m0."style", m0."character", m0."first_line", m0."body", m0."body_link", m0."pdf_link" FROM "monologues" AS m0 INNER JOIN "plays" AS p1 ON m0."play_id" = p1."id" WHERE (p1."id" = m0."play_id") AND (m0."character" ILIKE $1) GROUP BY p1."id", p1."title", m0."id", m0."location", m0."character", m0."first_line", m0."style", m0."body", m0."body_link", m0."pdf_link" ["%search_value%"]
+[info] Sent 200 in 11ms
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+[info] CONNECTED TO Phoenix.LiveView.Socket in 79µs
+  Transport: :websocket
+  Serializer: Phoenix.Socket.V2.JSONSerializer
+  Parameters: %{"_csrf_token" => "OA4gNn0nJRwnIi14Nw4fNBMSdwEuLxQAiVqn3QAluoh2ECF_ak0rAwWL", "_live_referer" => "undefined", "_mount_attempts" => "0", "_mounts" => "0", "_track_static" => %{"0" => "http://localhost:4000/assets/css/normalize.css", "1" => "http://localhost:4000/assets/app.css", "2" => "http://localhost:4000/assets/css/application.css"}, "vsn" => "2.0.0"}
+[debug] MOUNT MonoPhoenixV01Web.PlaysPageLive
+  Parameters: %{}
+  Session: %{"_csrf_token" => "QXQXNvdpRMEJrMYkryGsoXCL"}
+[debug] QUERY OK source="monologues" db=1.4ms queue=0.1ms idle=1737.7ms
+SELECT p1."title", p1."id", m0."id", m0."location", m0."style", m0."character", m0."first_line", m0."body", m0."body_link", m0."pdf_link" FROM "monologues" AS m0 INNER JOIN "plays" AS p1 ON m0."play_id" = p1."id" WHERE (p1."id" = m0."play_id") AND (m0."character" ILIKE $1) GROUP BY p1."id", p1."title", m0."id", m0."location", m0."character", m0."first_line", m0."style", m0."body", m0."body_link", m0."pdf_link" ["%search_value%"]
+[debug] Replied in 12ms
+[debug] MOUNT MonoPhoenixV01Web.SearchBarLive
+  Parameters: :not_mounted_at_router
+  Session: %{"_csrf_token" => "QXQXNvdpRMEJrMYkryGsoXCL"}
+[debug] Replied in 207µs
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+[debug] Live reload: lib/mono_phoenix_v01_web/templates/layout/static.html.heex
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+Compiling 1 file (.ex)
+Generated mono_phoenix_v01 app
+[info] GET /plays/
+[debug] Processing with MonoPhoenixV01Web.PlaysPageLive.__live__/0
+  Parameters: %{}
+  Pipelines: [:browser]
+[debug] QUERY OK source="monologues" db=3.2ms idle=200.5ms
+SELECT p1."title", p1."id", m0."id", m0."location", m0."style", m0."character", m0."first_line", m0."body", m0."body_link", m0."pdf_link" FROM "monologues" AS m0 INNER JOIN "plays" AS p1 ON m0."play_id" = p1."id" WHERE (p1."id" = m0."play_id") AND (m0."character" ILIKE $1) GROUP BY p1."id", p1."title", m0."id", m0."location", m0."character", m0."first_line", m0."style", m0."body", m0."body_link", m0."pdf_link" ["%search_value%"]
+[info] Sent 200 in 13ms
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+[info] CONNECTED TO Phoenix.LiveView.Socket in 17µs
+  Transport: :websocket
+  Serializer: Phoenix.Socket.V2.JSONSerializer
+  Parameters: %{"_csrf_token" => "ZzdmDWM0BjYHDicJNBQrWzoKIiYDCg876o7U-BbFUCbCFYr0HseUlRLw", "_live_referer" => "undefined", "_mount_attempts" => "0", "_mounts" => "0", "_track_static" => %{"0" => "http://localhost:4000/assets/css/normalize.css", "1" => "http://localhost:4000/assets/app.css", "2" => "http://localhost:4000/assets/css/application.css"}, "vsn" => "2.0.0"}
+[debug] MOUNT MonoPhoenixV01Web.PlaysPageLive
+  Parameters: %{}
+  Session: %{"_csrf_token" => "QXQXNvdpRMEJrMYkryGsoXCL"}
+[debug] QUERY OK source="monologues" db=3.7ms idle=888.8ms
+SELECT p1."title", p1."id", m0."id", m0."location", m0."style", m0."character", m0."first_line", m0."body", m0."body_link", m0."pdf_link" FROM "monologues" AS m0 INNER JOIN "plays" AS p1 ON m0."play_id" = p1."id" WHERE (p1."id" = m0."play_id") AND (m0."character" ILIKE $1) GROUP BY p1."id", p1."title", m0."id", m0."location", m0."character", m0."first_line", m0."style", m0."body", m0."body_link", m0."pdf_link" ["%search_value%"]
+[debug] Replied in 10ms
+[debug] MOUNT MonoPhoenixV01Web.SearchBarLive
+  Parameters: :not_mounted_at_router
+  Session: %{"_csrf_token" => "QXQXNvdpRMEJrMYkryGsoXCL"}
+[debug] Replied in 171µs
+warning: a Mix listener expected by Phoenix.CodeReloader is missing.
+
+Please add the listener to your mix.exs configuration, like so:
+
+    def project do
+      [
+        ...,
+        listeners: [Phoenix.CodeReloader]
+      ]
+    end
+
+
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:76: anonymous fn/5 in Phoenix.CodeReloader.Server.handle_call/3
+  (mix 1.18.4) lib/mix/sync/lock.ex:112: Mix.Sync.Lock.with_lock/3
+  (phoenix 1.8.1) lib/phoenix/code_reloader/server.ex:70: Phoenix.CodeReloader.Server.handle_call/3
+  (stdlib 6.2.2) gen_server.erl:2381: :gen_server.try_handle_call/4
+  (stdlib 6.2.2) gen_server.erl:2410: :gen_server.handle_msg/6
+  (stdlib 6.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+[notice] SIGTERM received - shutting down
+
+[info] DRAINING 2 of 2 total connection(s) for socket Phoenix.LiveView.Socket every 2000ms - round 1 of 1
+[info] DRAINING 1 of 1 total connection(s) for socket Phoenix.LiveReloader.Socket every 2000ms - round 1 of 1
+[notice]     :alarm_handler: {:clear, {:disk_almost_full, ~c"/usr/lib/wsl/drivers"}}
