@@ -22,7 +22,7 @@ config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
     port: 443
   ],
   check_origin: :conn,
-  force_ssl: [rewrite_on: [:x_forwarded_proto]]
+  force_ssl: [rewrite_on: [:x_forwarded_proto], host: nil]
 
 # config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
 # url: [host: "mono-phoenix.herokuapp.com", port: 80],
