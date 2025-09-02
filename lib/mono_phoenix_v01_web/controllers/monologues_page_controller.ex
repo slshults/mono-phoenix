@@ -8,42 +8,49 @@ defmodule MonoPhoenixV01Web.MonologuesPageController do
   # Show a monologue from the database
   @spec monologues(Plug.Conn.t(), any) :: Plug.Conn.t()
   def monologues(conn, params) do
-    monoid = String.to_integer(params["monoid"])
+    case Integer.parse(params["monoid"]) do
+      {monoid, ""} when monoid > 0 ->
+        query =
+          from(m in "monologues",
+            join: p in "plays",
+            on: m.play_id == p.id,
+            where: m.id == ^monoid,
+            group_by: [
+              p.id,
+              p.title,
+              m.id,
+              m.location,
+              m.character,
+              m.first_line,
+              m.style,
+              m.body,
+              m.body_link,
+              m.pdf_link
+            ],
+            select: %{
+              id: p.id,
+              play: p.title,
+              monologues: m.id,
+              location: m.location,
+              style: m.style,
+              character: m.character,
+              firstline: m.first_line,
+              body: m.body,
+              scene: m.body_link,
+              pdf: m.pdf_link
+            }
+          )
 
-    query =
-      from(m in "monologues",
-        join: p in "plays",
-        on: m.play_id == p.id,
-        where: m.id == ^monoid,
-        group_by: [
-          p.id,
-          p.title,
-          m.id,
-          m.location,
-          m.character,
-          m.first_line,
-          m.style,
-          m.body,
-          m.body_link,
-          m.pdf_link
-        ],
-        select: %{
-          id: p.id,
-          play: p.title,
-          monologues: m.id,
-          location: m.location,
-          style: m.style,
-          character: m.character,
-          firstline: m.first_line,
-          body: m.body,
-          scene: m.body_link,
-          pdf: m.pdf_link
-        }
-      )
+        rows = MonoPhoenixV01.Repo.all(query)
+        render(conn, "monologues.html", rows: rows)
 
-    rows = MonoPhoenixV01.Repo.all(query)
-
-    render(conn, "monologues.html", rows: rows)
+      _ ->
+        conn
+        |> put_status(:not_found)
+        |> put_view(MonoPhoenixV01Web.ErrorView)
+        |> render("404.html")
+        |> halt()
+    end
   end
 end
 
