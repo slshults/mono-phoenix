@@ -11,9 +11,8 @@ defmodule MonoPhoenixV01Web.PosthogProxyController do
       {Tesla.Middleware.BaseUrl, base_url},
       {Tesla.Middleware.Headers, [{"user-agent", "PostHog-Proxy/1.0"}]},
       Tesla.Middleware.FollowRedirects,
-      Tesla.Middleware.Compression,
-      {Tesla.Middleware.Adapter, Tesla.Adapter.Hackney}
-    ])
+      Tesla.Middleware.Compression
+    ], Tesla.Adapter.Hackney)
   end
 
   def proxy(conn, params) do

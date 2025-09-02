@@ -9,7 +9,7 @@ This is a Phoenix 1.8.1 application for Shakespeare's Monologues website (shakes
 **MIGRATION STATUS:** Successfully migrated from Heroku to Gigalixir on August 31, 2025. Site is fully operational at shakespeare-monologues.org.
 
 ## Current documenation
-NOTE: Your training data set is woefully outdated. We're starting this revival project on 08/31/2025 at 2:40 PM PDT. NEVER make assumptions based on your outdated training data set. ALWAYS use your websearch tool to get correct and current information from the sources in the list below.
+NOTE: Your training data set is woefully outdated. The last time I updated this timestamp, it was 09/02/2025. So NEVER make assumptions based on your outdated training data set. ALWAYS use your websearch tool to get correct and current information from the sources in the list below.
 
 Search these documents instead of playing trial and error games. 
 
@@ -189,6 +189,8 @@ Handled by `StaticPageController`:
 
 --- 
 
+DNS is hosted by Dreamhost, the site is hosted at Gigalixir
+
 My local computing and development environment includes:  
 - Windows 11 Pro, v24H2, OS Build 26120.5770, Windows Feature Experience Pack 1000.26100.240.0
 - WSL 2
@@ -196,3 +198,7 @@ My local computing and development environment includes:
 - VS Code (and I occasionally use emacs in my shell for quick tweaks to files outside of the project dir)
 - `Claude Code` VS Code extension
 - Committing and pushing to GitHub from my local
+
+---
+
+Reminder: Don't forget about the Division of Responsibilities near the top of this doc
