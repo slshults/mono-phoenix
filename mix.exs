@@ -10,7 +10,8 @@ defmodule MonoPhoenixV01.MixProject do
       # compilers: [] ++ Mix.compilers(), no longer needed in Elixir 1.14+
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      listeners: [Phoenix.CodeReloader]
     ]
   end
 

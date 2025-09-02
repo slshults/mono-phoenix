@@ -211,10 +211,6 @@ Handled by `StaticPageController`:
 
 ### Current Status
 
-Hey Claude 👋, 
-
-Welcome to our project for working on shakespeare-monologues.org back online.
-
 My local computing and development environment includes:  
 - Windows 11 Pro, v24H2, OS Build 26120.5770, Windows Feature Experience Pack 1000.26100.240.0
 - WSL 2

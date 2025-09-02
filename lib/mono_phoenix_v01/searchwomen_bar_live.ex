@@ -38,7 +38,7 @@ defmodule MonoPhoenixV01Web.SearchwomenBarLive do
   def render(assigns) do
     ~H"""
 
-      <%= render_search_form(assigns) %> <%# added %>
+      <%= render_search_form(assigns) %> <%!-- added --%>
       <%= render_searchwomen_bar(assigns) %>
     """
   end

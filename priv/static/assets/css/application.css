@@ -64,7 +64,7 @@ body {
     padding-left: 2px;
 }
 
-html,body.dark-mode {
+html.dark-mode, body.dark-mode {
     background-color: #222222;
     
     background-image: none; /* Remove the background image in dark mode */

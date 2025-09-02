@@ -39,7 +39,7 @@ defmodule MonoPhoenixV01Web.SearchByPlayLive do
   def render(assigns) do
     ~H"""
 
-      <%= render_search_form(assigns) %> <%# added %>
+      <%= render_search_form(assigns) %> <%!-- added --%>
       <%= render_search_by_play(assigns) %>
     """
   end

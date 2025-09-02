@@ -1,6 +1,5 @@
 defmodule MonoPhoenixV01Web.PlaysPageLive do
   use MonoPhoenixV01Web, :live_view
-  alias MonoPhoenixV01Web.Router.Helpers, as: Routes
   import Ecto.Query
 
   @impl true
