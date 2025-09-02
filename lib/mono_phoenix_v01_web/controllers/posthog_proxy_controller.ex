@@ -17,11 +17,29 @@ defmodule MonoPhoenixV01Web.PosthogProxyController do
   end
 
   def proxy(conn, params) do
-    proxy_to_posthog(conn, @posthog_api_host, params)
+    # Handle CORS preflight requests
+    if conn.method == "OPTIONS" do
+      conn
+      |> put_resp_header("access-control-allow-origin", "*")
+      |> put_resp_header("access-control-allow-methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+      |> put_resp_header("access-control-allow-headers", "authorization, content-type, x-requested-with")
+      |> send_resp(200, "")
+    else
+      proxy_to_posthog(conn, @posthog_api_host, params)
+    end
   end
 
   def static(conn, %{"path" => path}) do
-    proxy_to_posthog(conn, @posthog_static_host, %{"path" => ["static" | path]})
+    # Handle CORS preflight requests for static assets too
+    if conn.method == "OPTIONS" do
+      conn
+      |> put_resp_header("access-control-allow-origin", "*")
+      |> put_resp_header("access-control-allow-methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+      |> put_resp_header("access-control-allow-headers", "authorization, content-type, x-requested-with")
+      |> send_resp(200, "")
+    else
+      proxy_to_posthog(conn, @posthog_static_host, %{"path" => ["static" | path]})
+    end
   end
 
   defp proxy_to_posthog(conn, target_host, params) do
@@ -68,6 +86,9 @@ defmodule MonoPhoenixV01Web.PosthogProxyController do
         Logger.info("Filtered headers being sent: #{inspect(filtered_headers)}")
         
         conn
+        |> put_resp_header("access-control-allow-origin", "*")
+        |> put_resp_header("access-control-allow-methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+        |> put_resp_header("access-control-allow-headers", "authorization, content-type, x-requested-with")
         |> merge_resp_headers(filtered_headers)
         |> send_resp(status, response_body)
         
