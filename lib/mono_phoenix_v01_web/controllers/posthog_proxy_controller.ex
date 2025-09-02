@@ -42,8 +42,8 @@ defmodule MonoPhoenixV01Web.PosthogProxyController do
   end
 
   defp proxy_to_posthog(conn, target_host, params) do
-    # Get the request body
-    {:ok, body, conn} = Plug.Conn.read_body(conn, length: 64 * 1024 * 1024) # 64MB limit for PostHog
+    # Get the request body - handle both raw and parsed cases
+    {body, conn} = get_request_body(conn, params)
 
     # Build the target path
     path_info = build_path_info(params)
@@ -52,13 +52,15 @@ defmodule MonoPhoenixV01Web.PosthogProxyController do
     # Get HTTP method early since we need it for headers
     method = String.downcase(conn.method) |> String.to_atom()
     
-    # Prepare headers (remove connection-specific headers and fix content-type)
+    Logger.info("Proxying #{method} #{target_path} body size: #{byte_size(body || "")}")
+    
+    # Prepare headers - remove connection-specific headers
     headers = 
       conn.req_headers
       |> Enum.reject(fn {key, _} -> 
-        String.downcase(key) in ["host", "content-length", "connection", "content-type"] 
+        String.downcase(key) in ["host", "content-length", "connection"] 
       end)
-      |> maybe_add_content_type(body, method)
+      |> add_proper_content_type_for_method(method, body)
       |> Enum.concat([{"host", get_posthog_host(target_host)}])
 
     # Create Tesla client for the target host
@@ -67,13 +69,20 @@ defmodule MonoPhoenixV01Web.PosthogProxyController do
     # Parse query string into keyword list
     query_params = if conn.query_string == "", do: [], else: URI.decode_query(conn.query_string) |> Enum.to_list()
     
+    # Don't send body for GET requests
+    request_body = if method == :get, do: nil, else: body
+    
+    Logger.info("Final request headers being sent: #{inspect(headers)}")
+    Logger.info("Query params: #{inspect(query_params)}")
+    
     case Tesla.request(client, 
            method: method, 
            url: target_path,
-           body: body,
+           body: request_body,
            headers: headers,
            query: query_params) do
       {:ok, %Tesla.Env{status: status, body: response_body, headers: response_headers}} ->
+        Logger.info("Tesla response status: #{status}")
         Logger.info("Tesla response headers: #{inspect(response_headers)}")
         
         # Tesla handles compression automatically, so we should get clean headers
@@ -102,18 +111,83 @@ defmodule MonoPhoenixV01Web.PosthogProxyController do
   defp build_path_info(%{"path" => path}) when is_list(path), do: path
   defp build_path_info(_), do: []
 
+  # Get request body - handle both raw and Phoenix-parsed cases
+  defp get_request_body(conn, params) do
+    # First try to read raw body
+    case Plug.Conn.read_body(conn, length: 64 * 1024 * 1024) do
+      {:ok, "", conn} ->
+        # Body was already read/parsed, try to reconstruct from params
+        reconstruct_json_from_params(conn, params)
+      {:ok, body, conn} when byte_size(body) > 0 ->
+        # Got raw body
+        {body, conn}
+      {:more, _partial, conn} ->
+        # Body too large, try to get all of it
+        case Plug.Conn.read_body(conn, length: 64 * 1024 * 1024, read_length: 64 * 1024 * 1024) do
+          {:ok, body, conn} -> {body, conn}
+          {:more, partial, conn} -> {partial, conn}
+          {:error, reason} ->
+            Logger.error("Failed to read request body: #{inspect(reason)}")
+            {"", conn}
+        end
+      {:error, reason} ->
+        Logger.error("Failed to read request body: #{inspect(reason)}")
+        {"", conn}
+    end
+  end
+
+  # Try to reconstruct JSON body from parsed params (fallback for Phoenix-parsed requests)
+  defp reconstruct_json_from_params(conn, params) do
+    # Remove "path" from params and try to reconstruct JSON
+    json_params = Map.drop(params, ["path"])
+    
+    cond do
+      # If we have typical PostHog params, encode as JSON
+      Map.has_key?(json_params, "api_key") or Map.has_key?(json_params, "distinct_id") ->
+        body = Jason.encode!(json_params)
+        {body, conn}
+      
+      # If there's a single key that looks like JSON, use that
+      map_size(json_params) == 1 ->
+        case Enum.to_list(json_params) do
+          [{potential_json, ""}] when is_binary(potential_json) ->
+            # This might be JSON that got parsed as a form key
+            if String.starts_with?(potential_json, "{") and String.ends_with?(potential_json, "}") do
+              {potential_json, conn}
+            else
+              {"", conn}
+            end
+          _ -> {"", conn}
+        end
+      
+      # No body or unrecognizable format
+      true -> {"", conn}
+    end
+  end
+
   defp get_posthog_host("https://us.i.posthog.com"), do: "us.i.posthog.com"
   defp get_posthog_host("https://us-assets.i.posthog.com"), do: "us-assets.i.posthog.com"
   
-  # Add appropriate content-type header based on request method and body
-  defp maybe_add_content_type(headers, body, method) when method in [:post, :put, :patch] do
-    if body != "" and body != nil do
-      # For POST/PUT/PATCH with body, assume JSON (PostHog's default)
-      [{"content-type", "application/json"} | headers]
-    else
-      headers
+  # Add proper content-type based on HTTP method and PostHog requirements
+  defp add_proper_content_type_for_method(headers, method, body) do
+    # Remove any existing content-type headers first
+    headers = Enum.reject(headers, fn {key, _} -> 
+      String.downcase(key) == "content-type" 
+    end)
+    
+    case method do
+      :get ->
+        # GET requests should NOT have content-type header
+        headers
+      method when method in [:post, :put, :patch, :delete] ->
+        # POST/PUT/PATCH/DELETE requests need application/json for PostHog API
+        if body && byte_size(body) > 0 do
+          [{"content-type", "application/json"} | headers]
+        else
+          headers
+        end
+      _ ->
+        headers
     end
   end
-  
-  defp maybe_add_content_type(headers, _body, _method), do: headers
 end

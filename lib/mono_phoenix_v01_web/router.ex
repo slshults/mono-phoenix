@@ -15,10 +15,15 @@ defmodule MonoPhoenixV01Web.Router do
   pipeline :api do
     plug(:accepts, ["json"])
   end
+  
+  # PostHog proxy pipeline - no body parsing
+  pipeline :posthog_proxy do
+    # Don't parse body or params - let the proxy controller handle raw requests
+  end
 
   # PostHog proxy routes for autolycus.shakespeare-monologues.org only - MUST BE FIRST!
   scope "/", MonoPhoenixV01Web, host: "autolycus.shakespeare-monologues.org" do
-    pipe_through :api
+    pipe_through :posthog_proxy
     
     # PostHog static assets proxy
     get "/static/*path", PosthogProxyController, :static
