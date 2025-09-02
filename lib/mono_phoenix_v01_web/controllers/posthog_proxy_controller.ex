@@ -49,12 +49,16 @@ defmodule MonoPhoenixV01Web.PosthogProxyController do
     path_info = build_path_info(params)
     target_path = "/" <> Enum.join(path_info, "/")
     
-    # Prepare headers (remove connection-specific headers)
+    # Get HTTP method early since we need it for headers
+    method = String.downcase(conn.method) |> String.to_atom()
+    
+    # Prepare headers (remove connection-specific headers and fix content-type)
     headers = 
       conn.req_headers
       |> Enum.reject(fn {key, _} -> 
-        String.downcase(key) in ["host", "content-length", "connection"] 
+        String.downcase(key) in ["host", "content-length", "connection", "content-type"] 
       end)
+      |> maybe_add_content_type(body, method)
       |> Enum.concat([{"host", get_posthog_host(target_host)}])
 
     # Create Tesla client for the target host
@@ -62,9 +66,6 @@ defmodule MonoPhoenixV01Web.PosthogProxyController do
     
     # Parse query string into keyword list
     query_params = if conn.query_string == "", do: [], else: URI.decode_query(conn.query_string) |> Enum.to_list()
-
-    # Make the HTTP request using Tesla
-    method = String.downcase(conn.method) |> String.to_atom()
     
     case Tesla.request(client, 
            method: method, 
@@ -103,4 +104,16 @@ defmodule MonoPhoenixV01Web.PosthogProxyController do
 
   defp get_posthog_host("https://us.i.posthog.com"), do: "us.i.posthog.com"
   defp get_posthog_host("https://us-assets.i.posthog.com"), do: "us-assets.i.posthog.com"
+  
+  # Add appropriate content-type header based on request method and body
+  defp maybe_add_content_type(headers, body, method) when method in [:post, :put, :patch] do
+    if body != "" and body != nil do
+      # For POST/PUT/PATCH with body, assume JSON (PostHog's default)
+      [{"content-type", "application/json"} | headers]
+    else
+      headers
+    end
+  end
+  
+  defp maybe_add_content_type(headers, _body, _method), do: headers
 end
