@@ -16,6 +16,22 @@ defmodule MonoPhoenixV01Web.Router do
     plug(:accepts, ["json"])
   end
 
+  # PostHog proxy routes for autolycus.shakespeare-monologues.org only - MUST BE FIRST!
+  scope "/", MonoPhoenixV01Web, host: "autolycus.shakespeare-monologues.org" do
+    pipe_through :api
+    
+    # PostHog static assets proxy
+    get "/static/*path", PosthogProxyController, :static
+    
+    # PostHog API proxy - catch all other routes on the subdomain
+    post "/*path", PosthogProxyController, :proxy
+    get "/*path", PosthogProxyController, :proxy
+    put "/*path", PosthogProxyController, :proxy
+    patch "/*path", PosthogProxyController, :proxy
+    delete "/*path", PosthogProxyController, :proxy
+    options "/*path", PosthogProxyController, :proxy
+  end
+
   scope "/", MonoPhoenixV01Web do
     pipe_through(:browser)
 
@@ -159,22 +175,6 @@ defmodule MonoPhoenixV01Web.Router do
   redirect("/plays/35", "/play/35", :permanent, preserve_query_string: true)
   redirect("/plays/36", "/play/36", :permanent, preserve_query_string: true)
   redirect("/plays/37", "/play/37", :permanent, preserve_query_string: true)
-
-  # PostHog proxy routes for autolycus.shakespeare-monologues.org only
-  scope "/", MonoPhoenixV01Web, host: "autolycus.shakespeare-monologues.org" do
-    pipe_through :api
-    
-    # PostHog static assets proxy
-    get "/static/*path", PosthogProxyController, :static
-    
-    # PostHog API proxy - catch all other routes on the subdomain
-    post "/*path", PosthogProxyController, :proxy
-    get "/*path", PosthogProxyController, :proxy
-    put "/*path", PosthogProxyController, :proxy
-    patch "/*path", PosthogProxyController, :proxy
-    delete "/*path", PosthogProxyController, :proxy
-    options "/*path", PosthogProxyController, :proxy
-  end
 
   # Enables LiveDashboard only for development
   #
