@@ -160,14 +160,14 @@ defmodule MonoPhoenixV01Web.Router do
   redirect("/plays/36", "/play/36", :permanent, preserve_query_string: true)
   redirect("/plays/37", "/play/37", :permanent, preserve_query_string: true)
 
-  # PostHog proxy routes for autolycus.shakespeare-monologues.org
-  scope "/", MonoPhoenixV01Web do
+  # PostHog proxy routes for autolycus.shakespeare-monologues.org only
+  scope "/", MonoPhoenixV01Web, host: "autolycus.shakespeare-monologues.org" do
     pipe_through :api
     
     # PostHog static assets proxy
     get "/static/*path", PosthogProxyController, :static
     
-    # PostHog API proxy - catch all other routes
+    # PostHog API proxy - catch all other routes on the subdomain
     post "/*path", PosthogProxyController, :proxy
     get "/*path", PosthogProxyController, :proxy
     put "/*path", PosthogProxyController, :proxy

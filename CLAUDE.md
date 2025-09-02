@@ -184,32 +184,10 @@ Handled by `StaticPageController`:
 - No formal test suite currently exists (test directory not present)
 - Focus on gender-specific content organization (mens/womens/both categorization)
 - DO NOT run git commands. Ask me to run them in an external terminal (This is primarily for `commit` and `push`. There may be scenarious where you'll need to use git (diff, etc), but let's discuss first, please)
+- DO NOT run deploy commands. I will handle all deploys myself.
 - When Steven shares screenshots or other files with you, you'll find them in `D:\Users\Steven\Documents\Shakes\2025revival\screenshots_etc` (You'll need to translate that Windows directory to a WSL2 directory path in order to access the contents.)
 
-
-
-### Migration Success Notes (August 2025)
-
-**Key Technical Solutions for Future Reference:**
-
-**WebSocket/LiveView Issues:**
-- Problem: WebSocket origin checking failures with custom domains
-- Solution: Use `check_origin: :conn` in config/prod.exs (not endpoint.ex)
-- This automatically matches request's host, port, and scheme
-
-**Gigalixir SSL Certificates:**
-- Fully automatic via cert-manager and Let's Encrypt
-- No manual certificate upload needed
-- Typical provisioning time: 15 minutes to 24 hours after DNS propagation
-- Temporary "Kubernetes Ingress Controller Fake Certificate" is normal during provisioning
-
-**Deployment Process:**
-1. Set PHX_HOST environment variable to match your custom domain
-2. Ensure DNS CNAMEs point to *.gigalixirdns.com endpoints  
-3. SSL certificates provision automatically via cert-manager
-4. Use `assets/package.json` with deploy script for proper asset compilation
-
-### Current Status
+--- 
 
 My local computing and development environment includes:  
 - Windows 11 Pro, v24H2, OS Build 26120.5770, Windows Feature Experience Pack 1000.26100.240.0
