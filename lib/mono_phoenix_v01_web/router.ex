@@ -17,26 +17,26 @@ defmodule MonoPhoenixV01Web.Router do
   end
   
   # PostHog proxy pipeline - bypass UTF-8 validation and preserve raw body
-  pipeline :posthog_proxy do
-    plug MonoPhoenixV01Web.Plugs.PosthogBodyReader
-    # Skip default body parsing to avoid UTF-8 validation errors
-  end
+  # pipeline :posthog_proxy do
+  #   plug MonoPhoenixV01Web.Plugs.PosthogBodyReader
+  #   # Skip default body parsing to avoid UTF-8 validation errors
+  # end
 
   # PostHog proxy routes for autolycus.shakespeare-monologues.org only - MUST BE FIRST!
-  scope "/", MonoPhoenixV01Web, host: "autolycus.shakespeare-monologues.org" do
-    pipe_through :posthog_proxy
-    
-    # PostHog static assets proxy
-    get "/static/*path", PosthogProxyController, :static
-    
-    # PostHog API proxy - catch all other routes on the subdomain
-    post "/*path", PosthogProxyController, :proxy
-    get "/*path", PosthogProxyController, :proxy
-    put "/*path", PosthogProxyController, :proxy
-    patch "/*path", PosthogProxyController, :proxy
-    delete "/*path", PosthogProxyController, :proxy
-    options "/*path", PosthogProxyController, :proxy
-  end
+  # scope "/", MonoPhoenixV01Web, host: "autolycus.shakespeare-monologues.org" do
+  #   pipe_through :posthog_proxy
+  #   
+  #   # PostHog static assets proxy
+  #   get "/static/*path", PosthogProxyController, :static
+  #   
+  #   # PostHog API proxy - catch all other routes on the subdomain
+  #   post "/*path", PosthogProxyController, :proxy
+  #   get "/*path", PosthogProxyController, :proxy
+  #   put "/*path", PosthogProxyController, :proxy
+  #   patch "/*path", PosthogProxyController, :proxy
+  #   delete "/*path", PosthogProxyController, :proxy
+  #   options "/*path", PosthogProxyController, :proxy
+  # end
 
   scope "/", MonoPhoenixV01Web do
     pipe_through(:browser)
