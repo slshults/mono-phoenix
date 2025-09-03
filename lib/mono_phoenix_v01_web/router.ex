@@ -16,9 +16,10 @@ defmodule MonoPhoenixV01Web.Router do
     plug(:accepts, ["json"])
   end
   
-  # PostHog proxy pipeline - no body parsing
+  # PostHog proxy pipeline - bypass UTF-8 validation and preserve raw body
   pipeline :posthog_proxy do
-    # Don't parse body or params - let the proxy controller handle raw requests
+    plug MonoPhoenixV01Web.Plugs.PosthogBodyReader
+    # Skip default body parsing to avoid UTF-8 validation errors
   end
 
   # PostHog proxy routes for autolycus.shakespeare-monologues.org only - MUST BE FIRST!

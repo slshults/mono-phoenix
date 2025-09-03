@@ -1,6 +1,5 @@
 defmodule MonoPhoenixV01Web.PosthogProxyController do
   use MonoPhoenixV01Web, :controller
-  use Phoenix.Controller, formats: []
   require Logger
 
   @posthog_api_host "https://us.i.posthog.com"
@@ -43,7 +42,7 @@ defmodule MonoPhoenixV01Web.PosthogProxyController do
   end
 
   defp proxy_to_posthog(conn, target_host, params) do
-    # Get the request body - handle both raw and parsed cases
+    # Get the request body - use pre-read raw body if available
     {body, conn} = get_request_body(conn, params)
 
     # Build the target path
@@ -111,93 +110,117 @@ defmodule MonoPhoenixV01Web.PosthogProxyController do
   defp build_path_info(%{"path" => path}) when is_list(path), do: path
   defp build_path_info(_), do: []
 
-  # Get request body - handle both raw and Phoenix-parsed cases
+  # Get request body - handle both pre-read raw body and Phoenix-parsed cases
+  # For proxy requests, we want to avoid any UTF-8 validation
   defp get_request_body(conn, params) do
-    # First try to read raw body
-    case Plug.Conn.read_body(conn, length: 64 * 1024 * 1024) do
+    # First check if we have a pre-read raw body from PosthogBodyReader plug
+    case conn.assigns[:raw_body] do
+      body when is_binary(body) ->
+        Logger.info("Using pre-read raw body of size: #{byte_size(body)}")
+        {body, conn}
+      nil ->
+        # Fallback to reading body directly (shouldn't happen with our plug)
+        Logger.info("No pre-read body found, attempting direct read")
+        read_body_directly(conn, params)
+    end
+  end
+
+  # Direct body reading fallback
+  defp read_body_directly(conn, params) do
+    case Plug.Conn.read_body(conn, 
+         length: 64 * 1024 * 1024, 
+         read_length: 1024 * 1024, 
+         read_timeout: 60_000) do
       {:ok, "", conn} ->
         # Body was already read/parsed, try to reconstruct from params
-        reconstruct_json_from_params(conn, params)
+        reconstruct_body_from_params(conn, params)
       {:ok, body, conn} when byte_size(body) > 0 ->
-        # Got raw body
+        # Got raw body - return as-is for proxy forwarding
+        Logger.info("Using directly read body of size: #{byte_size(body)}")
         {body, conn}
-      {:more, _partial, conn} ->
-        # Body too large, try to get all of it
-        case Plug.Conn.read_body(conn, length: 64 * 1024 * 1024, read_length: 64 * 1024 * 1024) do
-          {:ok, body, conn} -> {body, conn}
-          {:more, partial, conn} -> {partial, conn}
-          {:error, reason} ->
-            Logger.error("Failed to read request body: #{inspect(reason)}")
-            {"", conn}
-        end
+      {:more, partial, conn} ->
+        # Body too large, collect all chunks
+        collect_remaining_body(conn, partial)
+      {:error, :timeout} ->
+        Logger.error("Timeout reading request body")
+        {"", conn}
       {:error, reason} ->
         Logger.error("Failed to read request body: #{inspect(reason)}")
         {"", conn}
     end
   end
 
-  # Try to reconstruct JSON body from parsed params (fallback for Phoenix-parsed requests)
-  defp reconstruct_json_from_params(conn, params) do
-    # Remove "path" from params and try to reconstruct JSON
-    json_params = Map.drop(params, ["path"])
+  # Collect remaining chunks for large bodies
+  defp collect_remaining_body(conn, acc) do
+    case Plug.Conn.read_body(conn, 
+         length: 64 * 1024 * 1024, 
+         read_length: 1024 * 1024,
+         read_timeout: 60_000) do
+      {:ok, body, conn} -> {acc <> body, conn}
+      {:more, partial, conn} -> collect_remaining_body(conn, acc <> partial)
+      {:error, reason} ->
+        Logger.error("Failed to read remaining body: #{inspect(reason)}")
+        {acc, conn}
+    end
+  end
+
+  # Try to reconstruct body from parsed params (fallback for Phoenix-parsed requests)
+  # This handles both JSON and form-encoded data
+  defp reconstruct_body_from_params(conn, params) do
+    # Remove "path" from params
+    cleaned_params = Map.drop(params, ["path"])
     
     cond do
-      # If we have typical PostHog params, encode as JSON
-      Map.has_key?(json_params, "api_key") or Map.has_key?(json_params, "distinct_id") ->
-        body = Jason.encode!(json_params)
-        {body, conn}
+      # If we have typical PostHog JSON params, encode as JSON
+      Map.has_key?(cleaned_params, "api_key") or Map.has_key?(cleaned_params, "distinct_id") ->
+        try do
+          body = Jason.encode!(cleaned_params)
+          Logger.info("Reconstructed JSON body from params")
+          {body, conn}
+        rescue
+          e in Jason.EncodeError ->
+            Logger.error("Failed to encode params as JSON: #{inspect(e)}")
+            {"", conn}
+        end
       
       # If there's a single key that looks like JSON, use that
-      map_size(json_params) == 1 ->
-        case Enum.to_list(json_params) do
+      map_size(cleaned_params) == 1 ->
+        case Enum.to_list(cleaned_params) do
           [{potential_json, ""}] when is_binary(potential_json) ->
             # This might be JSON that got parsed as a form key
             if String.starts_with?(potential_json, "{") and String.ends_with?(potential_json, "}") do
+              Logger.info("Using potential JSON from form key")
               {potential_json, conn}
             else
-              {"", conn}
+              # Might be form data, encode as form
+              encode_as_form_data(cleaned_params, conn)
             end
-          _ -> {"", conn}
+          _ -> encode_as_form_data(cleaned_params, conn)
         end
+      
+      # If we have multiple params, might be form data
+      map_size(cleaned_params) > 0 ->
+        encode_as_form_data(cleaned_params, conn)
       
       # No body or unrecognizable format
       true -> {"", conn}
     end
   end
 
-  defp get_posthog_host("https://us.i.posthog.com"), do: "us.i.posthog.com"
-  defp get_posthog_host("https://us-assets.i.posthog.com"), do: "us-assets.i.posthog.com"
-  
-  # Preserve original content-type from client request for PostHog compatibility
-  defp add_proper_content_type_for_method(headers, method, body) do
-    # Check if we already have a content-type header
-    has_content_type = Enum.any?(headers, fn {key, _} -> 
-      String.downcase(key) == "content-type" 
-    end)
-    
-    case method do
-      :get ->
-        # GET requests should NOT have content-type header
-        Enum.reject(headers, fn {key, _} -> 
-          String.downcase(key) == "content-type" 
-        end)
-      method when method in [:post, :put, :patch, :delete] ->
-        if body && byte_size(body) > 0 do
-          if has_content_type do
-            # Preserve existing content-type from original request
-            headers
-          else
-            # Only add JSON content-type if no content-type was provided
-            [{"content-type", "application/json"} | headers]
-          end
-        else
-          # Remove content-type for empty body requests
-          Enum.reject(headers, fn {key, _} -> 
-            String.downcase(key) == "content-type" 
-          end)
-        end
-      _ ->
-        headers
+  # Encode params as form data
+  defp encode_as_form_data(params, conn) do
+    try do
+      # Use URI.encode_query which properly handles UTF-8
+      body = URI.encode_query(params)
+      Logger.info("Reconstructed form body from params")
+      {body, conn}
+    rescue
+      e ->
+        Logger.error("Failed to encode params as form data: #{inspect(e)}")
+        {"", conn}
     end
   end
+
+  defp get_posthog_host("https://us.i.posthog.com"), do: "us.i.posthog.com"
+  defp get_posthog_host("https://us-assets.i.posthog.com"), do: "us-assets.i.posthog.com"
 end
