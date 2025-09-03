@@ -11,13 +11,44 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
       phx-hook="ModalClickHandler"
       phx-target={@myself}
     >
+      <!-- Confirmation Dialog -->
+      <div 
+        id="confirmation-dialog" 
+        class="confirmation-dialog-overlay" 
+        style={if @show_confirmation, do: "display: flex;", else: "display: none;"}
+      >
+        <div class="confirmation-dialog">
+          <div class="confirmation-dialog-header">
+            <h4 id="confirmation-dialog-title">Cancel Generation?</h4>
+          </div>
+          <div class="confirmation-dialog-body">
+            <p id="confirmation-dialog-message">Claude is still generating content. Are you sure you want to cancel and close this window?</p>
+          </div>
+          <div class="confirmation-dialog-buttons">
+            <button 
+              class="confirmation-btn confirm-cancel"
+              phx-click="close_modal"
+              phx-value-force="true"
+              phx-target={@myself}
+            >
+              Yes, cancel
+            </button>
+            <button 
+              class="confirmation-btn confirm-wait"
+              phx-click="hide_confirmation"
+              phx-target={@myself}
+            >
+              No, wait
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div class="summary-modal-content">
         <div class="summary-modal-header">
           <h3 class="summary-modal-title"><%= @title %></h3>
           <button 
             class="summary-modal-close" 
-            phx-click="close_modal"
-            phx-target={@myself}
             aria-label="Close modal"
           >
             &times;
@@ -75,13 +106,45 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
       title: "", 
       content_type: "",
       error: nil,
-      generation_params: %{}
+      generation_params: %{},
+      canceled: false,
+      show_confirmation: false
     )}
   end
 
   @impl true
-  def handle_event("close_modal", _, socket) do
-    {:noreply, assign(socket, show: false)}
+  def handle_event("modal_close_request", _params, socket) do
+    if socket.assigns.loading do
+      # Show confirmation dialog
+      {:noreply, assign(socket, show_confirmation: true)}
+    else
+      # Not loading - close normally  
+      {:noreply, assign(socket, show: false)}
+    end
+  end
+
+  @impl true
+  def handle_event("close_modal", params, socket) do
+    case params do
+      %{"force" => "true"} ->
+        # Force close - user confirmed they want to cancel
+        require Logger
+        Logger.info("User confirmed cancellation - stopping generation")
+        
+        # Notify parent LiveView that user canceled generation
+        send(self(), {:cancel_generation, "summary-modal"})
+        
+        {:noreply, assign(socket, show: false, loading: false, error: nil, canceled: true, show_confirmation: false)}
+      
+      _ ->
+        # Fallback handler
+        {:noreply, assign(socket, show: false)}
+    end
+  end
+
+  @impl true
+  def handle_event("hide_confirmation", _params, socket) do
+    {:noreply, assign(socket, show_confirmation: false)}
   end
 
   @impl true
@@ -123,7 +186,8 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
       title: "Play Summary: #{play_title}",
       content_type: "Play Summary",
       error: nil,
-      generation_params: %{play_title: play_title}
+      generation_params: %{play_title: play_title},
+      canceled: false
     )
     
     {:ok, socket}
@@ -137,7 +201,8 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
       title: "Scene Summary: #{play_title} - #{location}", 
       content_type: "Scene Summary",
       error: nil,
-      generation_params: %{play_title: play_title, location: location}
+      generation_params: %{play_title: play_title, location: location},
+      canceled: false
     )
     
     {:ok, socket}
@@ -151,7 +216,8 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
       title: "Modern Paraphrasing: #{character}",
       content_type: "Paraphrasing", 
       error: nil,
-      generation_params: %{monologue_id: monologue_id, monologue_text: monologue_text}
+      generation_params: %{monologue_id: monologue_id, monologue_text: monologue_text},
+      canceled: false
     )
     
     {:ok, socket}
@@ -159,13 +225,22 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
 
   @impl true
   def update(%{action: "content_generated", content: content}, socket) do
-    {:ok, assign(socket, loading: false, content: content)}
+    if socket.assigns.canceled do
+      {:ok, socket}
+    else
+      {:ok, assign(socket, loading: false, content: content)}
+    end
   end
 
   @impl true
   def update(%{action: "content_error", error: error}, socket) do
-    {:ok, assign(socket, loading: false, error: error)}
+    if socket.assigns.canceled do
+      {:ok, socket}
+    else
+      {:ok, assign(socket, loading: false, error: error)}
+    end
   end
+
 
   @impl true
   def update(assigns, socket) do

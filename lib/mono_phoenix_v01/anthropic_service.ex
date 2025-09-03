@@ -161,11 +161,16 @@ defmodule MonoPhoenixV01.AnthropicService do
   end
 
   defp call_anthropic_api(system_prompt, user_prompt, response_key) do
+    call_anthropic_api_with_retry(system_prompt, user_prompt, response_key, 0)
+  end
+
+  defp call_anthropic_api_with_retry(system_prompt, user_prompt, response_key, attempt) do
     config = Application.get_env(:mono_phoenix_v01, :anthropic)
     api_key = config[:api_key]
     model = config[:model]
+    max_retries = 3
 
-    Logger.info("Making Anthropic API request for model: #{model}")
+    Logger.info("Making Anthropic API request for model: #{model} (attempt #{attempt + 1})")
 
     headers = [
       {"x-api-key", api_key},
@@ -186,11 +191,10 @@ defmodule MonoPhoenixV01.AnthropicService do
     }
 
     json_body = Jason.encode!(body)
-    Logger.info("Making API request to: #{@base_url}")
-    Logger.info("Request headers: #{inspect(headers)}")
     
     case Tesla.post(@base_url, json_body, headers: headers) do
       {:ok, %{status: 200, body: response_body}} ->
+        Logger.info("API request successful on attempt #{attempt + 1}")
         case Jason.decode(response_body) do
           {:ok, %{"content" => [%{"text" => text}]}} ->
             # Try to parse as JSON to extract the specific field
@@ -205,6 +209,13 @@ defmodule MonoPhoenixV01.AnthropicService do
           {:error, decode_error} ->
             {:error, "JSON decode error: #{inspect(decode_error)}"}
         end
+      
+      {:ok, %{status: status, body: error_body}} when status in [429, 529] and attempt < max_retries ->
+        # Rate limited - retry with exponential backoff
+        retry_delay = :math.pow(2, attempt) * 1000 + :rand.uniform(1000)  # 1-2s, 2-3s, 4-5s
+        Logger.warn("API rate limited (#{status}), retrying in #{trunc(retry_delay)}ms (attempt #{attempt + 1}/#{max_retries + 1})")
+        Process.sleep(trunc(retry_delay))
+        call_anthropic_api_with_retry(system_prompt, user_prompt, response_key, attempt + 1)
       
       {:ok, %{status: status, body: error_body}} ->
         Logger.error("Anthropic API error #{status}: #{error_body}")

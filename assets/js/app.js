@@ -35,6 +35,15 @@ let Hooks = {}
 // Modal Click Handler Hook
 Hooks.ModalClickHandler = {
   mounted() {
+    // Handle X button clicks with confirmation
+    const closeButton = this.el.querySelector(".summary-modal-close")
+    if (closeButton) {
+      closeButton.addEventListener("click", (e) => {
+        e.preventDefault()
+        this.handleModalClose()
+      })
+    }
+
     this.el.addEventListener("click", (e) => {
       // Handle copy button clicks
       if (e.target.classList.contains("copy-to-clipboard-btn")) {
@@ -58,13 +67,26 @@ Hooks.ModalClickHandler = {
         return
       }
       
-      // Only close if clicking on the overlay itself, not any child elements
+      // Click-outside-to-close behavior - only when NOT loading
       if (e.target === this.el) {
-        // Send the event to the component, not the parent LiveView
-        this.pushEventTo(this.el, "close_modal", {})
+        // Check if we're currently loading (generating content)
+        const loadingElement = this.el.querySelector(".summary-loading")
+        if (loadingElement) {
+          // Currently loading - don't allow click-outside close
+          return
+        }
+        
+        // Not loading - allow click-outside close
+        this.handleModalClose()
       }
     })
   },
+  
+  handleModalClose() {
+    // Push event directly to the LiveComponent using its ID
+    this.pushEventTo("#summary-modal", "modal_close_request", {})
+  },
+  
   
   fallbackCopyTextToClipboard(text, button) {
     const textArea = document.createElement("textarea")
