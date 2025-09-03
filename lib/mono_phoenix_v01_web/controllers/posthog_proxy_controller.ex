@@ -1,5 +1,6 @@
 defmodule MonoPhoenixV01Web.PosthogProxyController do
   use MonoPhoenixV01Web, :controller
+  use Phoenix.Controller, formats: []
   require Logger
 
   @posthog_api_host "https://us.i.posthog.com"

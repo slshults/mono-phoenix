@@ -180,6 +180,26 @@ Handled by `StaticPageController`:
 ## Important Notes
 
 - Be security conscious. Do not make suggestions which compromise security. Call me out if I make choices which compromise security.
+
+## Database Record Deletion for Bad AI Summaries
+
+When AI generates poorly formatted summaries/paraphrasing, delete them surgically:
+
+**Find Record ID:** Browser console shows `data-record-id` attribute on modal elements
+**Console Access:** `gigalixir ps:remote_console` (prod) or `iex -S mix phx.server` (local)  
+**Preview First:** `Ecto.Adapters.SQL.query!(MonoPhoenixV01.Repo, "SELECT id, content_type, identifier, LEFT(content, 100) as preview FROM summaries WHERE id = $1", [ID])`
+**Delete:** `Ecto.Adapters.SQL.query!(MonoPhoenixV01.Repo, "DELETE FROM summaries WHERE id = $1", [ID])`
+**Verify Gone:** `Ecto.Adapters.SQL.query!(MonoPhoenixV01.Repo, "SELECT COUNT(*) FROM summaries WHERE id = $1", [ID])`
+
+Commands identical between local/prod - only console access differs.
+
+## Phoenix LiveView Async Patterns
+
+- **Always use `start_async/3` for API calls** - prevents UI blocking during external requests
+- **Proper cancellation handling** - don't clean up metadata until async handlers complete to avoid race conditions  
+- **Request deduplication with MapSet** - prevents multiple simultaneous API calls for same content
+- **Modal record IDs** - `data-record-id` attributes enable easy debugging and deletion
+
 - The application uses PostHog for analytics tracking
 - Database contains production data copy for development
 - No formal test suite currently exists (test directory not present)
