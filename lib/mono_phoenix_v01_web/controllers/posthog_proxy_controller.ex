@@ -55,13 +55,12 @@ defmodule MonoPhoenixV01Web.PosthogProxyController do
     
     Logger.info("Proxying #{method} #{target_path} body size: #{byte_size(body || "")}")
     
-    # Prepare headers - remove connection-specific headers
+    # Prepare headers - remove connection-specific headers, preserve original content-type
     headers = 
       conn.req_headers
       |> Enum.reject(fn {key, _} -> 
         String.downcase(key) in ["host", "content-length", "connection"] 
       end)
-      |> add_proper_content_type_for_method(method, body)
       |> Enum.concat([{"host", get_posthog_host(target_host)}])
 
     # Create Tesla client for the target host
