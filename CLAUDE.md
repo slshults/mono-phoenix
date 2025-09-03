@@ -20,6 +20,7 @@ Our authoritative sources for docs for this project are:
 - https://hexdocs.pm/phoenix/gigalixir.html
 - https://www.gigalixir.com/docs
 - http://posthog.com/docs
+- https://docs.anthropic.com/en/api/messages
 
 #### Division of Responsibilities
 
@@ -185,6 +186,7 @@ Handled by `StaticPageController`:
 - Focus on gender-specific content organization (mens/womens/both categorization)
 - DO NOT run git commands. Ask me to run them in an external terminal (This is primarily for `commit` and `push`. There may be scenarious where you'll need to use git (diff, etc), but let's discuss first, please)
 - DO NOT run deploy commands. I will handle all deploys myself.
+- DO NOT use trial and error to solve problems, it's neither efficient nor effective. Instead ALWAYS search authoritative documentation for the correct and current approach to any issues.
 - When Steven shares screenshots or other files with you, you'll find them in `D:\Users\Steven\Documents\Shakes\2025revival\screenshots_etc` (You'll need to translate that Windows directory to a WSL2 directory path in order to access the contents.)
 
 --- 

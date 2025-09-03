@@ -30,8 +30,67 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 
+let Hooks = {}
+
+// Modal Click Handler Hook
+Hooks.ModalClickHandler = {
+  mounted() {
+    this.el.addEventListener("click", (e) => {
+      // Handle copy button clicks
+      if (e.target.classList.contains("copy-to-clipboard-btn")) {
+        const contentDiv = this.el.querySelector(".summary-content")
+        if (contentDiv) {
+          // Get text content, preserve line breaks
+          const text = contentDiv.innerText || contentDiv.textContent || ""
+          navigator.clipboard.writeText(text).then(() => {
+            // Visual feedback - briefly change the icon
+            const originalText = e.target.textContent
+            e.target.textContent = "✅"
+            setTimeout(() => {
+              e.target.textContent = originalText
+            }, 1000)
+          }).catch(err => {
+            console.warn('Failed to copy text: ', err)
+            // Fallback for older browsers
+            this.fallbackCopyTextToClipboard(text, e.target)
+          })
+        }
+        return
+      }
+      
+      // Only close if clicking on the overlay itself, not any child elements
+      if (e.target === this.el) {
+        // Send the event to the component, not the parent LiveView
+        this.pushEventTo(this.el, "close_modal", {})
+      }
+    })
+  },
+  
+  fallbackCopyTextToClipboard(text, button) {
+    const textArea = document.createElement("textarea")
+    textArea.value = text
+    document.body.appendChild(textArea)
+    textArea.focus()
+    textArea.select()
+    try {
+      document.execCommand('copy')
+      const originalText = button.textContent
+      button.textContent = "✅"
+      setTimeout(() => {
+        button.textContent = originalText
+      }, 1000)
+    } catch (err) {
+      console.warn('Fallback copy failed: ', err)
+    }
+    document.body.removeChild(textArea)
+  }
+}
+
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
-let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}})
+let liveSocket = new LiveSocket("/live", Socket, {
+  params: {_csrf_token: csrfToken},
+  hooks: Hooks
+})
 
 // Capture searches for PostHog custom event
 let searchTimeout;

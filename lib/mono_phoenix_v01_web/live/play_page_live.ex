@@ -7,10 +7,14 @@ defmodule MonoPhoenixV01Web.PlayPageLive do
   def mount(%{"playid" => playid_str}, _session, socket) do
     playid = String.to_integer(playid_str)
     rows = fetch_monologues(playid, "")
+    
+    # Subscribe to PubSub events for retry functionality
+    Phoenix.PubSub.subscribe(MonoPhoenixV01.PubSub, "play_page_events")
+    
     {:ok, assign(socket, search_bar: %{}, search_value: "", rows: rows, play_id: playid)}
   end
 
-  # Add this function to handle the search event
+  # Handle search events
   @impl true
   def handle_event("search", %{"search_value" => search_value}, socket) do
     # Cancel any previous timer
@@ -23,6 +27,55 @@ defmodule MonoPhoenixV01Web.PlayPageLive do
     {:noreply, assign(socket, search_timer: timer_ref)}
   end
 
+  # Handle summary icon click events
+  @impl true
+  def handle_event("show_play_summary", %{"play-title" => play_title}, socket) do
+    # Show the modal first
+    send_update(MonoPhoenixV01Web.SummaryModalComponent, 
+      id: "summary-modal", 
+      action: "show_play_summary", 
+      play_title: play_title
+    )
+    
+    # Then start the content generation
+    send(self(), {:generate_summary, "play_summary", %{play_title: play_title}, "summary-modal"})
+    
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("show_scene_summary", %{"play-title" => play_title, "location" => location}, socket) do
+    # Show the modal first
+    send_update(MonoPhoenixV01Web.SummaryModalComponent, 
+      id: "summary-modal", 
+      action: "show_scene_summary", 
+      play_title: play_title,
+      location: location
+    )
+    
+    # Then start the content generation
+    send(self(), {:generate_summary, "scene_summary", %{play_title: play_title, location: location}, "summary-modal"})
+    
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("show_paraphrasing", %{"monologue-id" => monologue_id, "monologue-text" => monologue_text, "character" => character}, socket) do
+    # Show the modal first
+    send_update(MonoPhoenixV01Web.SummaryModalComponent, 
+      id: "summary-modal", 
+      action: "show_paraphrasing", 
+      monologue_id: monologue_id,
+      monologue_text: monologue_text,
+      character: character
+    )
+    
+    # Then start the content generation
+    send(self(), {:generate_summary, "paraphrasing", %{monologue_id: monologue_id, monologue_text: monologue_text}, "summary-modal"})
+    
+    {:noreply, socket}
+  end
+
   @impl true
   def handle_info({:search, search_value}, socket) do
     # Check if rows are empty before calling hd
@@ -30,6 +83,62 @@ defmodule MonoPhoenixV01Web.PlayPageLive do
     updated_rows = fetch_monologues(playid, search_value)
 
     {:noreply, assign(socket, rows: updated_rows, search_timer: nil)}
+  end
+
+  # Handle summary generation events
+  @impl true
+  def handle_info({:generate_summary, content_type, params, component_id}, socket) do
+    case content_type do
+      "play_summary" ->
+        case MonoPhoenixV01.AnthropicService.get_play_summary(params.play_title) do
+          {:ok, content} ->
+            send_update(MonoPhoenixV01Web.SummaryModalComponent, 
+              id: component_id, 
+              action: "content_generated", 
+              content: content
+            )
+          {:error, error} ->
+            send_update(MonoPhoenixV01Web.SummaryModalComponent, 
+              id: component_id, 
+              action: "content_error", 
+              error: "Failed to generate play summary: #{error}"
+            )
+        end
+
+      "scene_summary" ->
+        case MonoPhoenixV01.AnthropicService.get_scene_summary(params.play_title, params.location) do
+          {:ok, content} ->
+            send_update(MonoPhoenixV01Web.SummaryModalComponent, 
+              id: component_id, 
+              action: "content_generated", 
+              content: content
+            )
+          {:error, error} ->
+            send_update(MonoPhoenixV01Web.SummaryModalComponent, 
+              id: component_id, 
+              action: "content_error", 
+              error: "Failed to generate scene summary: #{error}"
+            )
+        end
+
+      "paraphrasing" ->
+        case MonoPhoenixV01.AnthropicService.get_monologue_paraphrasing(params.monologue_id, params.monologue_text) do
+          {:ok, content} ->
+            send_update(MonoPhoenixV01Web.SummaryModalComponent, 
+              id: component_id, 
+              action: "content_generated", 
+              content: content
+            )
+          {:error, error} ->
+            send_update(MonoPhoenixV01Web.SummaryModalComponent, 
+              id: component_id, 
+              action: "content_error", 
+              error: "Failed to generate paraphrasing: #{error}"
+            )
+        end
+    end
+
+    {:noreply, socket}
   end
 
   # Update fetch_monologues/1 to fetch_monologues/2 and add search_value as an argument

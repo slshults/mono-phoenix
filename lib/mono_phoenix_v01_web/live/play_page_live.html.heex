@@ -53,7 +53,13 @@
                 class="monologue-playname"
                 alt="This is the title of the play the monologue is found in."
                 title="This is the title of the play the monologue is found in."
-              ><%= row.play %></span>&nbsp; &middot; <span
+              ><%= row.play %></span>
+              <span class="summary-icon" 
+                    phx-click="show_play_summary" 
+                    phx-value-play-title={row.play}
+                    title="Show play summary">
+                <img src={Routes.static_path(@socket, "/images/scroll-summary-icon.svg")} alt="Play summary" />
+              </span>&nbsp; &middot; <span
                 class="monologue-actscene"
                 alt="👆 Click here to read the whole scene. 
 This link jumps you to the monologue, 
@@ -61,7 +67,14 @@ scroll up to read from the top of the scene."
                 title="👆 Click here to read the whole scene. 
 This link jumps you to the monologue, 
 scroll up to read from the top of the scene."
-              ><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; &middot;
+              ><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>
+              <span class="summary-icon" 
+                    phx-click="show_scene_summary" 
+                    phx-value-play-title={row.play}
+                    phx-value-location={row.location}
+                    title="Show scene summary">
+                <img src={Routes.static_path(@socket, "/images/scroll-summary-icon.svg")} alt="Scene summary" />
+              </span>&nbsp; &middot;
               <span class="monologue-actscene"><%= row.style %></span>
               <br />
               <span
@@ -87,6 +100,14 @@ scroll up to read from the top of the scene."
               >
                 <br />
                 <%= raw(Map.get(row, :body)) %>&nbsp;
+                <span class="summary-icon" 
+                      phx-click="show_paraphrasing" 
+                      phx-value-monologue-id={row.monologues}
+                      phx-value-monologue-text={Map.get(row, :body)}
+                      phx-value-character={row.character}
+                      title="Show modern paraphrasing">
+                  <img src={Routes.static_path(@socket, "/images/thinking-paraphrase-icon.svg")} alt="Modern paraphrasing" />
+                </span>&nbsp;
                 <%= link to: raw(row.pdf), method: :get, target: "_blank", rel: "noopener" do %>
                   <img
                     src={Routes.static_path(@socket, "/images/pdf_file_icon_16x16.png")}
@@ -103,6 +124,11 @@ scroll up to read from the top of the scene."
     </table>
   </div>
 </div>
+
+<.live_component 
+  module={MonoPhoenixV01Web.SummaryModalComponent} 
+  id="summary-modal" 
+/>
 
 <script>
   const toggleButton = document.getElementById('toggle-button');

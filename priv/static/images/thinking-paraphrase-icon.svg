@@ -1,0 +1,16 @@
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <!-- Thought bubble main -->
+  <ellipse cx="8" cy="6" rx="6" ry="4" fill="#F9F9DF" stroke="#5E2612" stroke-width="0.8"/>
+  
+  <!-- Small thought bubble -->
+  <circle cx="4" cy="11" r="1.5" fill="#F9F9DF" stroke="#5E2612" stroke-width="0.6"/>
+  
+  <!-- Tiny thought bubble -->
+  <circle cx="2.5" cy="13" r="0.8" fill="#F9F9DF" stroke="#5E2612" stroke-width="0.5"/>
+  
+  <!-- Question mark inside main bubble -->
+  <path d="M7 4 Q8.5 3 9.5 4 Q9.5 5 8.5 5.5 L8.5 6.5 M8.5 7.5 L8.5 8" stroke="#5E2612" stroke-width="0.6" fill="none" stroke-linecap="round"/>
+  
+  <!-- Question mark dot -->
+  <circle cx="8.5" cy="8.5" r="0.3" fill="#5E2612"/>
+</svg>

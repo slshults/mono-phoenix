@@ -751,6 +751,246 @@ span.toggle-control>a.toggle-mono>img {
     color: #F9F9DF;
   }
 
-  
-  
-  
+/* Shakespeare Summary & Paraphrasing Feature Styles */
+
+/* Summary icons */
+.summary-icon {
+    display: inline-block;
+    margin-left: 4px;
+    margin-right: 4px;
+    cursor: pointer;
+    vertical-align: middle;
+    transition: transform 0.2s ease;
+}
+
+.summary-icon:hover {
+    transform: scale(1.2);
+}
+
+.summary-icon img {
+    width: 16px;
+    height: 16px;
+    border: none;
+}
+
+/* Modal overlay */
+.summary-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    display: none;
+}
+
+/* Modal content */
+.summary-modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #F9F9DF;
+    border: 2px solid #5E2612;
+    border-radius: 8px;
+    max-width: 600px;
+    max-height: 80vh;
+    width: 90%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Modal header */
+.summary-modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #5E2612;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #F9F9DF;
+    border-radius: 6px 6px 0 0;
+}
+
+.summary-modal-title {
+    margin: 0;
+    color: #5E2612;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.summary-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #5E2612;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+}
+
+.summary-modal-close:hover {
+    background-color: rgba(94, 38, 18, 0.1);
+}
+
+/* Modal body */
+.summary-modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+    background-color: #F9F9DF;
+    border-radius: 0 0 6px 6px;
+}
+
+/* Content styles */
+.summary-content {
+    color: #333;
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+.summary-content p {
+    margin-bottom: 12px;
+}
+
+/* Loading state */
+.summary-loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: #5E2612;
+}
+
+.loading-spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid #F9F9DF;
+    border-top: 3px solid #5E2612;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 16px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Error state */
+.summary-error {
+    text-align: center;
+    padding: 20px;
+    color: #c00;
+}
+
+.retry-button {
+    background-color: #5E2612;
+    color: #F9F9DF;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 12px;
+    transition: background-color 0.2s ease;
+}
+
+.retry-button:hover {
+    background-color: #4a1e0f;
+}
+
+/* Dark mode support for modals */
+.dark-mode .summary-modal-content {
+    background-color: #2b2a2a;
+    border-color: #666;
+}
+
+.dark-mode .summary-modal-header {
+    background-color: #2b2a2a;
+    border-bottom-color: #666;
+}
+
+.dark-mode .summary-modal-title {
+    color: #F9F9DF;
+}
+
+.dark-mode .summary-modal-close {
+    color: #F9F9DF;
+}
+
+.dark-mode .summary-modal-close:hover {
+    background-color: rgba(249, 249, 223, 0.1);
+}
+
+.dark-mode .summary-modal-body {
+    background-color: #2b2a2a;
+}
+
+.dark-mode .summary-content {
+    color: #F9F9DF;
+}
+
+.dark-mode .summary-loading {
+    color: #F9F9DF;
+}
+
+.dark-mode .loading-spinner {
+    border-color: #2b2a2a;
+    border-top-color: #F9F9DF;
+}
+
+/* Summary Modal Footer */
+.summary-modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #ddd;
+}
+
+.copy-to-clipboard-btn {
+  background: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 6px 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.copy-to-clipboard-btn:hover {
+  background-color: #f5f5f5;
+  border-color: #999;
+}
+
+.ai-disclaimer {
+  font-size: 11px;
+  color: #666;
+  text-align: left;
+  max-width: 70%;
+}
+
+/* Dark mode styles for footer */
+.dark-mode .summary-modal-footer {
+  border-top-color: #555;
+}
+
+.dark-mode .copy-to-clipboard-btn {
+  border-color: #555;
+  color: #e0e0e0;
+}
+
+.dark-mode .copy-to-clipboard-btn:hover {
+  background-color: #444;
+  border-color: #777;
+}
+
+.dark-mode .ai-disclaimer {
+  color: #999;
+}
