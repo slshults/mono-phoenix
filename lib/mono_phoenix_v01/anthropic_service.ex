@@ -99,7 +99,7 @@ defmodule MonoPhoenixV01.AnthropicService do
     - No Fear Shakespeare Series by SparkNotes
     """
 
-    user_prompt = "Please provide a 2 to 4 paragraph overview and summary of the events in Shakespeare's play \"#{play_title}\"."
+    user_prompt = "Please provide a 2 to 4 paragraph overview and summary of the events in Shakespeare's play \"#{play_title}\". Do not include commentary about the play, beyond summarizing the events of the play. Don't insert literary commentary such as this example: \"...one of Shakespeare's most complex and tonally ambiguous plays...\", just focus on the events of the play."
 
     call_anthropic_api(system_prompt, user_prompt, "PlaySummary")
   end
@@ -126,7 +126,7 @@ defmodule MonoPhoenixV01.AnthropicService do
     - No Fear Shakespeare Series by SparkNotes
     """
 
-    user_prompt = "Please provide a 1 or 2 paragraph overview and summary of the events of #{location} of Shakespeare's play \"#{play_title}\", writing in the third person."
+    user_prompt = "Please provide a 1 or 2 paragraph overview and summary of the events of #{location} of Shakespeare's play \"#{play_title}\", writing in the third person. Do not include commentary about the play, beyond summarizing the events of the scene. Don't insert literary commentary such as this example: \"...one of Shakespeare's most complex and tonally ambiguous plays...\", just focus on the events of the scene."
 
     call_anthropic_api(system_prompt, user_prompt, "SceneSummary")
   end
@@ -152,7 +152,23 @@ defmodule MonoPhoenixV01.AnthropicService do
     """
 
     user_prompt = """
-    Please provide a line-by-line paraphrase of this monologue from Shakespeare, modernizing the language to make it more accessible for a high school reading level while maintaining the essence of the character's thoughts and emotions. The original text of the monologue follows:
+    Please provide a line-by-line paraphrase of this monologue from Shakespeare, modernizing the language to make it more accessible for a high school reading level while maintaining the essence of the character's thoughts and emotions.
+
+    IMPORTANT FORMATTING REQUIREMENTS:
+    1. Use EXACTLY this format for each line pair:
+       Original: [original Shakespeare line]
+       Modern: [modern paraphrase]
+
+    2. Ignore any lines that contain strikethroughs or HTML strike tags (<strike>, </strike>, <s>, </s>) - do not include these lines in your paraphrase.
+
+    3. Example of correct formatting:
+       Original: But soft, what light through yonder window breaks?
+       Modern: Wait, what's that light coming from that window over there?
+       
+       Original: It is the east, and Juliet is the sun.
+       Modern: It's coming from the east, and Juliet is like the sun.
+
+    The original text of the monologue follows:
 
     #{monologue_text}
     """
