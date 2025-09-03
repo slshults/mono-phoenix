@@ -148,7 +148,15 @@ defmodule MonoPhoenixV01Web.PlayPageLive do
     metadata = socket.assigns.async_metadata[request_key]
     
     case api_result do
-      {:ok, content} ->
+      {:ok, %{content: content, id: record_id}} ->
+        send_update(MonoPhoenixV01Web.SummaryModalComponent, 
+          id: metadata.component_id, 
+          action: "content_generated", 
+          content: content,
+          record_id: record_id
+        )
+      {:ok, content} when is_binary(content) ->
+        # Fallback for old format (shouldn't happen with new code)
         send_update(MonoPhoenixV01Web.SummaryModalComponent, 
           id: metadata.component_id, 
           action: "content_generated", 

@@ -10,6 +10,7 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
       style={if @show, do: "display: block;", else: "display: none;"}
       phx-hook="ModalClickHandler"
       phx-target={@myself}
+      data-record-id={@record_id}
     >
       <!-- Confirmation Dialog -->
       <div 
@@ -108,7 +109,8 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
       error: nil,
       generation_params: %{},
       canceled: false,
-      show_confirmation: false
+      show_confirmation: false,
+      record_id: nil
     )}
   end
 
@@ -224,7 +226,17 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
   end
 
   @impl true
+  def update(%{action: "content_generated", content: content, record_id: record_id}, socket) do
+    if socket.assigns.canceled do
+      {:ok, socket}
+    else
+      {:ok, assign(socket, loading: false, content: content, record_id: record_id)}
+    end
+  end
+
+  @impl true
   def update(%{action: "content_generated", content: content}, socket) do
+    # Fallback for updates without record_id (shouldn't happen with new code)
     if socket.assigns.canceled do
       {:ok, socket}
     else

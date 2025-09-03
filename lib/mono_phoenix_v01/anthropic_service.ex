@@ -43,21 +43,21 @@ defmodule MonoPhoenixV01.AnthropicService do
       nil ->
         case generator_fn.(identifier) do
           {:ok, content} ->
-            cache_content(content_type, identifier, content)
-            {:ok, content}
+            record = cache_content(content_type, identifier, content)
+            {:ok, %{content: content, id: record.id}}
           error ->
             error
         end
       
-      cached_content ->
-        {:ok, cached_content}
+      cached_data ->
+        {:ok, cached_data}
     end
   end
 
   defp get_cached_content(content_type, identifier) do
     from(s in Summary,
       where: s.content_type == ^content_type and s.identifier == ^identifier,
-      select: s.content
+      select: %{content: s.content, id: s.id}
     )
     |> Repo.one()
   end
