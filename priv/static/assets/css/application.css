@@ -756,8 +756,8 @@ span.toggle-control>a.toggle-mono>img {
 /* Summary icons */
 .summary-icon {
     display: inline-block;
-    margin-left: 4px;
-    margin-right: 4px;
+    margin-left: 2px;
+    margin-right: 6px;
     cursor: pointer;
     vertical-align: middle;
     transition: transform 0.2s ease;

@@ -748,3 +748,23 @@ span.toggle-control>a.toggle-mono>img {
   font-weight: normal;
   color: inherit;
 }
+
+/* Summary icons */
+.summary-icon {
+    display: inline-block;
+    margin-left: 2px;
+    margin-right: 6px;
+    cursor: pointer;
+    vertical-align: middle;
+    transition: transform 0.2s ease;
+}
+
+.summary-icon:hover {
+    transform: scale(1.2);
+}
+
+.summary-icon img {
+    width: 16px;
+    height: 16px;
+    border: none;
+}
