@@ -85,4 +85,9 @@ if config_env() == :prod do
   #     config :swoosh, :api_client, Swoosh.ApiClient.Hackney
   #
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
+
+  # Anthropic API configuration for Shakespeare summaries
+  config :mono_phoenix_v01, :anthropic,
+    api_key: System.get_env("ANTHROPIC_API_KEY"),
+    model: "claude-sonnet-4-20250514"
 end
