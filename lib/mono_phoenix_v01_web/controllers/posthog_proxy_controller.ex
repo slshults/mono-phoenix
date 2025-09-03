@@ -169,23 +169,33 @@ defmodule MonoPhoenixV01Web.PosthogProxyController do
   defp get_posthog_host("https://us.i.posthog.com"), do: "us.i.posthog.com"
   defp get_posthog_host("https://us-assets.i.posthog.com"), do: "us-assets.i.posthog.com"
   
-  # Add proper content-type based on HTTP method and PostHog requirements
+  # Preserve original content-type from client request for PostHog compatibility
   defp add_proper_content_type_for_method(headers, method, body) do
-    # Remove any existing content-type headers first
-    headers = Enum.reject(headers, fn {key, _} -> 
+    # Check if we already have a content-type header
+    has_content_type = Enum.any?(headers, fn {key, _} -> 
       String.downcase(key) == "content-type" 
     end)
     
     case method do
       :get ->
         # GET requests should NOT have content-type header
-        headers
+        Enum.reject(headers, fn {key, _} -> 
+          String.downcase(key) == "content-type" 
+        end)
       method when method in [:post, :put, :patch, :delete] ->
-        # POST/PUT/PATCH/DELETE requests need application/json for PostHog API
         if body && byte_size(body) > 0 do
-          [{"content-type", "application/json"} | headers]
+          if has_content_type do
+            # Preserve existing content-type from original request
+            headers
+          else
+            # Only add JSON content-type if no content-type was provided
+            [{"content-type", "application/json"} | headers]
+          end
         else
-          headers
+          # Remove content-type for empty body requests
+          Enum.reject(headers, fn {key, _} -> 
+            String.downcase(key) == "content-type" 
+          end)
         end
       _ ->
         headers
