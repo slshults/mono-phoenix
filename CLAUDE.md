@@ -109,7 +109,7 @@ Also, when handing off tasks to Opus, please speak to them like they're a person
 
 ## Development Commands
 
-### Essential Commands
+### Essential Commands - Use with caution
 - `mix deps.get` - Install dependencies
 - `mix ecto.setup` - Set up database (create, migrate, seed)
 - `mix ecto.reset` - Drop and recreate database
@@ -126,9 +126,9 @@ Also, when handing off tasks to Opus, please speak to them like they're a person
 - `mix test` - Run tests (creates test DB first)
 - `mix credo` - Static code analysis with Credo
 
-### Asset Building
+### Do Not Use
 - `mix assets.deploy` - Build and digest assets for production
-- ESBuild is configured to watch assets in development mode
+(ESBuild is configured to watch assets in development mode, and I don't want to deploy anything untested)
 
 ## Application Architecture
 
