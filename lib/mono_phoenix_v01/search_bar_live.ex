@@ -330,7 +330,7 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
                 data-toggle="collapse"
                 data-target={"#collapse-#{index}"}
                 >
-                  <%= row.firstline %>
+                  <%= row.firstline %>↴
                 </div>
 
                 <div

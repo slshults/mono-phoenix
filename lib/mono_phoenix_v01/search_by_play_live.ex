@@ -315,7 +315,7 @@ defmodule MonoPhoenixV01Web.SearchByPlayLive do
                 data-toggle="collapse"
                 data-target={"#collapse-#{index}"}
                 >
-                  <%= row.firstline %>
+                  <%= row.firstline %>↴
                 </div>
 
                 <div

@@ -325,7 +325,7 @@ defmodule MonoPhoenixV01Web.SearchwomenBarLive do
                 data-toggle="collapse"
                 data-target={"#collapse-#{index}"}
                 >
-                  <%= row.firstline %>
+                  <%= row.firstline %>↴
                 </div>
 
                 <div
