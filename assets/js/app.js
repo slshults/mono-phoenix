@@ -169,7 +169,7 @@ document.addEventListener('input', function (event) {
     
     // Set a new timeout to capture the event after 5 seconds of inactivity
     searchTimeout = setTimeout(function() {
-      posthog.capture('used_search', { query: searchQuery });
+      posthog.capture('used_search', { searched_for: searchQuery });
     }, 5000);
   }
 }, false);
@@ -179,10 +179,213 @@ document.addEventListener('click', function (event) {
   if (event.target.matches('.monologue-pdflink')) {
     const linkElement = event.target.closest('a');
     if (linkElement) {
-      const clicked_3rdPartyUrl = linkElement.getAttribute('href');
-      posthog.capture('clicked_3rdPartyUrl', {
-        url: clicked_3rdPartyUrl
+      const pdf_url = linkElement.getAttribute('href');
+      
+      // Get monologue context from the row
+      const monologueRow = linkElement.closest('tr');
+      let monologue_id = null;
+      let character_name = null;
+      let play_title = null;
+      
+      if (monologueRow) {
+        // Try to get monologue ID from nearby summary icon
+        const summaryIcon = monologueRow.querySelector('.summary-icon[phx-value-monologue-id]');
+        if (summaryIcon) {
+          monologue_id = summaryIcon.getAttribute('phx-value-monologue-id');
+          character_name = summaryIcon.getAttribute('phx-value-character');
+          play_title = summaryIcon.getAttribute('phx-value-play-title');
+        }
+        
+        // Fallback to extracting from text content
+        if (!character_name) {
+          const characterElement = monologueRow.querySelector('.monologue-character');
+          character_name = characterElement ? characterElement.textContent.trim() : null;
+        }
+        
+        if (!play_title) {
+          const playElement = monologueRow.querySelector('.monologue-playname a');
+          play_title = playElement ? playElement.textContent.trim() : null;
+        }
+      }
+      
+      posthog.capture('pdf_clicked', {
+        pdf_url: pdf_url,
+        monologue_id: monologue_id,
+        character_name: character_name,
+        play_title: play_title
       });
+    }
+  }
+}, false);
+
+// Attach event listener to monologue first line clicks for PostHog custom event
+document.addEventListener('click', function (event) {
+  if (event.target.matches('.monologue-firstline-table') || 
+      event.target.closest('.monologue-firstline-table')) {
+    const firstLineElement = event.target.closest('.monologue-firstline-table') || event.target;
+    const targetId = firstLineElement.getAttribute('data-target');
+    const collapseElement = targetId ? document.querySelector(targetId) : null;
+    
+    // Determine if this is expanding or collapsing
+    const isExpanding = collapseElement && !collapseElement.classList.contains('show');
+    
+    if (isExpanding) {
+      // Get monologue details from the row context
+      const monologueRow = firstLineElement.closest('tr');
+      let monologue_id = null;
+      let character_name = null;
+      let play_title = null;
+      
+      if (monologueRow) {
+        // Extract character name from the character span
+        const characterElement = monologueRow.querySelector('.monologue-character');
+        character_name = characterElement ? characterElement.textContent.trim() : null;
+        
+        // Extract play title from the play name span
+        const playElement = monologueRow.querySelector('.monologue-play');
+        play_title = playElement ? playElement.textContent.trim() : null;
+        
+        // Try to get monologue ID from nearby summary icon if present
+        const summaryIcon = monologueRow.querySelector('.summary-icon[phx-value-monologue-id]');
+        if (summaryIcon) {
+          monologue_id = summaryIcon.getAttribute('phx-value-monologue-id');
+        }
+      }
+      
+      posthog.capture('monologue_expanded', {
+        monologue_id: monologue_id,
+        character_name: character_name,
+        play_title: play_title
+      });
+    }
+  }
+}, false);
+
+// Attach event listener to summary/paraphrasing icon clicks for PostHog custom event
+document.addEventListener('click', function (event) {
+  if (event.target.matches('.summary-icon') || 
+      event.target.closest('.summary-icon')) {
+    const summaryIcon = event.target.closest('.summary-icon') || event.target;
+    
+    // Get monologue details from the attributes
+    const monologue_id = summaryIcon.getAttribute('phx-value-monologue-id');
+    const character_name = summaryIcon.getAttribute('phx-value-character');
+    const play_title = summaryIcon.getAttribute('phx-value-play-title');
+    
+    // Determine request type based on context or default to paraphrasing
+    const monologueRow = summaryIcon.closest('tr');
+    let request_type = 'paraphrasing'; // default
+    
+    // Check if this is in a play context (might be scene summary)
+    if (monologueRow && monologueRow.querySelector('.monologue-actscene')) {
+      const actScene = monologueRow.querySelector('.monologue-actscene');
+      if (actScene && actScene.textContent.includes('Scene')) {
+        request_type = 'scene_summary';
+      }
+    }
+    
+    posthog.capture('paraphrasing_requested', {
+      monologue_id: monologue_id,
+      character_name: character_name,
+      play_title: play_title,
+      request_type: request_type
+    });
+  }
+}, false);
+
+// Attach event listener to play name link clicks for PostHog custom event
+document.addEventListener('click', function (event) {
+  if (event.target.matches('.monologue-playname a') || 
+      event.target.closest('.monologue-playname')) {
+    const playElement = event.target.closest('.monologue-playname') || event.target;
+    const linkElement = playElement.querySelector('a') || event.target.closest('a');
+    
+    if (linkElement) {
+      const href = linkElement.getAttribute('href');
+      const play_title = linkElement.textContent.trim();
+      
+      // Extract play_id and section from the href
+      let play_id = null;
+      let section = 'general';
+      
+      if (href) {
+        if (href.includes('/men/')) {
+          section = 'men';
+          play_id = href.split('/men/')[1];
+        } else if (href.includes('/women/')) {
+          section = 'women';
+          play_id = href.split('/women/')[1];
+        } else if (href.includes('/play/')) {
+          section = 'general';
+          play_id = href.split('/play/')[1];
+        }
+      }
+      
+      // Get context from the page
+      let source_context = 'unknown';
+      if (document.querySelector('.search-box-default')) {
+        source_context = 'search_results';
+      } else if (window.location.pathname.includes('/plays')) {
+        source_context = 'plays_listing';
+      }
+      
+      posthog.capture('play_selected', {
+        play_id: play_id,
+        play_title: play_title,
+        section: section,
+        source_context: source_context
+      });
+    }
+  }
+}, false);
+
+// Attach event listener to section navigation clicks for PostHog custom event
+document.addEventListener('click', function (event) {
+  const linkElement = event.target.closest('a');
+  if (linkElement) {
+    const href = linkElement.getAttribute('href');
+    
+    // Check if this is a section navigation link
+    if (href === '/mens' || href === '/womens' || href === '/plays') {
+      let section_selected = '';
+      let current_section = 'unknown';
+      
+      // Determine which section was selected
+      if (href === '/mens') {
+        section_selected = 'men';
+      } else if (href === '/womens') {
+        section_selected = 'women';
+      } else if (href === '/plays') {
+        section_selected = 'all';
+      }
+      
+      // Determine current section from URL
+      const currentPath = window.location.pathname;
+      if (currentPath.includes('/mens') || currentPath.includes('/men/')) {
+        current_section = 'men';
+      } else if (currentPath.includes('/womens') || currentPath.includes('/women/')) {
+        current_section = 'women';
+      } else if (currentPath.includes('/plays') || currentPath.includes('/play/')) {
+        current_section = 'all';
+      } else if (currentPath.includes('/search')) {
+        // Check if it's a gendered search page
+        if (currentPath.includes('men')) {
+          current_section = 'men';
+        } else if (currentPath.includes('women')) {
+          current_section = 'women';
+        } else {
+          current_section = 'all';
+        }
+      }
+      
+      // Only track if they're actually switching sections
+      if (section_selected !== current_section) {
+        posthog.capture('section_filtered', {
+          section_selected: section_selected,
+          previous_section: current_section,
+          source_page: currentPath
+        });
+      }
     }
   }
 }, false);

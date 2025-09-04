@@ -22,6 +22,33 @@ Our authoritative sources for docs for this project are:
 - http://posthog.com/docs
 - https://docs.anthropic.com/en/api/messages
 
+## PostHog MCP Server
+
+The PostHog Model Context Protocol (MCP) server is available for Claude Code to query analytics data directly. This enables:
+- Real-time analytics queries and insights
+- Custom event analysis and reporting
+- User behavior analysis from session replays
+- Data-driven decision making for UX improvements
+
+**Setup**: Installed via `npx @posthog/wizard@latest mcp add`
+**Documentation**: https://posthog.com/docs/model-context-protocol
+
+**Known Issue**: Claude Code MCP has persistent caching problems - may show "✓ Connected" but cache old API keys even after restarts and config changes. Org-level API keys work perfectly via direct API calls. Workaround: use direct PostHog API calls when MCP functions fail.
+
+### Custom PostHog Events Implemented
+
+The following custom events are now tracked with rich contextual properties:
+
+- **`monologue_expanded`** - User clicks `↴` indicators to expand monologues
+- **`paraphrasing_requested`** - AI summary/paraphrasing requests with content type detection
+- **`play_selected`** - Navigation to play pages with section and source context
+- **`pdf_clicked`** - PDF downloads with monologue context (renamed from `clicked_3rdPartyUrl`)
+- **`section_filtered`** - Navigation between Men/Women/All sections (only tracks actual changes)
+- **`used_search`** - Search usage (property: `searched_for`)
+
+**Event Naming Convention**: snake_case `object_verb` pattern
+**Implementation**: JavaScript event delegation in `assets/js/app.js`
+
 #### Division of Responsibilities
 
 This is IMPORTANT for managing rate-limiting and billing efficiency. 
