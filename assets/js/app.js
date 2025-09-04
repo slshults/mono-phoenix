@@ -35,18 +35,34 @@ let Hooks = {}
 // Modal Click Handler Hook
 Hooks.ModalClickHandler = {
   mounted() {
+    console.log("ModalClickHandler mounted on element:", this.el)
+    console.log("Element ID:", this.el.id)
+    console.log("Element classes:", this.el.className)
+    
     // Handle X button clicks with confirmation
     const closeButton = this.el.querySelector(".summary-modal-close")
     if (closeButton) {
+      console.log("Close button found and event listener attached")
       closeButton.addEventListener("click", (e) => {
         e.preventDefault()
         this.handleModalClose()
       })
+    } else {
+      console.log("No close button found")
     }
 
     this.el.addEventListener("click", (e) => {
+      // Debug ALL click events on the modal
+      console.log("Click event detected on modal:")
+      console.log("- Event target:", e.target)
+      console.log("- Target tagName:", e.target.tagName)
+      console.log("- Target classes:", e.target.className)
+      console.log("- Target === this.el:", e.target === this.el)
+      console.log("- this.el:", this.el)
+      
       // Handle copy button clicks
       if (e.target.classList.contains("copy-to-clipboard-btn")) {
+        console.log("Copy button clicked")
         const contentDiv = this.el.querySelector(".summary-content")
         if (contentDiv) {
           // Get text content, preserve line breaks
@@ -69,22 +85,48 @@ Hooks.ModalClickHandler = {
       
       // Click-outside-to-close behavior - only when NOT loading
       if (e.target === this.el) {
+        console.log("=== CLICK-OUTSIDE DETECTED ===")
+        
         // Check if we're currently loading (generating content)
         const loadingElement = this.el.querySelector(".summary-loading")
+        const dataLoading = this.el.getAttribute("data-loading")
+        
+        console.log("Loading state check:")
+        console.log("- .summary-loading element:", loadingElement)
+        console.log("- data-loading attribute:", dataLoading)
+        console.log("- Modal innerHTML preview:", this.el.innerHTML.substring(0, 200))
+        
         if (loadingElement) {
-          // Currently loading - don't allow click-outside close
+          console.log("❌ PREVENTING CLOSE - content is loading")
           return
         }
         
-        // Not loading - allow click-outside close
+        if (dataLoading === "true") {
+          console.log("❌ PREVENTING CLOSE - data-loading is true")
+          return
+        }
+        
+        console.log("✅ ALLOWING CLOSE - not loading")
         this.handleModalClose()
+      } else {
+        console.log("Click was on child element, not closing modal")
       }
     })
   },
   
   handleModalClose() {
+    console.log("=== handleModalClose() called ===")
+    console.log("Pushing modal_close_request event to #summary-modal")
+    
     // Push event directly to the LiveComponent using its ID
     this.pushEventTo("#summary-modal", "modal_close_request", {})
+  },
+  
+  updated() {
+    console.log("=== Modal updated ===")
+    console.log("- data-loading:", this.el.getAttribute("data-loading"))
+    console.log("- display style:", this.el.style.display)
+    console.log("- .summary-loading present:", !!this.el.querySelector(".summary-loading"))
   },
   
   

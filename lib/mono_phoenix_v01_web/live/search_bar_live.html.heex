@@ -31,7 +31,18 @@
           <%= for row <- @rows do %>
             <tr class="monologue_list" style="background-color: #F9F9DF;">
               <td class="{ (index.even? ? 'even' : 'odd') }">
-                <span class="monologue-playname" style="background-color: #F9F9DF;"><%= row.play %></span>&nbsp; &middot;  <span class="monologue-actscene"><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; &middot; 
+                <span class="monologue-playname" style="background-color: #F9F9DF;"><%= row.play %></span><span class="summary-icon" 
+                      phx-click="show_play_summary" 
+                      phx-value-play-title={row.play}
+                      title="Show play summary">
+                  <img src={Routes.static_path(@conn, "/images/scroll-summary-icon.svg")} alt="Play summary" />
+                </span>&nbsp; &middot;  <span class="monologue-actscene"><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span><span class="summary-icon" 
+                      phx-click="show_scene_summary" 
+                      phx-value-play-title={row.play}
+                      phx-value-location={row.location}
+                      title="Show scene summary">
+                  <img src={Routes.static_path(@conn, "/images/scroll-summary-icon.svg")} alt="Scene summary" />
+                </span>&nbsp; &middot; 
                 <span class="monologue-actscene"><%= row.style %></span>
                 <br />
                 <span class="monologue-character"><%= row.character %></span>
@@ -57,6 +68,15 @@
                       class="monologue-pdflink"
                     />
                   <% end %>
+                  <span class="summary-icon" 
+                        phx-click="show_paraphrasing" 
+                        phx-value-monologue-id={row.monologues}
+                        phx-value-monologue-text={row.body}
+                        phx-value-character={row.character}
+                        phx-value-play-title={row.play}
+                        title="Show paraphrasing">
+                    <img src={Routes.static_path(@conn, "/images/scroll-paraphrasing-icon.svg")} alt="Paraphrasing" />
+                  </span>
                 </div>
               </td>
             </tr>

@@ -3,7 +3,12 @@ defmodule MonoPhoenixV01Web.SearchwomenBarLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, search_results: [])}
+    {:ok, assign(socket, 
+      search_results: [],
+      search_query: "",
+      active_requests: MapSet.new(),
+      async_metadata: %{}
+    )}
   end
 
   ## socket assigns
@@ -17,7 +22,7 @@ defmodule MonoPhoenixV01Web.SearchwomenBarLive do
         MonoPhoenixV01Web.SearchwomenBar.get_all(search_query)
       end
 
-    {:noreply, assign(socket, search_results: search_results)}
+    {:noreply, assign(socket, search_results: search_results, search_query: search_query)}
   end
 
   @impl true
@@ -32,14 +37,213 @@ defmodule MonoPhoenixV01Web.SearchwomenBarLive do
     {:noreply, socket}
   end
 
+  # Handle summary icon click events
+  @impl true
+  def handle_event("show_play_summary", %{"play-title" => play_title}, socket) do
+    request_key = "play_summary:#{play_title}"
+    
+    # Check if this request is already in progress
+    active_requests = Map.get(socket.assigns, :active_requests, MapSet.new())
+    if MapSet.member?(active_requests, request_key) do
+      # Request already in progress - ignore duplicate click
+      {:noreply, socket}
+    else
+      # Show the modal first
+      send_update(MonoPhoenixV01Web.SummaryModalComponent, 
+        id: "summary-modal", 
+        action: "show_play_summary", 
+        play_title: play_title
+      )
+      
+      # Track this request and start the content generation
+      active_requests = MapSet.put(active_requests, request_key)
+      send(self(), {:generate_summary, "play_summary", %{play_title: play_title}, "summary-modal", request_key})
+      
+      {:noreply, assign(socket, active_requests: active_requests)}
+    end
+  end
+
+  @impl true
+  def handle_event("show_scene_summary", %{"play-title" => play_title, "location" => location}, socket) do
+    request_key = "scene_summary:#{play_title}:#{location}"
+    
+    active_requests = Map.get(socket.assigns, :active_requests, MapSet.new())
+    if MapSet.member?(active_requests, request_key) do
+      {:noreply, socket}
+    else
+      send_update(MonoPhoenixV01Web.SummaryModalComponent, 
+        id: "summary-modal", 
+        action: "show_scene_summary", 
+        play_title: play_title,
+        location: location
+      )
+      
+      active_requests = MapSet.put(active_requests, request_key)
+      send(self(), {:generate_summary, "scene_summary", %{play_title: play_title, location: location}, "summary-modal", request_key})
+      
+      {:noreply, assign(socket, active_requests: active_requests)}
+    end
+  end
+
+  @impl true  
+  def handle_event("show_paraphrasing", %{"monologue-id" => monologue_id, "monologue-text" => monologue_text, "character" => character, "play-title" => play_title}, socket) do
+    request_key = "paraphrasing:#{monologue_id}"
+    
+    active_requests = Map.get(socket.assigns, :active_requests, MapSet.new())
+    if MapSet.member?(active_requests, request_key) do
+      {:noreply, socket}
+    else
+      send_update(MonoPhoenixV01Web.SummaryModalComponent, 
+        id: "summary-modal", 
+        action: "show_paraphrasing", 
+        monologue_id: monologue_id,
+        monologue_text: monologue_text,
+        character: character
+      )
+      
+      active_requests = MapSet.put(active_requests, request_key)
+      send(self(), {:generate_summary, "paraphrasing", %{monologue_id: monologue_id, monologue_text: monologue_text, character: character, play_title: play_title}, "summary-modal", request_key})
+      
+      {:noreply, assign(socket, active_requests: active_requests)}
+    end
+  end
+
+  # Handle summary generation events using async processing to avoid blocking
+  @impl true
+  def handle_info({:generate_summary, content_type, params, component_id, request_key}, socket) do
+    # Start async task to avoid blocking the LiveView process
+    socket = start_async(socket, request_key, fn ->
+      case content_type do
+        "play_summary" ->
+          MonoPhoenixV01.AnthropicService.get_play_summary(params.play_title)
+        "scene_summary" ->
+          MonoPhoenixV01.AnthropicService.get_scene_summary(params.play_title, params.location)
+        "paraphrasing" ->
+          MonoPhoenixV01.AnthropicService.get_monologue_paraphrasing(params.monologue_id, params.monologue_text)
+      end
+    end)
+    
+    # Store metadata for the async result handler
+    socket = assign(socket, 
+      async_metadata: Map.put(socket.assigns[:async_metadata] || %{}, request_key, %{
+        content_type: content_type,
+        component_id: component_id,
+        request_key: request_key
+      })
+    )
+    
+    {:noreply, socket}
+  end
+
+  # Handle async results
+  @impl true
+  def handle_async(request_key, {:ok, api_result}, socket) do
+    metadata = socket.assigns.async_metadata[request_key]
+    
+    case api_result do
+      {:ok, %{content: content, id: record_id}} ->
+        send_update(MonoPhoenixV01Web.SummaryModalComponent, 
+          id: metadata.component_id, 
+          action: "content_generated", 
+          content: content,
+          record_id: record_id
+        )
+      {:ok, content} when is_binary(content) ->
+        send_update(MonoPhoenixV01Web.SummaryModalComponent, 
+          id: metadata.component_id, 
+          action: "content_generated", 
+          content: content
+        )
+      {:error, reason} ->
+        send_update(MonoPhoenixV01Web.SummaryModalComponent, 
+          id: metadata.component_id, 
+          action: "error_occurred", 
+          error: reason
+        )
+    end
+    
+    # Clean up metadata and active requests  
+    active_requests = MapSet.delete(socket.assigns.active_requests, request_key)
+    async_metadata = Map.delete(socket.assigns.async_metadata, request_key)
+    
+    {:noreply, assign(socket, active_requests: active_requests, async_metadata: async_metadata)}
+  end
+
+  @impl true
+  def handle_async(request_key, {:error, reason}, socket) do
+    metadata = socket.assigns.async_metadata[request_key]
+    
+    case reason do
+      %{reason: :cancelled} ->
+        # Handle cancellation gracefully without showing error
+        send_update(MonoPhoenixV01Web.SummaryModalComponent, 
+          id: metadata.component_id, 
+          action: "generation_cancelled"
+        )
+      _ ->
+        send_update(MonoPhoenixV01Web.SummaryModalComponent, 
+          id: metadata.component_id, 
+          action: "error_occurred", 
+          error: "API call failed unexpectedly"
+        )
+    end
+    
+    # Clean up metadata and active requests  
+    active_requests = MapSet.delete(socket.assigns.active_requests, request_key)
+    async_metadata = Map.delete(socket.assigns.async_metadata, request_key)
+    
+    {:noreply, assign(socket, active_requests: active_requests, async_metadata: async_metadata)}
+  end
+
+  # Handle async task cancellation via exit
+  @impl true
+  def handle_async(request_key, {:exit, reason}, socket) do
+    require Logger
+    Logger.info("User confirmed cancellation - stopping generation")
+    
+    metadata = socket.assigns.async_metadata[request_key]
+    
+    # Handle cancellation gracefully
+    send_update(MonoPhoenixV01Web.SummaryModalComponent, 
+      id: metadata.component_id, 
+      action: "generation_cancelled"
+    )
+    
+    # Clean up metadata and active requests  
+    active_requests = MapSet.delete(socket.assigns.active_requests, request_key)
+    async_metadata = Map.delete(socket.assigns.async_metadata, request_key)
+    
+    {:noreply, assign(socket, active_requests: active_requests, async_metadata: async_metadata)}
+  end
+
+  # Handle cancellation requests from modal
+  @impl true  
+  def handle_info({:cancel_generation, component_id}, socket) do
+    require Logger
+    Logger.info("Cancelling generation for component: #{component_id}")
+    
+    # Cancel all active async tasks - but don't clean up metadata yet
+    # Let the async handlers clean up when they receive the cancellation
+    socket = Enum.reduce(socket.assigns.async_metadata, socket, fn {request_key, metadata}, acc_socket ->
+      if metadata.component_id == component_id do
+        # Cancel the async task - cleanup will happen in handle_async
+        cancel_async(acc_socket, request_key)
+      else
+        acc_socket
+      end
+    end)
+    
+    {:noreply, socket}
+  end
+
   ## render assigns
 
   @impl true
   def render(assigns) do
     ~H"""
-
       <%= render_search_form(assigns) %> <%!-- added --%>
       <%= render_searchwomen_bar(assigns) %>
+      <.live_component module={MonoPhoenixV01Web.SummaryModalComponent} id="summary-modal" />
     """
   end
 
@@ -53,7 +257,7 @@ defmodule MonoPhoenixV01Web.SearchwomenBarLive do
         <%= label f, :query, "" %>
 
         <%= text_input f, :query,
-          value: Map.get(assigns, :query, ""),
+          value: Map.get(assigns, :search_query, ""),
           placeholder: "Search for monologues...",
           class: "search-box-dark search-box-default input-group accent-font form-control monologue-list",
           phx_input: "search_input",
@@ -97,8 +301,19 @@ defmodule MonoPhoenixV01Web.SearchwomenBarLive do
             <tr class="monologue_list">
               <td class={if rem(index, 2) == 0, do: "even", else: "odd"}>
                 <span class="monologue-playname" alt="👆 Click to view all the women's monologues from this play"
-                title="👆 Click to view all the women's monologues from this play"><%= link to: "/women/#{row.play_id}", method: :get do %><%= row.play %><% end %></span>&nbsp; &middot; <span class="monologue-actscene" alt="👆 Click here to read the whole scene. This link jumps you to the monologue, scroll up to read from the top of the scene."
-                                title="👆 Click here to read the whole scene. This link jumps you to the monologue, scroll up to read from the top of the scene."><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; &middot;
+                title="👆 Click to view all the women's monologues from this play"><%= link to: "/women/#{row.play_id}", method: :get do %><%= row.play %><% end %></span><span class="summary-icon" 
+                      phx-click="show_play_summary" 
+                      phx-value-play-title={row.play}
+                      title="Show play summary">
+                  <img src={Routes.static_path(@socket, "/images/scroll-summary-icon.svg")} alt="Play summary" />
+                </span>&nbsp; &middot; <span class="monologue-actscene" alt="👆 Click here to read the whole scene. This link jumps you to the monologue, scroll up to read from the top of the scene."
+                                title="👆 Click here to read the whole scene. This link jumps you to the monologue, scroll up to read from the top of the scene."><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span><span class="summary-icon" 
+                      phx-click="show_scene_summary" 
+                      phx-value-play-title={row.play}
+                      phx-value-location={row.location}
+                      title="Show scene summary">
+                  <img src={Routes.static_path(@socket, "/images/scroll-summary-icon.svg")} alt="Scene summary" />
+                </span>&nbsp; &middot;
                 <span class="monologue-actscene"><%= row.style %></span>
                 <br />
                 <span class="monologue-character" alt="This is the name of the character who speaks this monologue." title="This is the name of the character who speaks this monologue."><%= row.character %></span>
@@ -119,6 +334,15 @@ defmodule MonoPhoenixV01Web.SearchwomenBarLive do
                 >
                   <br />
                   <%= raw(row.body) %>&nbsp;
+                  <span class="summary-icon" 
+                        phx-click="show_paraphrasing" 
+                        phx-value-monologue-id={row.monologues}
+                        phx-value-monologue-text={row.body}
+                        phx-value-character={row.character}
+                        phx-value-play-title={row.play}
+                        title="Show modern paraphrasing">
+                    <img src={Routes.static_path(@socket, "/images/thinking-paraphrase-icon.svg")} alt="Modern paraphrasing" />
+                  </span>&nbsp;
                   <%= link to: raw(row.pdf), method: :get, target: "_blank", rel: "noopener" do %>
                   <img
                   src={Routes.static_path(@socket, "/images/pdf_file_icon_16x16.png")}
