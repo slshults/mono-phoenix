@@ -54,6 +54,7 @@ defmodule MonoPhoenixV01Web.Router do
     get("/links", StaticPageController, :links)
     get("/privacy", StaticPageController, :privacy)
     get("/maintenance", StaticPageController, :maintenance)
+    live("/contact", ContactLive)
     get("/hello", PageController, :hello)
     get("/sandbox", PageController, :sandbox)
     live("/search_bar", SearchBarLive, :search_bar)

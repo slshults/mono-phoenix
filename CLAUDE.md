@@ -227,12 +227,14 @@ Commands identical between local/prod - only console access differs.
 - **Request deduplication with MapSet** - prevents multiple simultaneous API calls for same content
 - **Modal record IDs** - `data-record-id` attributes enable easy debugging and deletion
 
+## Misc IMPORTANT notes and reminders
 - The application uses PostHog for analytics tracking
 - Database contains production data copy for development
 - No formal test suite currently exists (test directory not present)
 - Focus on gender-specific content organization (mens/womens/both categorization)
 - DO NOT run git commands. Ask me to run them in an external terminal (This is primarily for `commit` and `push`. There may be scenarious where you'll need to use git (diff, etc), but let's discuss first, please)
 - DO NOT run deploy commands. I will handle all deploys myself.
+- If you run the server (`mix phx.server`) while working on things, please kill the proc at the end of your turn. (I like to run the server in an external terminal window for testing, so I can see the output there.)
 - DO NOT use trial and error to solve problems, it's neither efficient nor effective. Instead ALWAYS search authoritative documentation for the correct and current approach to any issues.
 - When Steven shares screenshots or other files with you, you'll find them in `D:\Users\Steven\Documents\Shakes\2025revival\screenshots_etc` (You'll need to translate that Windows directory to a WSL2 directory path in order to access the contents.)
 
@@ -250,4 +252,4 @@ My local computing and development environment includes:
 
 ---
 
-Reminder: Don't forget about the Division of Responsibilities near the top of this doc
+Reminder: Don't forget about the Division of Responsibilities near the top of this doc 🤓

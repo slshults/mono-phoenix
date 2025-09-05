@@ -86,6 +86,31 @@ if config_env() == :prod do
   #
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
 
+  # Configure mailer for production - using Google Workspace SMTP with app password
+  config :mono_phoenix_v01, MonoPhoenixV01.Mailer,
+    adapter: Swoosh.Adapters.SMTP,
+    relay: "smtp.gmail.com",
+    port: 587,
+    username: System.get_env("SMTP_USERNAME"),
+    password: System.get_env("SMTP_PASSWORD"),
+    ssl: false,
+    tls: :always,
+    auth: :always,
+    tls_options: [
+      verify: :verify_peer,
+      versions: [:"tlsv1.2", :"tlsv1.3"],
+      server_name_indication: ~c"smtp.gmail.com",
+      depth: 99
+    ]
+
+  # Configure Swoosh API client for production
+  config :swoosh, :api_client, Swoosh.ApiClient.Hackney
+
+  # reCAPTCHA configuration for production
+  config :recaptcha,
+    public_key: System.get_env("RECAPTCHA_PUBLIC_KEY"),
+    secret: System.get_env("RECAPTCHA_SECRET_KEY")
+
   # Anthropic API configuration for Shakespeare summaries
   config :mono_phoenix_v01, :anthropic,
     api_key: System.get_env("ANTHROPIC_API_KEY"),

@@ -46,6 +46,8 @@ defmodule MonoPhoenixV01.MixProject do
       {:phoenix_live_dashboard, "~> 0.8"},
       {:esbuild, "~> 0.4", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.3"},
+      {:gen_smtp, "~> 1.0"},
+      {:certifi, "~> 2.9"},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.22.1"},
@@ -57,7 +59,8 @@ defmodule MonoPhoenixV01.MixProject do
       {:html_assertion, "0.1.5", only: :test},
       {:floki, ">= 0.34.2", only: :test},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
-      {:earmark, "~> 1.4"}
+      {:earmark, "~> 1.4"},
+      {:recaptcha, "~> 3.0"}
     ]
   end
 

@@ -32,6 +32,135 @@ import topbar from "../vendor/topbar"
 
 let Hooks = {}
 
+// Load reCAPTCHA script dynamically
+function loadRecaptcha() {
+  if (!window.recaptchaLoaded && !document.querySelector('script[src*="google.com/recaptcha"]')) {
+    const script = document.createElement('script');
+    script.src = 'https://www.google.com/recaptcha/api.js';
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      window.recaptchaLoaded = true;
+      console.log('reCAPTCHA script loaded successfully');
+    };
+    script.onerror = () => {
+      console.error('Failed to load reCAPTCHA script');
+    };
+    document.head.appendChild(script);
+  }
+}
+
+// Load reCAPTCHA on page load and LiveView navigation
+document.addEventListener('DOMContentLoaded', loadRecaptcha);
+window.addEventListener("phx:page-loading-stop", loadRecaptcha);
+
+// reCAPTCHA Hook
+Hooks.Recaptcha = {
+  mounted() {
+    this.widgetId = null;
+    this.renderCaptcha();
+  },
+  
+  updated() {
+    // Re-render if the element was updated
+    if (this.widgetId !== null) {
+      try {
+        grecaptcha.reset(this.widgetId);
+      } catch (e) {
+        console.warn('reCAPTCHA reset failed, re-rendering:', e);
+        this.renderCaptcha();
+      }
+    } else {
+      this.renderCaptcha();
+    }
+  },
+  
+  destroyed() {
+    // Clean up the widget
+    if (this.widgetId !== null && typeof grecaptcha !== 'undefined') {
+      try {
+        grecaptcha.reset(this.widgetId);
+      } catch (e) {
+        console.warn('reCAPTCHA remove failed:', e);
+      }
+    }
+  },
+  
+  renderCaptcha() {
+    const sitekey = this.el.dataset.sitekey;
+    
+    const tryRender = () => {
+      if (typeof grecaptcha === 'undefined') {
+        setTimeout(tryRender, 100);
+        return;
+      }
+      
+      try {
+        // Clear any existing widget
+        this.el.innerHTML = '';
+        
+        this.widgetId = grecaptcha.render(this.el, {
+          sitekey: sitekey,
+          callback: (token) => {
+            console.log('reCAPTCHA callback fired with token:', token ? 'TOKEN_RECEIVED' : 'NO_TOKEN');
+            console.log('Token length:', token ? token.length : 0);
+            
+            // Add the token to the form as a hidden input
+            let tokenInput = document.querySelector('input[name="g-recaptcha-response"]');
+            if (!tokenInput) {
+              tokenInput = document.createElement('input');
+              tokenInput.type = 'hidden';
+              tokenInput.name = 'g-recaptcha-response';
+              this.el.closest('form').appendChild(tokenInput);
+              console.log('Created new hidden input for reCAPTCHA token');
+            }
+            tokenInput.value = token;
+            console.log('Set token value on input element');
+            
+            // Also try with underscore name for Phoenix compatibility
+            let tokenInputUnderscore = document.querySelector('input[name="g_recaptcha_response"]');
+            if (!tokenInputUnderscore) {
+              tokenInputUnderscore = document.createElement('input');
+              tokenInputUnderscore.type = 'hidden';
+              tokenInputUnderscore.name = 'g_recaptcha_response';
+              this.el.closest('form').appendChild(tokenInputUnderscore);
+              console.log('Created underscore version of hidden input');
+            }
+            tokenInputUnderscore.value = token;
+          },
+          'expired-callback': () => {
+            console.log('reCAPTCHA expired - clearing tokens');
+            // Remove token when expired
+            const tokenInput = document.querySelector('input[name="g-recaptcha-response"]');
+            if (tokenInput) {
+              tokenInput.value = '';
+            }
+            const tokenInputUnderscore = document.querySelector('input[name="g_recaptcha_response"]');
+            if (tokenInputUnderscore) {
+              tokenInputUnderscore.value = '';
+            }
+          },
+          'error-callback': (error) => {
+            console.error('reCAPTCHA error:', error);
+            const tokenInput = document.querySelector('input[name="g-recaptcha-response"]');
+            if (tokenInput) {
+              tokenInput.value = '';
+            }
+            const tokenInputUnderscore = document.querySelector('input[name="g_recaptcha_response"]');
+            if (tokenInputUnderscore) {
+              tokenInputUnderscore.value = '';
+            }
+          }
+        });
+      } catch (error) {
+        console.error('Failed to render reCAPTCHA:', error);
+      }
+    };
+    
+    tryRender();
+  }
+}
+
 // Modal Click Handler Hook
 Hooks.ModalClickHandler = {
   mounted() {
