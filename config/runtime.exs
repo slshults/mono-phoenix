@@ -96,7 +96,7 @@ if config_env() == :prod do
     ssl: false,
     tls: :always,
     auth: :always,
-    tls_options: [
+    ssl: [
       verify: :verify_peer,
       versions: [:"tlsv1.2", :"tlsv1.3"],
       server_name_indication: ~c"smtp.gmail.com",

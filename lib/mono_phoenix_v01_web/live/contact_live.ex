@@ -34,11 +34,16 @@ defmodule MonoPhoenixV01Web.ContactLive do
           # Verify reCAPTCHA
           case Recaptcha.verify(captcha_response) do
             {:ok, _response} ->
+              require Logger
+              Logger.info("Contact form: reCAPTCHA verified successfully for #{email}")
+              
               # Send the email
-              send_contact_email(name, email, subject, message)
+              email_result = send_contact_email(name, email, subject, message)
               |> Mailer.deliver()
-              |> case do
-                {:ok, _} ->
+              
+              case email_result do
+                {:ok, response} ->
+                  Logger.info("Contact form: Email sent successfully for #{email}. Response: #{inspect(response)}")
                   {:noreply, 
                    socket 
                    |> assign(:form, to_form(%{"name" => "", "email" => "", "subject" => "", "message" => "", "source_check" => ""}))
@@ -47,7 +52,8 @@ defmodule MonoPhoenixV01Web.ContactLive do
                    |> assign(:submitting, false)
                   }
                 
-                {:error, _reason} ->
+                {:error, reason} ->
+                  Logger.error("Contact form: Email delivery failed for #{email}. Reason: #{inspect(reason)}")
                   {:noreply, 
                    socket 
                    |> assign(:error_message, "Sorry, there was an error sending your message. Please try again later.")
@@ -56,7 +62,9 @@ defmodule MonoPhoenixV01Web.ContactLive do
                   }
               end
             
-            {:error, _errors} ->
+            {:error, errors} ->
+              require Logger
+              Logger.warning("Contact form: reCAPTCHA verification failed for #{email}. Errors: #{inspect(errors)}")
               {:noreply, 
                socket 
                |> assign(:error_message, "Please complete the reCAPTCHA verification.")
@@ -92,11 +100,16 @@ defmodule MonoPhoenixV01Web.ContactLive do
       # Validate the form fields
       case validate_contact_form(name, email, subject, message) do
         :ok ->
+          require Logger
+          Logger.info("Contact form: Fallback handler - sending email without reCAPTCHA for #{email}")
+          
           # Send the email (without reCAPTCHA verification for now)
-          send_contact_email(name, email, subject, message)
+          email_result = send_contact_email(name, email, subject, message)
           |> Mailer.deliver()
-          |> case do
-            {:ok, _} ->
+          
+          case email_result do
+            {:ok, response} ->
+              Logger.info("Contact form: Fallback - Email sent successfully for #{email}. Response: #{inspect(response)}")
               {:noreply, 
                socket 
                |> assign(:form, to_form(%{"name" => "", "email" => "", "subject" => "", "message" => "", "source_check" => ""}))
@@ -105,7 +118,8 @@ defmodule MonoPhoenixV01Web.ContactLive do
                |> assign(:submitting, false)
               }
             
-            {:error, _reason} ->
+            {:error, reason} ->
+              Logger.error("Contact form: Fallback - Email delivery failed for #{email}. Reason: #{inspect(reason)}")
               {:noreply, 
                socket 
                |> assign(:error_message, "Sorry, there was an error sending your message. Please try again later.")
@@ -160,7 +174,10 @@ defmodule MonoPhoenixV01Web.ContactLive do
 
   # Create the email
   defp send_contact_email(name, email, subject, message) do
-    Swoosh.Email.new()
+    require Logger
+    Logger.info("Contact form: Creating email - From: #{name} <#{email}>, Subject: #{subject}")
+    
+    email_struct = Swoosh.Email.new()
     |> Swoosh.Email.to("shakesmonos@shults.org")
     |> Swoosh.Email.from({"ShakesMonos Contact Form", "shakesmonos@shults.org"}) 
     |> Swoosh.Email.reply_to(email)
@@ -178,6 +195,9 @@ defmodule MonoPhoenixV01Web.ContactLive do
     This message was sent via the contact form on shakespeare-monologues.org
     Reply directly to this email to respond to #{name}.
     """)
+    
+    Logger.debug("Contact form: Email structure created: #{inspect(email_struct)}")
+    email_struct
   end
 
   @impl true
