@@ -96,9 +96,11 @@ if config_env() == :prod do
     ssl: false,
     tls: :always,
     auth: :always,
+    retries: 2,
     tls_options: [
+      versions: [:"tlsv1.3"],
       verify: :verify_peer,
-      versions: [:"tlsv1.2", :"tlsv1.3"],
+      cacerts: :certifi.cacerts(),
       server_name_indication: ~c"smtp.gmail.com",
       depth: 99
     ]
