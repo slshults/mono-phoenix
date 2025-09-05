@@ -35,6 +35,17 @@ The PostHog Model Context Protocol (MCP) server is available for Claude Code to 
 
 **Known Issue**: Claude Code MCP has persistent caching problems - may show "✓ Connected" but cache old API keys even after restarts and config changes. Org-level API keys work perfectly via direct API calls. Workaround: use direct PostHog API calls when MCP functions fail.
 
+### PostHog Reverse Proxy (Temporarily Shelved)
+
+**Status**: PostHog reverse proxy implementation moved to `temp_posthog_proxy/` directory (Sept 5, 2025).
+**Reason**: The `PosthogProxyController` was generating `:formats option` errors during Phoenix compilation, eating up token quota in development sessions.
+**Files Moved**: 
+- `posthog_proxy_controller.ex`
+- `posthog_body_reader.ex`
+- Routes remain commented in `router.ex` (lines 20-39)
+
+**To Resume**: Follow instructions in `temp_posthog_proxy/README.md` to restore files and uncomment routes.
+
 ### Custom PostHog Events Implemented
 
 The following custom events are now tracked with rich contextual properties:
@@ -45,6 +56,7 @@ The following custom events are now tracked with rich contextual properties:
 - **`pdf_clicked`** - PDF downloads with monologue context (renamed from `clicked_3rdPartyUrl`)
 - **`section_filtered`** - Navigation between Men/Women/All sections (only tracks actual changes)
 - **`used_search`** - Search usage (property: `searched_for`)
+- **`ai_content_feedback`** - User feedback on AI summaries/paraphrasing with contextual properties
 
 **Event Naming Convention**: snake_case `object_verb` pattern
 **Implementation**: JavaScript event delegation in `assets/js/app.js`

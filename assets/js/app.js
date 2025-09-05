@@ -279,6 +279,79 @@ Hooks.ModalClickHandler = {
   }
 }
 
+// Feedback Form Hook
+Hooks.FeedbackForm = {
+  mounted() {
+    this.setupFeedbackInteractions();
+    this.setupAutoHideSuccess();
+  },
+
+  updated() {
+    this.setupFeedbackInteractions();
+    this.setupAutoHideSuccess();
+  },
+
+  setupFeedbackInteractions() {
+    // Handle the "It's wrong" checkbox to show/hide details field
+    const wrongCheckbox = this.el.querySelector('input[value="wrong"]');
+    const detailsDiv = this.el.querySelector('.feedback-wrong-details');
+
+    if (wrongCheckbox && detailsDiv) {
+      wrongCheckbox.addEventListener('change', (e) => {
+        if (e.target.checked) {
+          detailsDiv.style.display = 'block';
+        } else {
+          detailsDiv.style.display = 'none';
+          // Clear the textarea when hiding
+          const textarea = detailsDiv.querySelector('textarea');
+          if (textarea) textarea.value = '';
+        }
+      });
+    }
+  },
+
+  setupAutoHideSuccess() {
+    const thanksDiv = document.querySelector('.feedback-thanks');
+    if (thanksDiv && thanksDiv.textContent.trim() === 'Thanks!' && !thanksDiv.dataset.tracked) {
+      // Track PostHog event when success is shown
+      this.trackPostHogFeedback();
+      
+      // Mark as tracked to prevent double-tracking
+      thanksDiv.dataset.tracked = 'true';
+      
+      // Auto-hide after 3 seconds
+      setTimeout(() => {
+        // Reset the feedback success state
+        this.pushEventTo("#summary-modal", "reset_feedback_success", {});
+      }, 3000);
+    }
+  },
+
+  trackPostHogFeedback() {
+    if (typeof posthog === 'undefined') return;
+
+    // Extract feedback data from the modal
+    const modal = document.querySelector('#summary-modal');
+    if (!modal) return;
+
+    const contentType = modal.querySelector('.summary-modal-title')?.textContent || 'Unknown';
+    const recordId = modal.dataset.recordId || 'Unknown';
+
+    // Try to get the checked feedback options from the form (they might be cleared already)
+    // This is a bit tricky since the form might be in the success state
+    // We'll track a basic event for now
+    const properties = {
+      content_type: contentType,
+      record_id: recordId,
+      timestamp: new Date().toISOString()
+    };
+
+    posthog.capture('ai_content_feedback', properties);
+  },
+
+  // No longer needed - PostHog tracking happens in trackPostHogFeedback()
+}
+
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {
   params: {_csrf_token: csrfToken},
