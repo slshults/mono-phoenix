@@ -90,14 +90,13 @@ if config_env() == :prod do
   config :mono_phoenix_v01, MonoPhoenixV01.Mailer,
     adapter: Swoosh.Adapters.SMTP,
     relay: "smtp.gmail.com",
-    port: 2525,
+    port: 587,
     username: System.get_env("SMTP_USERNAME"),
     password: System.get_env("SMTP_PASSWORD"),
     ssl: false,
     tls: :always,
-    auth: :always,
-    retries: 2,
-    tls_options: [verify: :verify_none]
+    tls_options: [verify: :verify_none],
+    auth: :always
 
   # Configure Swoosh API client for production
   config :swoosh, :api_client, Swoosh.ApiClient.Hackney
