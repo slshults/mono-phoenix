@@ -90,7 +90,7 @@ if config_env() == :prod do
   config :mono_phoenix_v01, MonoPhoenixV01.Mailer,
     adapter: Swoosh.Adapters.SMTP,
     relay: "smtp.gmail.com",
-    port: 587,
+    port: 2525,
     username: System.get_env("SMTP_USERNAME"),
     password: System.get_env("SMTP_PASSWORD"),
     ssl: false,
