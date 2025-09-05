@@ -97,13 +97,7 @@ if config_env() == :prod do
     tls: :always,
     auth: :always,
     retries: 2,
-    tls_options: [
-      versions: [:"tlsv1.3"],
-      verify: :verify_peer,
-      cacerts: :certifi.cacerts(),
-      server_name_indication: ~c"smtp.gmail.com",
-      depth: 99
-    ]
+    tls_options: [verify: :verify_none]
 
   # Configure Swoosh API client for production
   config :swoosh, :api_client, Swoosh.ApiClient.Hackney
