@@ -469,29 +469,48 @@ document.addEventListener('click', function (event) {
       event.target.closest('.summary-icon')) {
     const summaryIcon = event.target.closest('.summary-icon') || event.target;
     
-    // Get monologue details from the attributes
+    // Get details from the attributes
     const monologue_id = summaryIcon.getAttribute('phx-value-monologue-id');
     const character_name = summaryIcon.getAttribute('phx-value-character');
     const play_title = summaryIcon.getAttribute('phx-value-play-title');
+    const location = summaryIcon.getAttribute('phx-value-location');
     
-    // Determine request type based on context or default to paraphrasing
+    // Determine request type and appropriate event name
     const monologueRow = summaryIcon.closest('tr');
-    let request_type = 'paraphrasing'; // default
+    let event_name = 'paraphrasing_requested'; // default
+    let properties = {
+      play_title: play_title,
+      timestamp: new Date().toISOString()
+    };
     
-    // Check if this is in a play context (might be scene summary)
-    if (monologueRow && monologueRow.querySelector('.monologue-actscene')) {
-      const actScene = monologueRow.querySelector('.monologue-actscene');
-      if (actScene && actScene.textContent.includes('Scene')) {
-        request_type = 'scene_summary';
+    // Check for play summary (usually has no monologue context)
+    if (!monologue_id && play_title && !location) {
+      event_name = 'play_summary_requested';
+      properties.play_title = play_title;
+    }
+    // Check for scene summary (has location/act & scene info)
+    else if (location || (monologueRow && monologueRow.querySelector('.monologue-actscene'))) {
+      event_name = 'scene_summary_requested';
+      properties.play_title = play_title;
+      properties.location = location || (monologueRow.querySelector('.monologue-actscene') ? monologueRow.querySelector('.monologue-actscene').textContent.trim() : null);
+    }
+    // Default to paraphrasing
+    else {
+      event_name = 'paraphrasing_requested';
+      properties.monologue_id = monologue_id;
+      properties.character_name = character_name;
+      properties.play_title = play_title;
+      
+      // Get first line for paraphrasing context
+      if (monologueRow) {
+        const firstLineElement = monologueRow.querySelector('.monologue-firstline-table');
+        if (firstLineElement) {
+          properties.first_line = firstLineElement.textContent.trim();
+        }
       }
     }
     
-    posthog.capture('paraphrasing_requested', {
-      monologue_id: monologue_id,
-      character_name: character_name,
-      play_title: play_title,
-      request_type: request_type
-    });
+    posthog.capture(event_name, properties);
   }
 }, false);
 
@@ -658,6 +677,13 @@ window.addEventListener("phx:page-loading-stop", () => {
   }, 100);
 });
 */
+
+// Handle PostHog events pushed from Elixir LiveView
+window.addEventListener("phx:posthog_capture", (e) => {
+  if (typeof posthog !== 'undefined') {
+    posthog.capture(e.detail.event, e.detail.properties);
+  }
+});
 
 
 // Trigger for PostHog surveys:

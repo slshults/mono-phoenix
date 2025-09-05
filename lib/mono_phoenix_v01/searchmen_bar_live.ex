@@ -111,6 +111,30 @@ defmodule MonoPhoenixV01Web.SearchmenBarLive do
   # Handle summary generation events using async processing to avoid blocking
   @impl true
   def handle_info({:generate_summary, content_type, params, component_id, request_key}, socket) do
+    # Push PostHog event for generation started
+    event_name = case content_type do
+      "play_summary" -> "play_summary_generated"
+      "scene_summary" -> "scene_summary_generated" 
+      "paraphrasing" -> "paraphrasing_generated"
+    end
+    
+    event_properties = case content_type do
+      "play_summary" -> 
+        %{play_title: params.play_title, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+      "scene_summary" -> 
+        %{play_title: params.play_title, location: params.location, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+      "paraphrasing" ->
+        # Get first line from monologue text if available
+        first_line = case params.monologue_text do
+          text when is_binary(text) and byte_size(text) > 0 ->
+            text |> String.split("\n") |> List.first() |> String.slice(0, 100)
+          _ -> nil
+        end
+        %{monologue_id: params.monologue_id, first_line: first_line, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+    end
+    
+    socket = push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
+    
     # Start async task to avoid blocking the LiveView process
     socket = start_async(socket, request_key, fn ->
       case content_type do
@@ -128,7 +152,8 @@ defmodule MonoPhoenixV01Web.SearchmenBarLive do
       async_metadata: Map.put(socket.assigns[:async_metadata] || %{}, request_key, %{
         content_type: content_type,
         component_id: component_id,
-        request_key: request_key
+        request_key: request_key,
+        params: params
       })
     )
     
@@ -142,6 +167,30 @@ defmodule MonoPhoenixV01Web.SearchmenBarLive do
     
     case api_result do
       {:ok, %{content: content, id: record_id}} ->
+        # Push PostHog event for content displayed
+        event_name = case metadata.content_type do
+          "play_summary" -> "play_summary_displayed"
+          "scene_summary" -> "scene_summary_displayed" 
+          "paraphrasing" -> "paraphrasing_displayed"
+        end
+        
+        event_properties = case metadata.content_type do
+          "play_summary" -> 
+            %{play_title: metadata.params.play_title, record_id: record_id, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+          "scene_summary" -> 
+            %{play_title: metadata.params.play_title, location: metadata.params.location, record_id: record_id, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+          "paraphrasing" ->
+            # Get first line from monologue text if available
+            first_line = case metadata.params.monologue_text do
+              text when is_binary(text) and byte_size(text) > 0 ->
+                text |> String.split("\n") |> List.first() |> String.slice(0, 100)
+              _ -> nil
+            end
+            %{monologue_id: metadata.params.monologue_id, first_line: first_line, record_id: record_id, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+        end
+        
+        socket = push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
+        
         send_update(MonoPhoenixV01Web.SummaryModalComponent, 
           id: metadata.component_id, 
           action: "content_generated", 
@@ -149,6 +198,29 @@ defmodule MonoPhoenixV01Web.SearchmenBarLive do
           record_id: record_id
         )
       {:ok, content} when is_binary(content) ->
+        # Fallback for old format (shouldn't happen with new code) - still track display event
+        event_name = case metadata.content_type do
+          "play_summary" -> "play_summary_displayed"
+          "scene_summary" -> "scene_summary_displayed" 
+          "paraphrasing" -> "paraphrasing_displayed"
+        end
+        
+        event_properties = case metadata.content_type do
+          "play_summary" -> 
+            %{play_title: metadata.params.play_title, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+          "scene_summary" -> 
+            %{play_title: metadata.params.play_title, location: metadata.params.location, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+          "paraphrasing" ->
+            first_line = case metadata.params.monologue_text do
+              text when is_binary(text) and byte_size(text) > 0 ->
+                text |> String.split("\n") |> List.first() |> String.slice(0, 100)
+              _ -> nil
+            end
+            %{monologue_id: metadata.params.monologue_id, first_line: first_line, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+        end
+        
+        socket = push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
+        
         send_update(MonoPhoenixV01Web.SummaryModalComponent, 
           id: metadata.component_id, 
           action: "content_generated", 

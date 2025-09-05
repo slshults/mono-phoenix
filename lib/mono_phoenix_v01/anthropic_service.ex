@@ -126,7 +126,7 @@ defmodule MonoPhoenixV01.AnthropicService do
     - No Fear Shakespeare Series by SparkNotes
     """
 
-    user_prompt = "Please provide a 1 or 2 paragraph overview and summary of the events of the entire scene where this monologue appears in Shakespeare's play \"#{play_title}\". The location reference \"#{location}\" indicates the monologue starts around that line in the scene, but I want a summary of all the events in that complete scene, not just that specific line. Please write in the third person. Do not include commentary about the play, beyond summarizing the events of the scene. Don't insert literary commentary such as this example: \"...one of Shakespeare's most complex and tonally ambiguous plays...\", just focus on the events of the scene."
+    user_prompt = "Please provide a 2 paragraph overview and summary of #{location} of Shakespeare's play \"#{play_title}\". Please write in the third person. Do not include commentary about the play, beyond summarizing the events of the scene. Don't insert literary commentary such as this example: \"...one of Shakespeare's most complex and tonally ambiguous plays...\", just focus on the events of the scene."
 
     call_anthropic_api(system_prompt, user_prompt, "SceneSummary")
   end
