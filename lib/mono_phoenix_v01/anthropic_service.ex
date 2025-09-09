@@ -38,6 +38,27 @@ defmodule MonoPhoenixV01.AnthropicService do
 
   # Private functions
 
+  defp get_scene_url(play_title, location) do
+    import Ecto.Query
+    require Logger
+    
+    try do
+      # Query for the body_link (scene URL) based on play title and location
+      # We'll get the first matching monologue since they all share the same scene URL
+      from(m in "monologues",
+        join: p in "plays", on: m.play_id == p.id,
+        where: p.title == ^play_title and m.location == ^location,
+        select: m.body_link,
+        limit: 1
+      )
+      |> Repo.one()
+    rescue
+      error ->
+        Logger.warning("Failed to query scene URL for #{play_title} - #{location}: #{inspect(error)}")
+        nil
+    end
+  end
+
   defp get_or_generate_content(content_type, identifier, generator_fn) do
     case get_cached_content(content_type, identifier) do
       nil ->
@@ -105,6 +126,9 @@ defmodule MonoPhoenixV01.AnthropicService do
   end
 
   defp generate_scene_summary(play_title, location) do
+    # Query for the scene URL to provide additional context
+    scene_url = get_scene_url(play_title, location)
+    
     system_prompt = """
     You are an AI assistant that specializes in providing information and resources to help modern directors and actors prepare for productions, auditions, and training related to the works of William Shakespeare, in the way a dramaturg would. Your focus is on the performance aspect of Shakespeare's plays, scenes, and monologues, rather than literary analysis or authorship debates.
 
@@ -124,9 +148,22 @@ defmodule MonoPhoenixV01.AnthropicService do
     - The Arden Shakespeare Series
     - The Folger Shakespeare Library
     - No Fear Shakespeare Series by SparkNotes
+    
+    IMPORTANT: Different editions of Shakespeare's works may use different terminology for the same sections. For example:
+    - What one edition calls a "Prologue" another might call an "Induction"
+    - Act and scene numbering may vary between editions
+    - Some editions combine or split scenes differently
+    
+    Be flexible with terminology and focus on the actual content and events rather than getting confused by naming differences between editions.
     """
 
-    user_prompt = "Please provide a 2 paragraph overview and summary of #{location} of Shakespeare's play \"#{play_title}\". Please write in the third person. Do not include commentary about the play, beyond summarizing the events of the scene. Don't insert literary commentary such as this example: \"...one of Shakespeare's most complex and tonally ambiguous plays...\", just focus on the events of the scene."
+    url_context = if scene_url do
+      " For reference, this scene can be found at: #{scene_url}"
+    else
+      ""
+    end
+
+    user_prompt = "Please provide a 2 paragraph overview and summary of #{location} of Shakespeare's play \"#{play_title}\".#{url_context} Please write in the third person. Do not include commentary about the play, beyond summarizing the events of the scene. Don't insert literary commentary such as this example: \"...one of Shakespeare's most complex and tonally ambiguous plays...\", just focus on the events of the scene."
 
     call_anthropic_api(system_prompt, user_prompt, "SceneSummary")
   end

@@ -44,7 +44,10 @@ npm-debug.log
 /config/test.exs
 /config/.env
 
-# my misc backup habits
+CLAUDE.md
+/.claude/
+
+misc backup habits
 *.bak
 *.2023*
 \#*#

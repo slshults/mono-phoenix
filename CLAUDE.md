@@ -33,7 +33,15 @@ The PostHog Model Context Protocol (MCP) server is available for Claude Code to 
 **Setup**: Installed via `npx @posthog/wizard@latest mcp add`
 **Documentation**: https://posthog.com/docs/model-context-protocol
 
-**Known Issue**: Claude Code MCP has persistent caching problems - may show "✓ Connected" but cache old API keys even after restarts and config changes. Org-level API keys work perfectly via direct API calls. Workaround: use direct PostHog API calls when MCP functions fail.
+**Status**: ✅ **PostHog MCP is fully operational** as of Sept 6, 2025. All functions working correctly including project switching and event querying.
+
+**Previous Issue (Resolved)**: Claude Code MCP had persistent caching problems with API keys. 
+
+**Resolution**: When updating API keys, both files must be updated:
+- `~/.bashrc` - Update the `POSTHOG_AUTH_HEADER` environment variable
+- `~/.config/Code/User/mcp.json` - Update the key in the `env` section
+
+Then restart sequence: `source ~/.bashrc` → fresh terminal session → restart Claude Code/VS Code.
 
 ### PostHog Reverse Proxy (Temporarily Shelved)
 
