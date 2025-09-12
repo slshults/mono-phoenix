@@ -8,8 +8,9 @@ defmodule MonoPhoenixV01Web.WomenplayPageLive do
     playid = String.to_integer(playid_str)
     rows = fetch_monologues(playid, "")
     
-    # Subscribe to PubSub events for retry functionality
+    # Subscribe to PubSub events for retry functionality and PostHog LLM analytics
     Phoenix.PubSub.subscribe(MonoPhoenixV01.PubSub, "play_page_events")
+    Phoenix.PubSub.subscribe(MonoPhoenixV01.PubSub, "posthog_events")
     
     {:ok, assign(socket, search_bar: %{}, search_value: "", rows: rows, play_id: playid, active_requests: MapSet.new(), async_metadata: %{})}
   end
@@ -158,7 +159,7 @@ defmodule MonoPhoenixV01Web.WomenplayPageLive do
   def handle_async(request_key, {:ok, api_result}, socket) do
     metadata = socket.assigns.async_metadata[request_key]
     
-    case api_result do
+    {socket, _result} = case api_result do
       {:ok, %{content: content, id: record_id}} ->
         # Push PostHog event for content displayed
         event_name = case metadata.content_type do
@@ -190,6 +191,9 @@ defmodule MonoPhoenixV01Web.WomenplayPageLive do
           content: content,
           record_id: record_id
         )
+        
+        {socket, :content_generated}
+        
       {:ok, content} when is_binary(content) ->
         # Fallback for old format (shouldn't happen with new code) - still track display event
         event_name = case metadata.content_type do
@@ -219,6 +223,9 @@ defmodule MonoPhoenixV01Web.WomenplayPageLive do
           action: "content_generated", 
           content: content
         )
+        
+        {socket, :content_generated}
+        
       {:error, error} ->
         require Logger
         Logger.warning("API call failed for #{metadata.content_type}: #{error}")
@@ -227,9 +234,11 @@ defmodule MonoPhoenixV01Web.WomenplayPageLive do
           action: "content_error", 
           error: "Failed to generate #{metadata.content_type}: #{error}"
         )
+        
+        {socket, :error}
     end
     
-    # Clean up metadata and active requests
+    # Clean up metadata and active requests using the updated socket
     active_requests = MapSet.delete(socket.assigns.active_requests, request_key)
     async_metadata = Map.delete(socket.assigns.async_metadata, request_key)
     
@@ -282,6 +291,19 @@ defmodule MonoPhoenixV01Web.WomenplayPageLive do
         acc_socket
       end
     end)
+    
+    {:noreply, socket}
+  end
+
+  # Handle LLM analytics events from AnthropicService
+  @impl true
+  def handle_info({:track_llm, properties}, socket) do
+    # Forward LLM analytics events to PostHog via JavaScript
+    # Using PostHog's standard $ai_generation event name
+    socket = push_event(socket, "phx:posthog_capture", %{
+      event: "$ai_generation",
+      properties: properties
+    })
     
     {:noreply, socket}
   end

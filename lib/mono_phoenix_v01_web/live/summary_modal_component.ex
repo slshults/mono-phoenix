@@ -642,6 +642,7 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
     {:ok, assign(socket, assigns)}
   end
 
+
   # Private helper functions
 
   defp fetch_monologue_details(monologue_id) do

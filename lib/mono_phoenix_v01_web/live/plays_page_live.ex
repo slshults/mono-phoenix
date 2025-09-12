@@ -4,6 +4,10 @@ defmodule MonoPhoenixV01Web.PlaysPageLive do
 
   @impl true
   def mount(_params, _session, socket) do
+    # Subscribe to PubSub events for retry functionality and PostHog LLM analytics
+    Phoenix.PubSub.subscribe(MonoPhoenixV01.PubSub, "play_page_events")
+    Phoenix.PubSub.subscribe(MonoPhoenixV01.PubSub, "posthog_events")
+    
     rows = fetch_monologues(nil, "")
     {:ok, assign(socket, 
       search_bar: %{}, 
@@ -251,6 +255,19 @@ defmodule MonoPhoenixV01Web.PlaysPageLive do
         acc_socket
       end
     end)
+    
+    {:noreply, socket}
+  end
+
+  # Handle LLM analytics events from AnthropicService
+  @impl true
+  def handle_info({:track_llm, properties}, socket) do
+    # Forward LLM analytics events to PostHog via JavaScript
+    # Using PostHog's standard $ai_generation event name
+    socket = push_event(socket, "phx:posthog_capture", %{
+      event: "$ai_generation",
+      properties: properties
+    })
     
     {:noreply, socket}
   end
