@@ -31,6 +31,9 @@ config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
 # Do not print debug messages in production
 config :logger, level: :info
 
+# PostHog configuration for production (uses reverse proxy)
+config :mono_phoenix_v01, :posthog_api_host, "https://autolycus.shakespeare-monologues.org"
+
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key

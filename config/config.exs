@@ -50,6 +50,10 @@ config :phoenix, :json_library, Jason
 # Configure reCAPTCHA to use Jason for JSON decoding
 config :recaptcha, :json_library, Jason
 
+# PostHog Analytics Configuration
+config :mono_phoenix_v01, :posthog,
+  api_host: "https://us.i.posthog.com"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
