@@ -109,5 +109,5 @@ if config_env() == :prod do
   # Anthropic API configuration for Shakespeare summaries
   config :mono_phoenix_v01, :anthropic,
     api_key: System.get_env("ANTHROPIC_API_KEY"),
-    model: "claude-sonnet-4-20250514"
+    model: "claude-sonnet-4-5-20250929"
 end

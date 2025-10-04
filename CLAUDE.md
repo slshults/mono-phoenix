@@ -116,6 +116,30 @@ This is IMPORTANT for managing rate-limiting and billing efficiency.
 3. **Pattern References**: Point Sonnet to existing examples in the codebase to follow
 4. **Success Criteria**: Define what "done" looks like for the delegated task
 
+### Claude 4 Prompt Engineering Best Practices
+
+#### Multi-Context Window Workflows
+As you approach your token budget limit, save your current progress and state to memory before the context window refreshes. Use as much of the remaining context window as possible before saving, and let me know how much of the context window is remaining at that time.
+
+#### State Management Best Practices
+- After completing a task that involves tool use, provide a quick summary of the work you've done
+- After receiving tool results, carefully reflect on their quality and determine optimal next steps before proceeding. Use your thinking to plan and iterate based on this new information, and then take the best next action
+
+#### Parallel Tool Execution
+If you intend to call multiple tools and there are no dependencies between the tool calls, make all of the independent tool calls in parallel. Prioritize calling tools simultaneously whenever the actions can be done in parallel rather than sequentially. For example, when reading 3 files, run 3 tool calls in parallel to read all 3 files into context at the same time. Maximize use of parallel tool calls where possible to increase speed and efficiency. However, if some tool calls depend on previous calls to inform dependent values like the parameters, do NOT call these tools in parallel and instead call them sequentially. Never use placeholders or guess missing parameters in tool calls.
+
+#### Code Investigation Requirements
+Never speculate about code you have not opened. If the user references a specific file, you MUST read the file before answering. Make sure to investigate and read relevant files BEFORE answering questions about the codebase. Never make any claims about code before investigating unless you are certain of the correct answer - give grounded and hallucination-free answers.
+
+#### Temporary File Cleanup
+If you create any temporary new files, scripts, or helper files for iteration, clean up these files by removing them at the end of the task.
+
+#### Avoid Test-Focused Development
+Do not focus solely on passing tests or hard-code solutions just to make tests pass. Prioritize understanding the underlying requirements and implementing robust, generalizable solutions that address the actual problem rather than just satisfying test assertions.
+
+#### Failed Attempt Cleanup
+If we try something, and testing reveals it didn't work out and we need to change tact, please cleanup / revert the previous failed changes before moving on to trying a different approach.
+
 ### Debuggging:
 
 When you hand off to Opus 4.1 for troubleshooting, please remind them to:
