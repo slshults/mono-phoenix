@@ -1121,3 +1121,176 @@ span.toggle-control>a.toggle-mono>img {
 .dark-mode .confirm-cancel:hover {
   background-color: #e8e8c8;
 }
+
+/* ============================================
+   PostHog Conversations Widget Overrides
+   ============================================ */
+
+/* Hidden by default to prevent flash */
+#ph-conversations-widget-container {
+  display: none !important;
+}
+
+/* Revealed when body has the class */
+body.show-ph-widget #ph-conversations-widget-container {
+  display: block !important;
+}
+
+/* --- Light Mode Theme (default) --- */
+
+#ph-conversations-widget-container button[aria-label="Open chat"] {
+  background-color: #8B4513 !important;
+  color: #fff !important;
+}
+
+#ph-conversations-widget-container button[aria-label="Open chat"]:hover {
+  background-color: #A0522D !important;
+}
+
+#ph-conversations-widget-container button[aria-label="Close"] {
+  color: #fff !important;
+}
+
+/* Panel container (exclude the button wrapper) */
+#ph-conversations-widget-container > div > div {
+  background-color: #F9F9DF !important;
+}
+#ph-conversations-widget-container > div > div:has(> button[aria-label="Open chat"]) {
+  background-color: transparent !important;
+}
+
+/* Panel header */
+#ph-conversations-widget-container > div > div > div:first-child {
+  background-color: #8B4513 !important;
+  border-bottom: 1px solid #5E2612 !important;
+}
+
+/* Panel body */
+#ph-conversations-widget-container > div > div > div:nth-child(2) {
+  background-color: #F9F9DF !important;
+  color: #111 !important;
+}
+
+/* Form inputs */
+#ph-conversations-widget-container input,
+#ph-conversations-widget-container textarea,
+#ph-conversations-widget-container select {
+  background-color: #fff !important;
+  color: #111 !important;
+  border: 1px solid #999 !important;
+}
+
+#ph-conversations-widget-container input:focus,
+#ph-conversations-widget-container textarea:focus,
+#ph-conversations-widget-container select:focus {
+  border-color: #5E2612 !important;
+  box-shadow: 0 0 0 1px #5E2612 !important;
+}
+
+#ph-conversations-widget-container input::placeholder,
+#ph-conversations-widget-container textarea::placeholder {
+  color: #999 !important;
+}
+
+/* Form labels */
+#ph-conversations-widget-container label {
+  color: #111 !important;
+}
+
+/* Submit button */
+#ph-conversations-widget-container button[type="submit"] {
+  background-color: #8B4513 !important;
+  color: #fff !important;
+}
+
+#ph-conversations-widget-container button[type="submit"]:hover {
+  background-color: #A0522D !important;
+}
+
+/* All text */
+#ph-conversations-widget-container p,
+#ph-conversations-widget-container span,
+#ph-conversations-widget-container h1,
+#ph-conversations-widget-container h2,
+#ph-conversations-widget-container h3 {
+  color: #111 !important;
+}
+
+/* All elements inherit font */
+#ph-conversations-widget-container * {
+  font-family: inherit !important;
+}
+
+/* Header text (white on brown) */
+#ph-conversations-widget-container > div > div > div:first-child h1,
+#ph-conversations-widget-container > div > div > div:first-child h2,
+#ph-conversations-widget-container > div > div > div:first-child h3,
+#ph-conversations-widget-container > div > div > div:first-child p,
+#ph-conversations-widget-container > div > div > div:first-child span {
+  color: #ffffff !important;
+}
+
+/* Dark mode: force PANEL to light mode, but let floating button follow site theme */
+body.dark-mode #ph-conversations-widget-container > div > div,
+body.dark-mode #ph-conversations-widget-container > div > div * {
+  color: #111 !important;
+}
+
+body.dark-mode #ph-conversations-widget-container > div > div a {
+  color: #111 !important;
+}
+
+body.dark-mode #ph-conversations-widget-container > div > div a:hover {
+  color: #5E2612 !important;
+}
+
+/* Keep header white text on brown in dark mode */
+body.dark-mode #ph-conversations-widget-container > div > div > div:first-child,
+body.dark-mode #ph-conversations-widget-container > div > div > div:first-child * {
+  color: #fff !important;
+}
+
+/* Ensure panel backgrounds survive dark mode */
+body.dark-mode #ph-conversations-widget-container > div > div {
+  background-color: #F9F9DF !important;
+}
+
+body.dark-mode #ph-conversations-widget-container > div > div > div:first-child {
+  background-color: #8B4513 !important;
+}
+
+body.dark-mode #ph-conversations-widget-container > div > div > div:nth-child(2) {
+  background-color: #F9F9DF !important;
+}
+
+/* --- Light Mode Chat Bubble Overrides (nuclear depth-based) --- */
+
+#ph-conversations-widget-container div div div div div {
+  background-color: #f0f0d0 !important;
+  color: #111 !important;
+}
+
+/* --- Light Mode Whitelist: re-assert correct colors after nuclear override --- */
+
+#ph-conversations-widget-container > div > div > div:first-child,
+#ph-conversations-widget-container > div > div > div:first-child * {
+  background-color: #8B4513 !important;
+  color: #fff !important;
+}
+
+#ph-conversations-widget-container input,
+#ph-conversations-widget-container textarea,
+#ph-conversations-widget-container select {
+  background-color: #fff !important;
+  color: #111 !important;
+}
+
+#ph-conversations-widget-container button[type="submit"] {
+  background-color: #8B4513 !important;
+  color: #fff !important;
+}
+
+#ph-conversations-widget-container button[aria-label="Open chat"] {
+  background-color: #8B4513 !important;
+  color: #fff !important;
+}

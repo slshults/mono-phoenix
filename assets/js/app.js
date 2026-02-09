@@ -685,6 +685,28 @@ window.addEventListener("phx:posthog_capture", (e) => {
   }
 });
 
+// Auto-open PostHog conversations widget when arriving from "Contact" footer link
+document.addEventListener('DOMContentLoaded', function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('contact') === 'true') {
+    const maxAttempts = 20;
+    let attempts = 0;
+    const tryOpen = setInterval(function() {
+      attempts++;
+      if (window.posthog && window.posthog.conversations) {
+        window.posthog.conversations.show();
+        clearInterval(tryOpen);
+        // Clean up the URL parameter
+        const url = new URL(window.location);
+        url.searchParams.delete('contact');
+        window.history.replaceState({}, '', url);
+      } else if (attempts >= maxAttempts) {
+        clearInterval(tryOpen);
+      }
+    }, 250);
+  }
+});
+
 
 // Trigger for PostHog surveys:
 

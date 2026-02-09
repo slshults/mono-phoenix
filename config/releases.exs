@@ -7,5 +7,5 @@ config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint, server: true
 if System.get_env("POSTHOG_API_KEY") do
   config :mono_phoenix_v01, :posthog,
     api_key: System.get_env("POSTHOG_API_KEY"),
-    host: System.get_env("POSTHOG_HOST") || "https://app.posthog.com"
+    host: System.get_env("POSTHOG_HOST") || "https://us.i.posthog.com"
 end
