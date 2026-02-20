@@ -43,17 +43,6 @@ The PostHog Model Context Protocol (MCP) server is available for Claude Code to 
 
 Then restart sequence: `source ~/.bashrc` → fresh terminal session → restart Claude Code/VS Code.
 
-### PostHog Reverse Proxy (Temporarily Shelved)
-
-**Status**: PostHog reverse proxy implementation moved to `temp_posthog_proxy/` directory (Sept 5, 2025).
-**Reason**: The `PosthogProxyController` was generating `:formats option` errors during Phoenix compilation, eating up token quota in development sessions.
-**Files Moved**: 
-- `posthog_proxy_controller.ex`
-- `posthog_body_reader.ex`
-- Routes remain commented in `router.ex` (lines 20-39)
-
-**To Resume**: Follow instructions in `temp_posthog_proxy/README.md` to restore files and uncomment routes.
-
 ### Custom PostHog Events Implemented
 
 The following custom events are now tracked with rich contextual properties:
@@ -69,54 +58,25 @@ The following custom events are now tracked with rich contextual properties:
 **Event Naming Convention**: snake_case `object_verb` pattern
 **Implementation**: JavaScript event delegation in `assets/js/app.js`
 
-#### Division of Responsibilities
 
-This is IMPORTANT for managing rate-limiting and billing efficiency. 
+### Best Practices
 
-**Sonnet 4 should be the default model** since Task tool calls are billed under the calling model's usage:
+#### Focus
+When you're deciding how to approach a problem, choose an approach and commit to it. Avoid revisiting decisions unless you encounter new information that directly contradicts your reasoning. If you're weighing two approaches, pick one and see it through. You can always course-correct later if the chosen approach fails.
 
-**Sonnet 4 Role** claude-sonnet-4-20250514 (Default & Implementation):
-- File editing and code changes
-- Direct implementation of planned features
-- Routine refactoring and code updates
-- Following established patterns and conventions
-- Executing well-defined tasks with clear requirements
-- Basic debugging and troubleshooting
-- Most day-to-day development work
+#### Less is more
+Avoid over-engineering. Only make changes that are directly requested or clearly necessary. Keep solutions simple and focused:
 
-**Opus 4.1 Role** claude-opus-4-1-20250805 (Complex Analysis via Task Tool):
-- Complex analysis and architectural decisions
-- Multi-file code investigation and understanding
-- Task planning and breaking down requirements
-- Code review and verification of implementations
-- Handling complex debugging and system-level issues
-- Multi-system reasoning and integration problems
+- Scope: Don't add features, refactor code, or make "improvements" beyond what was asked. A bug fix doesn't need surrounding code cleaned up. A simple feature doesn't need extra configurability.
 
-#### When to Use the Task Tool
+- Documentation: Don't add docstrings, comments, or type annotations to code you didn't change. Only add comments where the logic isn't self-evident.
 
-**Sonnet should delegate to Opus for:**
-- Initial codebase exploration and analysis
-- Complex architectural decisions
-- Multi-system debugging
-- Planning and requirement analysis
-- Tasks requiring deep reasoning about system interactions
-- Complex refactoring that affects multiple files/systems
+- Defensive coding: Don't add error handling, fallbacks, or validation for scenarios that can't happen. Trust internal code and framework guarantees. Only validate at system boundaries (user input, external APIs).
 
-**Sonnet should handle directly:**
-- Making edits to existing files
-- Implementing features with clear requirements
-- Following established patterns (e.g., adding new API endpoints)
-- Routine code updates and maintenance tasks
-- Straightforward bug fixes and improvements
+- Abstractions: Don't create helpers, utilities, or abstractions for one-time operations. Don't design for hypothetical future requirements. The right amount of complexity is the minimum needed for the current task.
 
-#### Best Practices
-
-1. **Clear Task Definitions**: When using the Task tool, provide specific, actionable instructions
-2. **Context Preservation**: Include relevant file paths, function names, and implementation details
-3. **Pattern References**: Point Sonnet to existing examples in the codebase to follow
-4. **Success Criteria**: Define what "done" looks like for the delegated task
-
-### Claude 4 Prompt Engineering Best Practices
+#### Don't overthink it
+Extended thinking adds latency and should only be used when it will meaningfully improve answer quality - typically for problems that require multi-step reasoning. When in doubt, respond directly.
 
 #### Multi-Context Window Workflows
 As you approach your token budget limit, save your current progress and state to memory before the context window refreshes. Use as much of the remaining context window as possible before saving, and let me know how much of the context window is remaining at that time.
@@ -142,14 +102,14 @@ If we try something, and testing reveals it didn't work out and we need to chang
 
 ### Debuggging:
 
-When you hand off to Opus 4.1 for troubleshooting, please remind them to:
+When you hand off to subagents for troubleshooting, please remind them to:
 - Review the current conversation thus far
 - Review the project CLAUDE.md file
 - Tail `logs.gpr` to view the details of the most recent test
 - Search the web for any details needed about how SVGuitar works as of late 2025 (do not make assumptions, your training data set is outdated)
 This approach helps Steven stay within API rate limits while getting the best capabilities from both model types.
 
-Also, when handing off tasks to Opus, please speak to them like they're a person, the same way I speak to you (instead of barking orders at them as if they're just a dumb command line.)
+Also, when handing off tasks to subagents, please speak to them like they're a person, the same way I speak to you (instead of barking orders at them as if they're just a dumb command line.)
 
 ## Development Commands
 
@@ -296,4 +256,3 @@ My local computing and development environment includes:
 
 ---
 
-Reminder: Don't forget about the Division of Responsibilities near the top of this doc 🤓
