@@ -774,6 +774,40 @@ window.addEventListener("phx:page-loading-stop", () => {
   topbar.hide()
 })
 
+// Consent banner
+document.addEventListener('DOMContentLoaded', function() {
+  const banner = document.getElementById('consent-banner');
+  if (!banner) return;
+
+  if (!localStorage.getItem('consent_choice')) {
+    banner.style.display = 'block';
+  }
+
+  document.getElementById('consent-accept').addEventListener('click', function() {
+    localStorage.setItem('consent_choice', 'granted');
+    gtag('consent', 'update', {
+      'ad_storage': 'granted',
+      'ad_user_data': 'granted',
+      'ad_personalization': 'granted',
+      'analytics_storage': 'granted'
+    });
+    if (typeof posthog !== 'undefined' && !posthog.__loaded) {
+        posthog.init('phc_6aYLpkqQsmYJanYseJ8SJcOMicomCxj9v9Pl6hnZQS3', {
+            api_host: 'https://autolycus.shakespeare-monologues.org',
+            ui_host: 'https://us.posthog.com',
+            defaults: '2026-01-30',
+            person_profiles: 'identified_only',
+        });
+    }
+    banner.style.display = 'none';
+  });
+
+  document.getElementById('consent-decline').addEventListener('click', function() {
+    localStorage.setItem('consent_choice', 'declined');
+    banner.style.display = 'none';
+  });
+});
+
 // connect if there are any LiveViews on the page
 liveSocket.connect()
 
