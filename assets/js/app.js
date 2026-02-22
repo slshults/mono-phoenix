@@ -330,21 +330,45 @@ Hooks.FeedbackForm = {
   trackPostHogFeedback() {
     if (typeof posthog === 'undefined') return;
 
-    // Extract feedback data from the modal
     const modal = document.querySelector('#summary-modal');
     if (!modal) return;
 
-    const contentType = modal.querySelector('.summary-modal-title')?.textContent || 'Unknown';
+    const titleText = modal.querySelector('.summary-modal-title')?.textContent?.trim() || '';
     const recordId = modal.dataset.recordId || 'Unknown';
 
-    // Try to get the checked feedback options from the form (they might be cleared already)
-    // This is a bit tricky since the form might be in the success state
-    // We'll track a basic event for now
+    // Parse context from modal title string
+    let content_type = titleText;
+    let character_name = null;
+    let play_title = null;
+    let location = null;
+
+    if (titleText.startsWith('Modern Paraphrasing: ')) {
+      content_type = 'Paraphrasing';
+      character_name = titleText.replace('Modern Paraphrasing: ', '').trim();
+    } else if (titleText.startsWith('Play Summary: ')) {
+      content_type = 'Play Summary';
+      play_title = titleText.replace('Play Summary: ', '').trim();
+    } else if (titleText.startsWith('Scene Summary: ')) {
+      content_type = 'Scene Summary';
+      const rest = titleText.replace('Scene Summary: ', '').trim();
+      const dashIdx = rest.indexOf(' - ');
+      if (dashIdx !== -1) {
+        play_title = rest.substring(0, dashIdx);
+        location = rest.substring(dashIdx + 3);
+      } else {
+        play_title = rest;
+      }
+    }
+
     const properties = {
-      content_type: contentType,
+      content_type: content_type,
       record_id: recordId,
       timestamp: new Date().toISOString()
     };
+
+    if (character_name) properties.character_name = character_name;
+    if (play_title) properties.play_title = play_title;
+    if (location) properties.location = location;
 
     posthog.capture('ai_content_feedback', properties);
   },
@@ -405,16 +429,21 @@ document.addEventListener('click', function (event) {
         }
         
         if (!play_title) {
-          const playElement = monologueRow.querySelector('.monologue-playname a');
+          const playElement = monologueRow.querySelector('.monologue-playname');
           play_title = playElement ? playElement.textContent.trim() : null;
         }
       }
       
+      const location = monologueRow ? monologueRow.dataset.location : null;
+      const first_line = monologueRow ? monologueRow.dataset.firstline : null;
+
       posthog.capture('pdf_clicked', {
         pdf_url: pdf_url,
         monologue_id: monologue_id,
         character_name: character_name,
-        play_title: play_title
+        play_title: play_title,
+        location: location,
+        first_line: first_line
       });
     }
   }
@@ -444,7 +473,7 @@ document.addEventListener('click', function (event) {
         character_name = characterElement ? characterElement.textContent.trim() : null;
         
         // Extract play title from the play name span
-        const playElement = monologueRow.querySelector('.monologue-play');
+        const playElement = monologueRow.querySelector('.monologue-playname');
         play_title = playElement ? playElement.textContent.trim() : null;
         
         // Try to get monologue ID from nearby summary icon if present
@@ -454,10 +483,15 @@ document.addEventListener('click', function (event) {
         }
       }
       
+      const location = monologueRow ? monologueRow.dataset.location : null;
+      const first_line = monologueRow ? monologueRow.dataset.firstline : null;
+
       posthog.capture('monologue_expanded', {
         monologue_id: monologue_id,
         character_name: character_name,
-        play_title: play_title
+        play_title: play_title,
+        location: location,
+        first_line: first_line
       });
     }
   }
@@ -475,37 +509,41 @@ document.addEventListener('click', function (event) {
     const play_title = summaryIcon.getAttribute('phx-value-play-title');
     const location = summaryIcon.getAttribute('phx-value-location');
     
-    // Determine request type and appropriate event name
+    // Determine request type using phx-click attribute (reliable, not DOM-structure dependent)
+    const phxClick = summaryIcon.getAttribute('phx-click');
     const monologueRow = summaryIcon.closest('tr');
     let event_name = 'paraphrasing_requested'; // default
     let properties = {
-      play_title: play_title,
       timestamp: new Date().toISOString()
     };
-    
-    // Check for play summary (usually has no monologue context)
-    if (!monologue_id && play_title && !location) {
+
+    if (phxClick === 'show_play_summary') {
       event_name = 'play_summary_requested';
       properties.play_title = play_title;
-    }
-    // Check for scene summary (has location/act & scene info)
-    else if (location || (monologueRow && monologueRow.querySelector('.monologue-actscene'))) {
+    } else if (phxClick === 'show_scene_summary') {
       event_name = 'scene_summary_requested';
       properties.play_title = play_title;
-      properties.location = location || (monologueRow.querySelector('.monologue-actscene') ? monologueRow.querySelector('.monologue-actscene').textContent.trim() : null);
-    }
-    // Default to paraphrasing
-    else {
+      properties.location = location;
+    } else {
+      // show_paraphrasing
       event_name = 'paraphrasing_requested';
       properties.monologue_id = monologue_id;
       properties.character_name = character_name;
-      properties.play_title = play_title;
-      
-      // Get first line for paraphrasing context
+
+      // play_title not on paraphrasing icon attrs — get from DOM
+      let resolved_play_title = play_title;
+      if (!resolved_play_title && monologueRow) {
+        const playEl = monologueRow.querySelector('.monologue-playname');
+        resolved_play_title = playEl ? playEl.textContent.trim() : null;
+      }
+      properties.play_title = resolved_play_title;
+
       if (monologueRow) {
+        properties.location = monologueRow.dataset.location || null;
+
         const firstLineElement = monologueRow.querySelector('.monologue-firstline-table');
         if (firstLineElement) {
-          properties.first_line = firstLineElement.textContent.trim();
+          properties.first_line = firstLineElement.textContent.trim().replace('↴', '').trim();
         }
       }
     }

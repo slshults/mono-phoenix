@@ -47,7 +47,7 @@
           </a>
         </span>
         <%= for row <- @rows do %>
-          <tr class="monologue_list">
+          <tr class="monologue_list" data-location={row.location} data-firstline={row.firstline}>
             <td class="{ (index.even? ? 'even' : 'odd') }">
               <span
                 class="monologue-playname"
@@ -98,11 +98,12 @@
               >
                 <br />
                 <%= raw(Map.get(row, :body)) %>&nbsp;
-                <span class="summary-icon" 
-                      phx-click="show_paraphrasing" 
+                <span class="summary-icon"
+                      phx-click="show_paraphrasing"
                       phx-value-monologue-id={row.monologues}
                       phx-value-monologue-text={Map.get(row, :body)}
                       phx-value-character={row.character}
+                      phx-value-location={row.location}
                       title="Show modern paraphrasing">
                   <img src={Routes.static_path(@socket, "/images/thinking-paraphrase-icon.svg")} alt="Modern paraphrasing" />
                 </span>&nbsp;
@@ -127,6 +128,12 @@
   module={MonoPhoenixV01Web.SummaryModalComponent} 
   id="summary-modal" 
 />
+
+<script>
+  if (typeof posthog !== 'undefined') {
+    posthog.register({ play_title: '<%= if length(@rows) > 0, do: hd(@rows).play, else: "" %>' });
+  }
+</script>
 
 <script>
   const toggleButton = document.getElementById('toggle-button');

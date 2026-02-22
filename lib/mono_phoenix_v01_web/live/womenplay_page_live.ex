@@ -79,22 +79,22 @@ defmodule MonoPhoenixV01Web.WomenplayPageLive do
   end
 
   @impl true
-  def handle_event("show_paraphrasing", %{"monologue-id" => monologue_id, "monologue-text" => monologue_text, "character" => character}, socket) do
+  def handle_event("show_paraphrasing", %{"monologue-id" => monologue_id, "monologue-text" => monologue_text, "character" => character, "location" => location}, socket) do
     request_key = "paraphrasing:#{monologue_id}"
-    
+
     if MapSet.member?(socket.assigns.active_requests, request_key) do
       {:noreply, socket}
     else
-      send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-        id: "summary-modal", 
-        action: "show_paraphrasing", 
+      send_update(MonoPhoenixV01Web.SummaryModalComponent,
+        id: "summary-modal",
+        action: "show_paraphrasing",
         monologue_id: monologue_id,
         monologue_text: monologue_text,
         character: character
       )
-      
+
       active_requests = MapSet.put(socket.assigns.active_requests, request_key)
-      send(self(), {:generate_summary, "paraphrasing", %{monologue_id: monologue_id, monologue_text: monologue_text}, "summary-modal", request_key})
+      send(self(), {:generate_summary, "paraphrasing", %{monologue_id: monologue_id, monologue_text: monologue_text, character: character, location: location}, "summary-modal", request_key})
       
       {:noreply, assign(socket, active_requests: active_requests)}
     end
@@ -122,11 +122,11 @@ defmodule MonoPhoenixV01Web.WomenplayPageLive do
             text |> String.split("\n") |> List.first() |> String.slice(0, 100)
           _ -> nil
         end
-        %{monologue_id: params.monologue_id, first_line: first_line, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+        %{monologue_id: params.monologue_id, character_name: params.character, location: params.location, first_line: first_line, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
     end
-    
+
     socket = push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
-    
+
     # Start async task to avoid blocking the LiveView process
     socket = start_async(socket, request_key, fn ->
       case content_type do
@@ -160,19 +160,19 @@ defmodule MonoPhoenixV01Web.WomenplayPageLive do
     metadata = socket.assigns.async_metadata[request_key]
     
     {socket, _result} = case api_result do
-      {:ok, %{content: content, id: record_id}} ->
+      {:ok, %{content: content, id: record_id, source: source}} ->
         # Push PostHog event for content displayed
         event_name = case metadata.content_type do
           "play_summary" -> "play_summary_displayed"
-          "scene_summary" -> "scene_summary_displayed" 
+          "scene_summary" -> "scene_summary_displayed"
           "paraphrasing" -> "paraphrasing_displayed"
         end
-        
+
         event_properties = case metadata.content_type do
-          "play_summary" -> 
-            %{play_title: metadata.params.play_title, record_id: record_id, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
-          "scene_summary" -> 
-            %{play_title: metadata.params.play_title, location: metadata.params.location, record_id: record_id, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+          "play_summary" ->
+            %{play_title: metadata.params.play_title, record_id: record_id, source: source, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+          "scene_summary" ->
+            %{play_title: metadata.params.play_title, location: metadata.params.location, record_id: record_id, source: source, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
           "paraphrasing" ->
             # Get first line from monologue text if available
             first_line = case metadata.params.monologue_text do
@@ -180,14 +180,14 @@ defmodule MonoPhoenixV01Web.WomenplayPageLive do
                 text |> String.split("\n") |> List.first() |> String.slice(0, 100)
               _ -> nil
             end
-            %{monologue_id: metadata.params.monologue_id, first_line: first_line, record_id: record_id, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+            %{monologue_id: metadata.params.monologue_id, character_name: metadata.params.character, location: metadata.params.location, first_line: first_line, record_id: record_id, source: source, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
         end
-        
+
         socket = push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
-        
-        send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-          id: metadata.component_id, 
-          action: "content_generated", 
+
+        send_update(MonoPhoenixV01Web.SummaryModalComponent,
+          id: metadata.component_id,
+          action: "content_generated",
           content: content,
           record_id: record_id
         )
@@ -213,14 +213,14 @@ defmodule MonoPhoenixV01Web.WomenplayPageLive do
                 text |> String.split("\n") |> List.first() |> String.slice(0, 100)
               _ -> nil
             end
-            %{monologue_id: metadata.params.monologue_id, first_line: first_line, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+            %{monologue_id: metadata.params.monologue_id, character_name: metadata.params.character, location: metadata.params.location, first_line: first_line, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
         end
-        
+
         socket = push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
-        
-        send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-          id: metadata.component_id, 
-          action: "content_generated", 
+
+        send_update(MonoPhoenixV01Web.SummaryModalComponent,
+          id: metadata.component_id,
+          action: "content_generated",
           content: content
         )
         

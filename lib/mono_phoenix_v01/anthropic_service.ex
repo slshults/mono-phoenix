@@ -71,13 +71,13 @@ defmodule MonoPhoenixV01.AnthropicService do
         case generator_fn.(identifier) do
           {:ok, content} ->
             record = cache_content(content_type, identifier, content)
-            {:ok, %{content: content, id: record.id}}
+            {:ok, %{content: content, id: record.id, source: "claude"}}
           error ->
             error
         end
-      
+
       cached_data ->
-        {:ok, cached_data}
+        {:ok, Map.put(cached_data, :source, "db")}
     end
   end
 
