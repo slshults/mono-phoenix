@@ -1,4 +1,20 @@
 <script>document.body.classList.add('show-ph-widget');</script>
+<%= if @conn.request_path != "/home" do %>
+<!-- Cookie-gated chat icon: shown when PostHog conversations widget is unavailable -->
+<div id="cookie-chat-icon" title="Send us a message" style="display:none; position:fixed; bottom:20px; right:20px; z-index:9998; cursor:pointer;">
+  <div style="width:36px; height:36px; background:#5E2612; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.35);">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    </svg>
+  </div>
+</div>
+<!-- Cookie-gated chat modal -->
+<div id="cookie-chat-modal" style="display:none; position:fixed; bottom:65px; right:20px; z-index:9999; background:#fff; border-radius:6px; padding:14px 16px 14px 16px; box-shadow:0 4px 18px rgba(0,0,0,0.18); max-width:230px; font-family:Georgia, serif; border:1px solid #e0d5c8;">
+  <button id="cookie-chat-modal-close" style="position:absolute; top:6px; right:9px; background:none; border:none; cursor:pointer; font-size:17px; color:#888; line-height:1; padding:0;" aria-label="Close">×</button>
+  <p style="margin:0 0 10px 0; font-size:13px; color:#444; line-height:1.45; padding-right:12px;">To send us a message, please accept cookies first.</p>
+  <button id="cookie-chat-accept-from-modal" style="background:#5E2612; color:#fff; border:none; padding:6px 14px; cursor:pointer; font-size:13px; font-family:Georgia, serif; border-radius:3px;">Accept cookies</button>
+</div>
+<% end %>
 <!-- The site heading, or banner, or title or whatso'er shall please you -->
     <!-- Dark Mode Toggle -->
 <div

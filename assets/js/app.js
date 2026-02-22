@@ -774,6 +774,32 @@ window.addEventListener("phx:page-loading-stop", () => {
   topbar.hide()
 })
 
+// Cookie-gated chat icon (shown when PostHog conversations widget is unavailable)
+document.addEventListener('DOMContentLoaded', function() {
+  const chatIcon = document.getElementById('cookie-chat-icon');
+  const chatModal = document.getElementById('cookie-chat-modal');
+  if (!chatIcon || !chatModal) return;
+
+  if (localStorage.getItem('consent_choice') !== 'granted') {
+    chatIcon.style.display = 'block';
+  }
+
+  chatIcon.addEventListener('click', function() {
+    chatModal.style.display = chatModal.style.display === 'none' ? 'block' : 'none';
+  });
+
+  document.getElementById('cookie-chat-modal-close').addEventListener('click', function() {
+    chatModal.style.display = 'none';
+  });
+
+  document.getElementById('cookie-chat-accept-from-modal').addEventListener('click', function() {
+    chatModal.style.display = 'none';
+    chatIcon.style.display = 'none';
+    // Delegate to the main consent accept button so we don't duplicate the init logic
+    document.getElementById('consent-accept').click();
+  });
+});
+
 // Consent banner
 document.addEventListener('DOMContentLoaded', function() {
   const banner = document.getElementById('consent-banner');
