@@ -774,6 +774,47 @@ window.addEventListener("phx:page-loading-stop", () => {
   topbar.hide()
 })
 
+// Adblocker detection
+document.addEventListener('DOMContentLoaded', function() {
+  const overlay = document.getElementById('adblock-overlay');
+  if (!overlay) return;
+  if (sessionStorage.getItem('adblock_dismissed')) return;
+
+  function showAdblockModal() {
+    overlay.style.display = 'flex';
+  }
+
+  setTimeout(function() {
+    fetch('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', {
+      mode: 'no-cors',
+      cache: 'no-store'
+    })
+    .then(function(r) {
+      // Genuine cross-origin no-cors fetch returns type 'opaque'.
+      // Type 'basic' means UBO Lite intercepted and redirected to an empty response.
+      if (r.type === 'basic') {
+        showAdblockModal();
+        return;
+      }
+      // Fallback: CSS probe for cosmetic-blocking adblockers
+      const probe = document.getElementById('adblock-probe');
+      const cssBlocked = !probe ||
+        probe.offsetHeight === 0 ||
+        window.getComputedStyle(probe).display === 'none';
+      if (cssBlocked) showAdblockModal();
+    })
+    .catch(function() {
+      // Hard network block (some adblockers do cause a network error)
+      showAdblockModal();
+    });
+  }, 5000);
+
+  document.getElementById('adblock-dismiss').addEventListener('click', function() {
+    sessionStorage.setItem('adblock_dismissed', '1');
+    overlay.style.display = 'none';
+  });
+});
+
 // Cookie-gated chat icon (shown when PostHog conversations widget is unavailable)
 document.addEventListener('DOMContentLoaded', function() {
   const chatIcon = document.getElementById('cookie-chat-icon');

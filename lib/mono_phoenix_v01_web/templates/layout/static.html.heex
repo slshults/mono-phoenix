@@ -1,4 +1,4 @@
-<script>document.body.classList.add('show-ph-widget');</script>
+<%= if @conn.request_path != "/home" do %><script>document.body.classList.add('show-ph-widget');</script><% end %>
 <%= if @conn.request_path != "/home" do %>
 <!-- Cookie-gated chat icon: shown when PostHog conversations widget is unavailable -->
 <div id="cookie-chat-icon" title="Send us a message" style="display:none; position:fixed; bottom:20px; right:20px; z-index:9998; cursor:pointer;">

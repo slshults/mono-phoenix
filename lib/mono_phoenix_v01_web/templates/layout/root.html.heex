@@ -301,5 +301,19 @@
       <%= @inner_content %>
       <!-- end dynamic inner content -->
     </div>
+    <%= if @conn.request_path != "/home" do %>
+    <!-- Adblocker detection probe: adblockers hide/remove this element -->
+    <div id="adblock-probe" class="adsbox" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;pointer-events:none;" aria-hidden="true"></div>
+    <!-- Adblocker notice modal -->
+    <div id="adblock-overlay" style="display:none; position:fixed; inset:0; z-index:10002; background:rgba(0,0,0,0.55); align-items:center; justify-content:center;">
+      <div id="adblock-modal" style="background:#fff; border-radius:8px; padding:28px 30px 24px 30px; max-width:420px; width:90%; box-shadow:0 8px 32px rgba(0,0,0,0.28); font-family:Georgia, serif; position:relative;">
+        <h3 style="margin:0 0 14px 0; font-size:17px; color:#5E2612; font-family:Georgia, serif;">Please allow ads to help pay for hosting costs</h3>
+        <p style="margin:0 0 20px 0; font-size:14px; color:#444; line-height:1.6;">Looks like you're using an adblocker. I get it, I use them too. But some months the ad revenue doesn't even cover the hosting costs, so I'd appreciate if you unblock the ads while you're here. Thanks, and break a leg.</p>
+        <div style="text-align:right;">
+          <button id="adblock-dismiss" style="background:#5E2612; color:#fff; border:none; padding:8px 20px; cursor:pointer; font-size:14px; font-family:Georgia, serif; border-radius:3px;">Got it</button>
+        </div>
+      </div>
+    </div>
+    <% end %>
   </body>
 </html>

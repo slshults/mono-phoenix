@@ -1294,3 +1294,15 @@ body.dark-mode #ph-conversations-widget-container > div > div > div:nth-child(2)
   background-color: #8B4513 !important;
   color: #fff !important;
 }
+
+/* --- Adblocker notice modal: dark mode --- */
+body.dark-mode #adblock-modal {
+  background: #2a2520;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.55);
+}
+body.dark-mode #adblock-modal h3 {
+  color: #c8956b;
+}
+body.dark-mode #adblock-modal p {
+  color: #bbb;
+}
