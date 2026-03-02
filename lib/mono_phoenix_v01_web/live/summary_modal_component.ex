@@ -663,7 +663,8 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
           select: %{
             location: m.location,
             character: m.character,
-            firstline: m.first_line
+            firstline: m.first_line,
+            play_id: m.play_id
           }
         )
       )
@@ -684,26 +685,36 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
     end
   end
 
+  defp fetch_play_id_by_title(play_title) do
+    import Ecto.Query
+
+    MonoPhoenixV01.Repo.one(
+      from(p in "plays", where: p.title == ^play_title, select: p.id, limit: 1)
+    )
+  end
+
   defp send_feedback_email(assigns, feedback_items, wrong_details) do
     require Logger
-    
-    # Build monologue details based on content type
-    monologue_details = case assigns.content_type do
+
+    # Build monologue details and play link based on content type
+    {monologue_details, play_id} = case assigns.content_type do
       "Play Summary" ->
         play_title = Map.get(assigns.generation_params, :play_title, "Unknown")
-        "Play: #{play_title}"
-      
+        id = fetch_play_id_by_title(play_title)
+        {"Play: #{play_title}", id}
+
       "Scene Summary" ->
         play_title = Map.get(assigns.generation_params, :play_title, "Unknown")
         location = Map.get(assigns.generation_params, :location, "Unknown")
-        "Play: #{play_title}, Act/Scene: #{location}"
-      
+        id = fetch_play_id_by_title(play_title)
+        {"Play: #{play_title}, Act/Scene: #{location}", id}
+
       "Paraphrasing" ->
         monologue_id = Map.get(assigns.generation_params, :monologue_id, "Unknown")
-        
+
         Logger.info("Processing paraphrasing feedback - monologue_id: #{inspect(monologue_id)} (type: #{inspect(is_integer(monologue_id))})")
         Logger.info("Generation params: #{inspect(assigns.generation_params)}")
-        
+
         # Convert to integer if it's a string
         actual_monologue_id = case monologue_id do
           id when is_integer(id) -> id
@@ -714,9 +725,9 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
             end
           _ -> nil
         end
-        
+
         Logger.info("Converted monologue_id: #{inspect(actual_monologue_id)}")
-        
+
         # Fetch monologue details from database
         details = if actual_monologue_id && actual_monologue_id != "Unknown" do
           fetch_monologue_details(actual_monologue_id)
@@ -724,28 +735,35 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
           Logger.info("Monologue ID is invalid or 'Unknown', skipping database query")
           %{}
         end
-        
+
         Logger.info("Fetched details: #{inspect(details)}")
-        
+
         location = Map.get(details, :location, "Unknown")
         character = Map.get(details, :character, "Unknown")
         first_line = Map.get(details, :firstline, "Unknown")
-        
+        id = Map.get(details, :play_id)
+
         Logger.info("Final values - Character: #{character}, Location: #{location}, First Line: #{first_line}")
-        
-        "Character: #{character}, Location: #{location}, First Line: \"#{first_line}\""
-      
-      _ -> 
-        "Unknown content type"
+
+        {"Character: #{character}, Location: #{location}, First Line: \"#{first_line}\"", id}
+
+      _ ->
+        {"Unknown content type", nil}
     end
-    
+
+    play_link = if play_id do
+      "\n    View page: https://shakespeare-monologues.org/play/#{play_id}"
+    else
+      ""
+    end
+
     feedback_text = Enum.join(feedback_items, ", ")
-    
+
     email_body = """
     Feedback received for AI-generated content on Shakespeare Monologues site.
 
     Content Type: #{assigns.content_type}
-    #{monologue_details}
+    #{monologue_details}#{play_link}
 
     Feedback Options Selected: #{feedback_text}
 
