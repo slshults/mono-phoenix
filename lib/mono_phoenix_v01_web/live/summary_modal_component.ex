@@ -157,11 +157,20 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
                           Why is it talking to me?
                         </label>
                       </div>
-                      <div class="feedback-wrong-details" style={if @show_wrong_details, do: "display: block;", else: "display: none;"}>
-                        <textarea 
-                          name="wrong_details" 
-                          placeholder="What's wrong? (optional)"
+                      <div class="feedback-details-field" data-for="dont_like" style="display: none;">
+                        <textarea
+                          name="dont_like_details"
+                          placeholder="What would make you like it more?"
                           rows="2"
+                          maxlength="250"
+                        ></textarea>
+                      </div>
+                      <div class="feedback-details-field" data-for="wrong" style="display: none;">
+                        <textarea
+                          name="wrong_details"
+                          placeholder={"How, specifically, is it wrong?\nWhich publisher are you comparing to?"}
+                          rows="2"
+                          maxlength="250"
                         ></textarea>
                       </div>
                       <div class="feedback-form-buttons">
@@ -181,6 +190,14 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
                     </form>
                   <% end %>
                 </div>
+                <%= if @validation_message do %>
+                  <div class="feedback-validation-overlay">
+                    <div class="feedback-validation-modal">
+                      <p><%= raw(@validation_message) %></p>
+                      <button type="button" class="feedback-send-btn" phx-click="dismiss_validation" phx-target={@myself}>OK</button>
+                    </div>
+                  </div>
+                <% end %>
               </div>
             <% end %>
           <% end %>
@@ -302,11 +319,11 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
           height: 14px;
         }
         
-        .feedback-wrong-details {
+        .feedback-details-field {
           margin-bottom: 12px;
         }
-        
-        .feedback-wrong-details textarea {
+
+        .feedback-details-field textarea {
           width: 100%;
           padding: 6px;
           border: 1px solid #ccc;
@@ -315,6 +332,41 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
           font-size: 12px;
           resize: vertical;
           box-sizing: border-box;
+        }
+
+        .feedback-validation-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0,0,0,0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 8px;
+          z-index: 10;
+        }
+
+        .feedback-validation-modal {
+          background: #fff;
+          padding: 16px;
+          border-radius: 8px;
+          max-width: 260px;
+          text-align: center;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .feedback-validation-modal p {
+          margin: 0 0 12px 0;
+          font-size: 13px;
+          color: #333;
+          line-height: 1.4;
+        }
+
+        .feedback-validation-modal a {
+          color: #4a6da7;
+          text-decoration: underline;
         }
         
         .feedback-form-buttons {
@@ -379,10 +431,22 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
           color: #ccc;
         }
         
-        body.dark-mode .feedback-wrong-details textarea {
+        body.dark-mode .feedback-details-field textarea {
           background-color: #333;
           color: #fff;
           border-color: #666;
+        }
+
+        body.dark-mode .feedback-validation-modal {
+          background: #2a2a2a;
+        }
+
+        body.dark-mode .feedback-validation-modal p {
+          color: #ddd;
+        }
+
+        body.dark-mode .feedback-validation-modal a {
+          color: #7ab3e8;
         }
         
         body.dark-mode .feedback-thanks {
@@ -429,7 +493,8 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
       feedback_success: false,
       feedback_completed: false,
       sending_feedback: false,
-      show_wrong_details: false
+      show_wrong_details: false,
+      validation_message: nil
     )}
   end
 
@@ -501,10 +566,11 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
 
   @impl true
   def handle_event("toggle_feedback", _params, socket) do
-    socket = assign(socket, 
+    socket = assign(socket,
       show_feedback: !socket.assigns.show_feedback,
       feedback_success: false,
-      show_wrong_details: false
+      show_wrong_details: false,
+      validation_message: nil
     )
     {:noreply, socket}
   end
@@ -529,26 +595,45 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
   def handle_event("submit_feedback", params, socket) do
     feedback_items = Map.get(params, "feedback", [])
     wrong_details = Map.get(params, "wrong_details", "")
-    
-    # Show wrong details field if "wrong" is checked
-    socket = if "wrong" in feedback_items do
-      assign(socket, show_wrong_details: true, sending_feedback: true)
+    dont_like_details = Map.get(params, "dont_like_details", "")
+
+    # Validate required details fields (at least 3 words)
+    validation_error = cond do
+      "dont_like" in feedback_items && word_count(dont_like_details) < 3 ->
+        "I can't make it better if you can't tell me what's wrong with it."
+
+      "wrong" in feedback_items && word_count(wrong_details) < 3 ->
+        ~s(Please tell me how it's wrong if you want it fixed. See also<br>FAQ: <a href="https://www.shakespeare-monologues.org/faq#Q1" target="_blank">Why is the text of a monologue on this site a little different from the copy I have?</a>)
+
+      true ->
+        nil
+    end
+
+    if validation_error do
+      {:noreply, assign(socket, validation_message: validation_error)}
     else
-      assign(socket, sending_feedback: true)
+      socket = assign(socket, sending_feedback: true)
+
+      # Combine both detail fields for the email
+      combined_details = [dont_like_details, wrong_details]
+        |> Enum.reject(&(&1 == ""))
+        |> Enum.join("\n")
+
+      case send_feedback_email(socket.assigns, feedback_items, combined_details) do
+        {:ok, _result} ->
+          {:noreply, assign(socket, feedback_success: true, feedback_completed: true, show_feedback: false, sending_feedback: false)}
+
+        {:error, reason} ->
+          require Logger
+          Logger.error("Failed to send feedback email: #{inspect(reason)}")
+          {:noreply, assign(socket, sending_feedback: false)}
+      end
     end
-    
-    # Process the feedback
-    case send_feedback_email(socket.assigns, feedback_items, wrong_details) do
-      {:ok, _result} ->
-        # PostHog event will be tracked by JavaScript when success is shown
-        
-        {:noreply, assign(socket, feedback_success: true, feedback_completed: true, show_feedback: false, sending_feedback: false)}
-      
-      {:error, reason} ->
-        require Logger
-        Logger.error("Failed to send feedback email: #{inspect(reason)}")
-        {:noreply, assign(socket, sending_feedback: false)}
-    end
+  end
+
+  @impl true
+  def handle_event("dismiss_validation", _params, socket) do
+    {:noreply, assign(socket, validation_message: nil)}
   end
 
   @impl true
@@ -685,6 +770,11 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
     end
   end
 
+  defp word_count(text) when is_binary(text) do
+    text |> String.trim() |> String.split(~r/\s+/, trim: true) |> length()
+  end
+  defp word_count(_), do: 0
+
   defp fetch_play_id_by_title(play_title) do
     import Ecto.Query
 
@@ -757,17 +847,25 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
       ""
     end
 
+    record_id = assigns.record_id
+    delete_cmd = if record_id do
+      "\n    To delete and regenerate:\n    Ecto.Adapters.SQL.query!(MonoPhoenixV01.Repo, \"DELETE FROM summaries WHERE id = $1\", [#{record_id}])"
+    else
+      ""
+    end
+
     feedback_text = Enum.join(feedback_items, ", ")
 
     email_body = """
     Feedback received for AI-generated content on Shakespeare Monologues site.
 
     Content Type: #{assigns.content_type}
+    Record ID: #{record_id || "N/A"}
     #{monologue_details}#{play_link}
 
     Feedback Options Selected: #{feedback_text}
 
-    #{if wrong_details != "", do: "Additional Details: #{wrong_details}", else: ""}
+    #{if wrong_details != "", do: "Additional Details: #{wrong_details}", else: ""}#{delete_cmd}
 
     ---
     This feedback was submitted via the shakespeare-monologues.org feedback form.

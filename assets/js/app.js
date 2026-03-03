@@ -292,22 +292,24 @@ Hooks.FeedbackForm = {
   },
 
   setupFeedbackInteractions() {
-    // Handle the "It's wrong" checkbox to show/hide details field
-    const wrongCheckbox = this.el.querySelector('input[value="wrong"]');
-    const detailsDiv = this.el.querySelector('.feedback-wrong-details');
-
-    if (wrongCheckbox && detailsDiv) {
-      wrongCheckbox.addEventListener('change', (e) => {
-        if (e.target.checked) {
-          detailsDiv.style.display = 'block';
-        } else {
-          detailsDiv.style.display = 'none';
-          // Clear the textarea when hiding
-          const textarea = detailsDiv.querySelector('textarea');
-          if (textarea) textarea.value = '';
-        }
-      });
-    }
+    // Handle checkboxes that have associated details fields
+    const toggles = ['dont_like', 'wrong'];
+    toggles.forEach(value => {
+      const checkbox = this.el.querySelector(`input[value="${value}"]`);
+      const detailsDiv = this.el.querySelector(`.feedback-details-field[data-for="${value}"]`);
+      if (checkbox && detailsDiv) {
+        checkbox.addEventListener('change', (e) => {
+          if (e.target.checked) {
+            detailsDiv.style.display = 'block';
+            detailsDiv.querySelector('textarea')?.focus();
+          } else {
+            detailsDiv.style.display = 'none';
+            const textarea = detailsDiv.querySelector('textarea');
+            if (textarea) textarea.value = '';
+          }
+        });
+      }
+    });
   },
 
   setupAutoHideSuccess() {
