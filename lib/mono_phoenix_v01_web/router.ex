@@ -54,7 +54,7 @@ defmodule MonoPhoenixV01Web.Router do
     get("/links", StaticPageController, :links)
     get("/privacy", StaticPageController, :privacy)
     get("/maintenance", StaticPageController, :maintenance)
-    live("/contact", ContactLive)
+    # /contact retired — redirect handled below with other SEO redirects
     get("/hello", PageController, :hello)
     get("/sandbox", PageController, :sandbox)
     live("/search_bar", SearchBarLive, :search_bar)
@@ -64,7 +64,8 @@ defmodule MonoPhoenixV01Web.Router do
   end
 
   ## redirects for deep links from other sites. Will not work inside a scope.
-  # redirect from /men/plays/123 to /men/123
+  # /contact retired — replaced by PostHog support widget on /faq
+  redirect("/contact", "/faq?contact=true", :permanent)
   # redirect from /men/plays/123 to /men/123
   redirect("/", "/home", :permanent, preserve_query_string: true)
   redirect("/men", "/mens", :permanent, preserve_query_string: true)

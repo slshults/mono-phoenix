@@ -101,10 +101,6 @@ if config_env() == :prod do
   # Configure Swoosh API client for production
   config :swoosh, :api_client, Swoosh.ApiClient.Hackney
 
-  # reCAPTCHA configuration for production
-  config :recaptcha,
-    public_key: System.get_env("RECAPTCHA_PUBLIC_KEY"),
-    secret: System.get_env("RECAPTCHA_SECRET_KEY")
 
   # Anthropic API configuration for Shakespeare summaries
   config :mono_phoenix_v01, :anthropic,

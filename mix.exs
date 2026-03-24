@@ -59,8 +59,7 @@ defmodule MonoPhoenixV01.MixProject do
       {:html_assertion, "0.1.5", only: :test},
       {:floki, ">= 0.34.2", only: :test},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
-      {:earmark, "~> 1.4"},
-      {:recaptcha, "~> 3.0"}
+      {:earmark, "~> 1.4"}
     ]
   end
 
