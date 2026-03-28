@@ -15,10 +15,12 @@ function setDarkModePreference(isDarkMode) {
   var lightModeToggle = document.getElementById('light-mode-toggle');
   var darkModeToggle = document.getElementById('dark-mode-toggle');
   if (isDarkMode) {
+    document.documentElement.classList.add('dark-mode');
     bodyElement.classList.add('dark-mode');
     lightModeToggle.style.display = 'none';
     darkModeToggle.style.display = 'block';
   } else {
+    document.documentElement.classList.remove('dark-mode');
     bodyElement.classList.remove('dark-mode');
     lightModeToggle.style.display = 'block';
     darkModeToggle.style.display = 'none';

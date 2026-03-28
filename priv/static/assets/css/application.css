@@ -1306,3 +1306,6 @@ body.dark-mode #adblock-modal h3 {
 body.dark-mode #adblock-modal p {
   color: #bbb;
 }
+body.dark-mode #adblock-modal a {
+  color: #c8956b !important;
+}
