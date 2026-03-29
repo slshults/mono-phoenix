@@ -88,7 +88,7 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
                       <%= if @feedback_success do %>
                         <div class="feedback-thanks">Thanks!</div>
                       <% else %>
-                        <%# Show thumbs only if feedback not yet completed %>
+                        <%!-- Show thumbs only if feedback not yet completed --%>
                         <%= unless @feedback_completed do %>
                           <div class="feedback-buttons">
                             <button 

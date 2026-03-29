@@ -345,7 +345,7 @@ defmodule MonoPhoenixV01.AnthropicService do
   end
 
   # PostHog LLM Analytics tracking function with enhanced properties
-  defp track_llm_analytics(request_type, model, input_tokens, output_tokens, latency_ms, success, attempt, error_message \\ nil, cache_creation_input_tokens \\ nil, cache_read_input_tokens \\ nil, system_prompt \\ nil, user_prompt \\ nil, ai_output \\ nil) do
+  defp track_llm_analytics(request_type, model, input_tokens, output_tokens, latency_ms, success, attempt, error_message, cache_creation_input_tokens, cache_read_input_tokens, system_prompt, user_prompt, ai_output) do
     # Generate unique trace and span IDs for this request
     trace_id = generate_trace_id()
     span_id = generate_span_id()

@@ -176,7 +176,7 @@ defmodule MonoPhoenixV01Web.PlaysPageLive do
   @impl true
   def handle_async(request_key, {:ok, api_result}, socket) do
     # Get metadata for this request
-    metadata = Map.get(socket.assigns.async_metadata, request_key, %{})
+    _metadata = Map.get(socket.assigns.async_metadata, request_key, %{})
     
     # Pattern match the API result to extract content and record_id
     case api_result do
@@ -205,7 +205,7 @@ defmodule MonoPhoenixV01Web.PlaysPageLive do
   end
 
   @impl true
-  def handle_async(request_key, {:error, reason}, socket) do
+  def handle_async(request_key, {:error, _reason}, socket) do
     # Update modal with error message using action-based pattern
     send_update(MonoPhoenixV01Web.SummaryModalComponent, 
       id: "summary-modal",
@@ -222,7 +222,7 @@ defmodule MonoPhoenixV01Web.PlaysPageLive do
 
   # Handle async task cancellation via exit
   @impl true
-  def handle_async(request_key, {:exit, reason}, socket) do
+  def handle_async(request_key, {:exit, _reason}, socket) do
     require Logger
     Logger.info("User confirmed cancellation - stopping generation")
     

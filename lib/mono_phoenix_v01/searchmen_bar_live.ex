@@ -189,7 +189,7 @@ defmodule MonoPhoenixV01Web.SearchmenBarLive do
             %{monologue_id: metadata.params.monologue_id, first_line: first_line, record_id: record_id, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
         end
         
-        socket = push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
+        _socket = push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
         
         send_update(MonoPhoenixV01Web.SummaryModalComponent, 
           id: metadata.component_id, 
@@ -219,7 +219,7 @@ defmodule MonoPhoenixV01Web.SearchmenBarLive do
             %{monologue_id: metadata.params.monologue_id, first_line: first_line, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
         end
         
-        socket = push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
+        _socket = push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
         
         send_update(MonoPhoenixV01Web.SummaryModalComponent, 
           id: metadata.component_id, 
@@ -269,7 +269,7 @@ defmodule MonoPhoenixV01Web.SearchmenBarLive do
 
   # Handle async task cancellation via exit
   @impl true
-  def handle_async(request_key, {:exit, reason}, socket) do
+  def handle_async(request_key, {:exit, _reason}, socket) do
     require Logger
     Logger.info("User confirmed cancellation - stopping generation")
     

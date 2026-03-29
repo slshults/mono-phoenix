@@ -23,7 +23,9 @@ defmodule MonoPhoenixV01Web do
 
   def controller do
     quote do
-      use Phoenix.Controller, namespace: MonoPhoenixV01Web
+      use Phoenix.Controller,
+        formats: [html: "View"],
+        layouts: [html: {MonoPhoenixV01Web.LayoutView, :root}]
       import Plug.Conn
       import MonoPhoenixV01Web.Gettext
       alias MonoPhoenixV01Web.Router.Helpers, as: Routes
