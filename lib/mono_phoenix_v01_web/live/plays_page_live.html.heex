@@ -116,21 +116,3 @@
 
 <.live_component module={MonoPhoenixV01Web.SummaryModalComponent} id="summary-modal" />
 
-<script>
-  const toggleButton = document.getElementById('toggle-button');
-  const toggleImage = document.getElementById('toggle-image');
-
-  toggleButton.addEventListener('click', () => {
-    toggleImage.classList.toggle('collapsed');
-  });
-</script>
-
-<style>
-  #toggle-image.collapsed {
-    content: url('/images/CollapseAll.png');
-  }
-
-  #toggle-image {
-    content: url('/images/ExpandAll.png');
-  }
-</style>

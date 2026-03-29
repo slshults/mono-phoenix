@@ -50,14 +50,14 @@ defmodule MonoPhoenixV01Web.SearchwomenBarLive do
     else
       # Show the modal first
       send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-        id: "summary-modal", 
+        id: "search-summary-modal", 
         action: "show_play_summary", 
         play_title: play_title
       )
       
       # Track this request and start the content generation
       active_requests = MapSet.put(active_requests, request_key)
-      send(self(), {:generate_summary, "play_summary", %{play_title: play_title}, "summary-modal", request_key})
+      send(self(), {:generate_summary, "play_summary", %{play_title: play_title}, "search-summary-modal", request_key})
       
       {:noreply, assign(socket, active_requests: active_requests)}
     end
@@ -72,14 +72,14 @@ defmodule MonoPhoenixV01Web.SearchwomenBarLive do
       {:noreply, socket}
     else
       send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-        id: "summary-modal", 
+        id: "search-summary-modal", 
         action: "show_scene_summary", 
         play_title: play_title,
         location: location
       )
       
       active_requests = MapSet.put(active_requests, request_key)
-      send(self(), {:generate_summary, "scene_summary", %{play_title: play_title, location: location}, "summary-modal", request_key})
+      send(self(), {:generate_summary, "scene_summary", %{play_title: play_title, location: location}, "search-summary-modal", request_key})
       
       {:noreply, assign(socket, active_requests: active_requests)}
     end
@@ -94,7 +94,7 @@ defmodule MonoPhoenixV01Web.SearchwomenBarLive do
       {:noreply, socket}
     else
       send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-        id: "summary-modal", 
+        id: "search-summary-modal", 
         action: "show_paraphrasing", 
         monologue_id: monologue_id,
         monologue_text: monologue_text,
@@ -102,7 +102,7 @@ defmodule MonoPhoenixV01Web.SearchwomenBarLive do
       )
       
       active_requests = MapSet.put(active_requests, request_key)
-      send(self(), {:generate_summary, "paraphrasing", %{monologue_id: monologue_id, monologue_text: monologue_text, character: character, play_title: play_title}, "summary-modal", request_key})
+      send(self(), {:generate_summary, "paraphrasing", %{monologue_id: monologue_id, monologue_text: monologue_text, character: character, play_title: play_title}, "search-summary-modal", request_key})
       
       {:noreply, assign(socket, active_requests: active_requests)}
     end
@@ -315,7 +315,7 @@ defmodule MonoPhoenixV01Web.SearchwomenBarLive do
     ~H"""
       <%= render_search_form(assigns) %> <%!-- added --%>
       <%= render_searchwomen_bar(assigns) %>
-      <.live_component module={MonoPhoenixV01Web.SummaryModalComponent} id="summary-modal" />
+      <.live_component module={MonoPhoenixV01Web.SummaryModalComponent} id="search-summary-modal" />
     """
   end
 
@@ -355,10 +355,10 @@ defmodule MonoPhoenixV01Web.SearchwomenBarLive do
             href="#"
             data-toggle="collapse"
             data-target=".multi-collapse"
-            id="toggle-button"
+            id="search-toggle-button"
           ><img
               src="/images/ExpandAll.png"
-              id="toggle-image"
+              id="search-toggle-image"
               style="background-color: #F9F9DF; border-radius: 5px;"
               alt="👆 Click to toggle text of all monologues on the page.
           Reload the page to reset the toggle."
@@ -431,24 +431,29 @@ defmodule MonoPhoenixV01Web.SearchwomenBarLive do
         </tbody>
       </table>
     </div>
+    <%= if !is_nil(@search_results) && length(@search_results) > 0 do %>
     <script>
-    const toggleButton = document.getElementById('toggle-button');
-    const toggleImage = document.getElementById('toggle-image');
-
-    toggleButton.addEventListener('click', () => {
-      toggleImage.classList.toggle('collapsed');
-    });
+    {
+      const toggleButton = document.getElementById('search-toggle-button');
+      const toggleImage = document.getElementById('search-toggle-image');
+      if (toggleButton && toggleImage) {
+        toggleButton.addEventListener('click', () => {
+          toggleImage.classList.toggle('collapsed');
+        });
+      }
+    }
     </script>
 
     <style>
-    #toggle-image.collapsed {
+    #search-toggle-image.collapsed {
       content: url('/images/CollapseAll.png');
     }
 
-    #toggle-image {
+    #search-toggle-image {
       content: url('/images/ExpandAll.png');
     }
     </style>
+    <% end %>
     """
   end
 end

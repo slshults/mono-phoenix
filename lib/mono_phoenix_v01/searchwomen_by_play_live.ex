@@ -61,7 +61,7 @@ defmodule MonoPhoenixV01Web.SearchwomenByPlayLive do
     else
       # Show the modal first  
       send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-        id: "summary-modal",
+        id: "search-summary-modal",
         action: "show_play_summary", 
         play_title: play_title
       )
@@ -94,7 +94,7 @@ defmodule MonoPhoenixV01Web.SearchwomenByPlayLive do
     else
       # Show the modal first
       send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-        id: "summary-modal",
+        id: "search-summary-modal",
         action: "show_scene_summary", 
         play_title: play_title,
         location: location
@@ -133,7 +133,7 @@ defmodule MonoPhoenixV01Web.SearchwomenByPlayLive do
     else
       # Show the modal first
       send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-        id: "summary-modal",
+        id: "search-summary-modal",
         action: "show_paraphrasing", 
         monologue_id: monologue_id,
         monologue_text: monologue_text,
@@ -167,7 +167,7 @@ defmodule MonoPhoenixV01Web.SearchwomenByPlayLive do
       {:ok, %{content: content, id: record_id}} ->
         # Update modal with the extracted content
         send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-          id: "summary-modal",
+          id: "search-summary-modal",
           action: "content_generated", 
           content: content,
           record_id: record_id
@@ -175,7 +175,7 @@ defmodule MonoPhoenixV01Web.SearchwomenByPlayLive do
       _ ->
         # Handle unexpected API result format as error  
         send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-          id: "summary-modal",
+          id: "search-summary-modal",
           action: "error_occurred", 
           error: "Sorry, there was an unexpected error with the API response format."
         )
@@ -191,7 +191,7 @@ defmodule MonoPhoenixV01Web.SearchwomenByPlayLive do
   def handle_async(request_key, {:error, reason}, socket) do
     # Update modal with error message using action-based pattern
     send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-      id: "summary-modal",
+      id: "search-summary-modal",
       action: "error_occurred", 
       error: "Sorry, there was an error generating the content. Please try again later."
     )
@@ -210,7 +210,7 @@ defmodule MonoPhoenixV01Web.SearchwomenByPlayLive do
     
     # Handle cancellation gracefully
     send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-      id: "summary-modal", 
+      id: "search-summary-modal", 
       action: "generation_cancelled"
     )
     
@@ -231,7 +231,7 @@ defmodule MonoPhoenixV01Web.SearchwomenByPlayLive do
       
       <.live_component 
         module={MonoPhoenixV01Web.SummaryModalComponent} 
-        id="summary-modal" 
+        id="search-summary-modal" 
       />
     """
   end
@@ -274,11 +274,11 @@ defmodule MonoPhoenixV01Web.SearchwomenByPlayLive do
               href="#"
               data-toggle="collapse"
               data-target=".multi-collapse"
-              id="toggle-button"
+              id="search-toggle-button"
             >
             <img
                 src="/images/ExpandAll.png"
-                id="toggle-image"
+                id="search-toggle-image"
                 style="background-color: #F9F9DF; border-radius: 5px;"
                 alt="👆 Click to toggle text of all monologues on the page.
             🔄️ Reload the page to reset the toggle."
@@ -351,6 +351,29 @@ defmodule MonoPhoenixV01Web.SearchwomenByPlayLive do
         </tbody>
       </table>
     </div>
+    <%= if !is_nil(@search_results) && length(@search_results) > 0 do %>
+    <script>
+    {
+      const toggleButton = document.getElementById('search-toggle-button');
+      const toggleImage = document.getElementById('search-toggle-image');
+      if (toggleButton && toggleImage) {
+        toggleButton.addEventListener('click', () => {
+          toggleImage.classList.toggle('collapsed');
+        });
+      }
+    }
+    </script>
+
+    <style>
+    #search-toggle-image.collapsed {
+      content: url('/images/CollapseAll.png');
+    }
+
+    #search-toggle-image {
+      content: url('/images/ExpandAll.png');
+    }
+    </style>
+    <% end %>
     """
   end
 end

@@ -5,7 +5,7 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
   def render(assigns) do
     ~H"""
     <div
-      id="summary-modal"
+      id={@id}
       class="summary-modal-overlay"
       style={if @show, do: "display: block;", else: "display: none;"}
       phx-hook="ModalClickHandler"
@@ -15,16 +15,16 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
     >
       <!-- Confirmation Dialog -->
       <div 
-        id="confirmation-dialog" 
+        id={"#{@id}-confirmation-dialog"}
         class="confirmation-dialog-overlay" 
         style={if @show_confirmation, do: "display: flex;", else: "display: none;"}
       >
         <div class="confirmation-dialog">
           <div class="confirmation-dialog-header">
-            <h4 id="confirmation-dialog-title">Cancel Generation?</h4>
+            <h4 id={"#{@id}-confirmation-dialog-title"}>Cancel Generation?</h4>
           </div>
           <div class="confirmation-dialog-body">
-            <p id="confirmation-dialog-message">Claude is still generating content. Are you sure you want to cancel and close this window?</p>
+            <p id={"#{@id}-confirmation-dialog-message"}>Claude is still generating content. Are you sure you want to cancel and close this window?</p>
           </div>
           <div class="confirmation-dialog-buttons">
             <button 
@@ -122,7 +122,7 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
 
               <!-- Feedback Overlay -->
               <div 
-                id="feedback-overlay"
+                id={"#{@id}-feedback-overlay"}
                 class="feedback-overlay" 
                 style={if @show_feedback, do: "display: block;", else: "display: none;"}
                 phx-hook="FeedbackForm"
@@ -518,7 +518,7 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
         Logger.info("User confirmed cancellation - stopping generation")
         
         # Notify parent LiveView that user canceled generation
-        send(self(), {:cancel_generation, "summary-modal"})
+        send(self(), {:cancel_generation, socket.assigns.id})
         
         {:noreply, assign(socket, show: false, loading: false, error: nil, canceled: true, show_confirmation: false)}
       
@@ -558,7 +558,7 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
     Phoenix.PubSub.broadcast(
       MonoPhoenixV01.PubSub,
       "play_page_events",
-      {:generate_summary, message_type, params, "summary-modal"}
+      {:generate_summary, message_type, params, socket.assigns.id}
     )
     
     {:noreply, socket}

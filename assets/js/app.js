@@ -117,10 +117,10 @@ Hooks.ModalClickHandler = {
 
   handleModalClose() {
     console.debug("=== handleModalClose() called ===")
-    console.debug("Pushing modal_close_request event to #summary-modal")
+    console.debug("Pushing modal_close_request event to #" + this.el.id)
 
     // Push event directly to the LiveComponent using its ID
-    this.pushEventTo("#summary-modal", "modal_close_request", {})
+    this.pushEventTo("#" + this.el.id, "modal_close_request", {})
   },
 
   updated() {
@@ -196,7 +196,10 @@ Hooks.FeedbackForm = {
       // Auto-hide after 3 seconds
       setTimeout(() => {
         // Reset the feedback success state
-        this.pushEventTo("#summary-modal", "reset_feedback_success", {});
+        const parentModal = this.el.closest('.summary-modal-overlay');
+        if (parentModal) {
+          this.pushEventTo("#" + parentModal.id, "reset_feedback_success", {});
+        }
       }, 3000);
     }
   },
@@ -204,7 +207,7 @@ Hooks.FeedbackForm = {
   trackPostHogFeedback() {
     if (typeof posthog === 'undefined') return;
 
-    const modal = document.querySelector('#summary-modal');
+    const modal = this.el.closest('.summary-modal-overlay');
     if (!modal) return;
 
     const titleText = modal.querySelector('.summary-modal-title')?.textContent?.trim() || '';
