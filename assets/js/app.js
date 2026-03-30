@@ -714,6 +714,12 @@ document.addEventListener('DOMContentLoaded', function() {
     sessionStorage.setItem('adblock_dismissed', '1');
     overlay.style.display = 'none';
   });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && overlay.style.display === 'flex') {
+      document.getElementById('adblock-dismiss').click();
+    }
+  });
 });
 
 // Cookie-gated chat icon (shown when PostHog conversations widget is unavailable)
