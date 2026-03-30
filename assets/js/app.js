@@ -679,7 +679,8 @@ window.addEventListener("phx:page-loading-stop", () => {
 document.addEventListener('DOMContentLoaded', function() {
   const overlay = document.getElementById('adblock-overlay');
   if (!overlay) return;
-  if (sessionStorage.getItem('adblock_dismissed')) return;
+  const dismissedAt = localStorage.getItem('adblock_dismissed');
+  if (dismissedAt && (Date.now() - parseInt(dismissedAt)) < 3 * 24 * 60 * 60 * 1000) return;
 
   function showAdblockModal() {
     overlay.style.display = 'flex';
@@ -711,7 +712,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }, 5000);
 
   document.getElementById('adblock-dismiss').addEventListener('click', function() {
-    sessionStorage.setItem('adblock_dismissed', '1');
+    localStorage.setItem('adblock_dismissed', Date.now().toString());
     overlay.style.display = 'none';
   });
 
