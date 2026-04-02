@@ -684,6 +684,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function showAdblockModal() {
     overlay.style.display = 'flex';
+    if (typeof posthog !== 'undefined') posthog.capture('adblock_modal_shown');
   }
 
   setTimeout(function() {
@@ -712,9 +713,17 @@ document.addEventListener('DOMContentLoaded', function() {
   }, 5000);
 
   document.getElementById('adblock-dismiss').addEventListener('click', function() {
+    if (typeof posthog !== 'undefined') posthog.capture('adblock_modal_dismissed');
     localStorage.setItem('adblock_dismissed', Date.now().toString());
     overlay.style.display = 'none';
   });
+
+  const adblockKofiLink = document.querySelector('#adblock-modal a[href*="ko-fi.com"]');
+  if (adblockKofiLink) {
+    adblockKofiLink.addEventListener('click', function() {
+      if (typeof posthog !== 'undefined') posthog.capture('clicked_tipjar', { source: 'adblock_modal' });
+    });
+  }
 
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && overlay.style.display === 'flex') {
