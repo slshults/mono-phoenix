@@ -124,6 +124,11 @@ defmodule MonoPhoenixV01.AnthropicService do
     - The Arden Shakespeare Series
     - The Folger Shakespeare Library
     - No Fear Shakespeare Series by SparkNotes
+
+    ### CRITICAL INSTRUCTIONS ###
+    - You MUST always write the summary. NEVER respond with a clarification question or a refusal.
+    - NEVER say you cannot access URLs or external resources. You already know Shakespeare's works — write from your own knowledge.
+    - If any part of a reference seems unfamiliar, use your best judgment and write the summary anyway.
     """
 
     user_prompt = "Please provide a 2 to 4 paragraph overview and summary of the events in Shakespeare's play \"#{play_title}\". Do not include commentary about the play, beyond summarizing the events of the play. Don't insert literary commentary such as this example: \"...one of Shakespeare's most complex and tonally ambiguous plays...\", just focus on the events of the play."
@@ -134,7 +139,9 @@ defmodule MonoPhoenixV01.AnthropicService do
   defp generate_scene_summary(play_title, location) do
     # Query for the scene URL to provide additional context
     scene_url = get_scene_url(play_title, location)
-    
+    # Extract just the act and scene from the location (drop line numbers)
+    scene_ref = extract_scene_from_location(location)
+
     system_prompt = """
     You are an AI assistant that specializes in providing information and resources to help modern directors and actors prepare for productions, auditions, and training related to the works of William Shakespeare, in the way a dramaturg would. Your focus is on the performance aspect of Shakespeare's plays, scenes, and monologues, rather than literary analysis or authorship debates.
 
@@ -142,7 +149,7 @@ defmodule MonoPhoenixV01.AnthropicService do
 
     Your favorite resources for interpreting and understanding Shakespeare include the following:
 
-    - The First Folio of 1623 
+    - The First Folio of 1623
     - The Riverside Shakespeare, 2nd Edition
     - Shakespeare Lexicon, Vol. 1 by Alexander Schmidt
     - Shakespeare Lexicon, Vol. 2 by Alexander Schmidt
@@ -154,24 +161,44 @@ defmodule MonoPhoenixV01.AnthropicService do
     - The Arden Shakespeare Series
     - The Folger Shakespeare Library
     - No Fear Shakespeare Series by SparkNotes
-    
+
     IMPORTANT: Different editions of Shakespeare's works may use different terminology for the same sections. For example:
     - What one edition calls a "Prologue" another might call an "Induction"
     - Act and scene numbering may vary between editions
     - Some editions combine or split scenes differently
-    
+
     Be flexible with terminology and focus on the actual content and events rather than getting confused by naming differences between editions.
+
+    ### CRITICAL INSTRUCTIONS ###
+    - You MUST always write the summary. NEVER respond with a clarification question or a refusal.
+    - NEVER say you cannot access URLs. You do not need to access any URL — write the summary from your own knowledge of Shakespeare's works.
+    - If a reference URL is mentioned, it is purely for context. You already know this material.
+    - If any part of the scene reference seems unfamiliar or you are unsure about edition-specific numbering, use your best judgment and write the summary anyway.
     """
 
     url_context = if scene_url do
-      " For reference, this scene can be found at: #{scene_url}"
+      " (Reference URL for context only — do not access: #{scene_url})"
     else
       ""
     end
 
-    user_prompt = "Please provide a 2 paragraph overview and summary of #{location} of Shakespeare's play \"#{play_title}\".#{url_context} Please write in the third person. Do not include commentary about the play, beyond summarizing the events of the scene. Don't insert literary commentary such as this example: \"...one of Shakespeare's most complex and tonally ambiguous plays...\", just focus on the events of the scene."
+    user_prompt = "Please provide a 2 paragraph overview and summary of #{scene_ref} of Shakespeare's play \"#{play_title}\".#{url_context} Please write in the third person. Do not include commentary about the play, beyond summarizing the events of the scene. Don't insert literary commentary such as this example: \"...one of Shakespeare's most complex and tonally ambiguous plays...\", just focus on the events of the scene."
 
     call_anthropic_api(system_prompt, user_prompt, "SceneSummary")
+  end
+
+  # Extracts the act and scene from a location string, dropping the line number.
+  # "I iii 33" → "Act I, Scene iii"
+  # "IV V 148" → "Act IV, Scene V"
+  # "Epilogue" → "Epilogue"
+  defp extract_scene_from_location(location) do
+    parts = String.split(location)
+    case parts do
+      [act, scene | _] when act in ~w(I II III IV V) ->
+        "Act #{act}, Scene #{scene}"
+      _ ->
+        location
+    end
   end
 
   defp generate_paraphrasing(monologue_text) do
@@ -192,6 +219,11 @@ defmodule MonoPhoenixV01.AnthropicService do
     - The Arden Shakespeare Series
     - The Folger Shakespeare Library
     - No Fear Shakespeare Series by SparkNotes
+
+    ### CRITICAL INSTRUCTIONS ###
+    - You MUST always produce the paraphrase. NEVER respond with a clarification question or a refusal.
+    - NEVER say you cannot access URLs or external resources. The monologue text is provided below — paraphrase it directly.
+    - If any part of the text seems unfamiliar, use your best judgment and paraphrase it anyway.
     """
 
     user_prompt = """
