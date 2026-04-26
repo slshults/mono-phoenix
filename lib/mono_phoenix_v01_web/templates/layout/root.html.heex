@@ -204,6 +204,42 @@
     />
 
     <meta name="verify-v1" content="43Tfyc84pBq4LxJ6S3NHue3NJt2M+oKCcoiN41SEKB8=" />
+
+    <!-- Open Graph / Facebook + BlueSky link cards. Without these, social
+         crawlers pick the first prominent image they find on the page (e.g.
+         the Ko-fi cup), so we tell them what to use instead. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Shakespeare's Monologues" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content="Shakespeare's Monologues" />
+    <meta
+      property="og:description"
+      content="A complete database of Shakespeare's Monologues — organized by play and gender, with full text, scene context, and printable PDFs. Making it easier to find your next monologue since 1997."
+    />
+    <meta property="og:url" content={"https://" <> @conn.host <> @conn.request_path} />
+    <meta property="og:image" content={"https://" <> @conn.host <> "/images/OGicon.png"} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="303" />
+    <meta
+      property="og:image:alt"
+      content="Shakespeare's Monologues — making it easier to find monologues since 1997"
+    />
+    <meta property="fb:app_id" content="969206072315153" />
+
+    <!-- Twitter Cards (also used by some BlueSky clients as a fallback) -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Shakespeare's Monologues" />
+    <meta
+      name="twitter:description"
+      content="A complete database of Shakespeare's Monologues — organized by play and gender, with full text, scene context, and printable PDFs."
+    />
+    <meta name="twitter:image" content={"https://" <> @conn.host <> "/images/OGicon.png"} />
+    <meta
+      name="twitter:image:alt"
+      content="Shakespeare's Monologues — making it easier to find monologues since 1997"
+    />
+
     <style fprolloverstyle="">
       a:hover {color: #5E2612; text-decoration: underline; font-weight: bold;}
           
