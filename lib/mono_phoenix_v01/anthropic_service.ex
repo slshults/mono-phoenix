@@ -485,12 +485,7 @@ defmodule MonoPhoenixV01.AnthropicService do
     end
 
     # Send directly to PostHog (this works in all contexts)
-    try do
-      send_to_posthog("$ai_generation", properties)
-    rescue
-      error ->
-        Logger.warning("Failed to send LLM analytics to PostHog: #{inspect(error)}")
-    end
+    MonoPhoenixV01.PostHog.capture("$ai_generation", properties)
 
     # Also send to Phoenix LiveView for backward compatibility (when in LiveView context)
     try do
@@ -544,56 +539,4 @@ defmodule MonoPhoenixV01.AnthropicService do
     end
   end
 
-  # Send event directly to PostHog API
-  defp send_to_posthog(event_name, properties) do
-    # Get PostHog configuration from environment
-    posthog_host = System.get_env("POSTHOG_HOST", "https://us.i.posthog.com")
-    
-    # Use Project API Key for event ingestion (different from Personal API Key used for MCP)
-    # This is the same key used in the frontend PostHog snippet
-    posthog_api_key = "phc_6aYLpkqQsmYJanYseJ8SJcOMicomCxj9v9Pl6hnZQS3"
-
-    # Create the event payload following PostHog format
-    payload = %{
-      "api_key" => posthog_api_key,
-      "event" => event_name,
-      "properties" => properties,
-      "distinct_id" => "shakespeare_monologues_server",  # Server-side events use a fixed ID
-      "timestamp" => DateTime.utc_now() |> DateTime.to_iso8601()
-    }
-
-    # PostHog batch endpoint
-    url = "#{posthog_host}/batch"
-    
-    headers = [
-      {"Content-Type", "application/json"},
-      {"User-Agent", "MonoPhoenixV01/1.0"}
-    ]
-
-    # Wrap in batch format
-    body = %{
-      "api_key" => posthog_api_key,
-      "batch" => [payload]
-    }
-    |> Jason.encode!()
-
-    # Send HTTP request using Tesla (already configured in the module)
-    case Tesla.post(url, body, headers: headers) do
-      {:ok, %{status: status}} when status in 200..299 ->
-        Logger.debug("PostHog LLM analytics event sent successfully")
-        :ok
-      
-      {:ok, %{status: status, body: error_body}} ->
-        Logger.warning("PostHog API error #{status}: #{inspect(error_body)}")
-        {:error, "HTTP #{status}"}
-      
-      {:error, error} ->
-        Logger.warning("Failed to send PostHog event: #{inspect(error)}")
-        {:error, error}
-    end
-  rescue
-    error ->
-      Logger.warning("Exception sending PostHog event: #{inspect(error)}")
-      {:error, error}
-  end
 end

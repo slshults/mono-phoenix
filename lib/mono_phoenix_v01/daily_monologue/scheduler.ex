@@ -11,7 +11,18 @@ defmodule MonoPhoenixV01.DailyMonologue.Scheduler do
   # because each new attempt re-runs the Selector and picks a different
   # monologue, polluting the audit trail. The next daily cron tick will try
   # again with a fresh pick.
-  use Oban.Worker, queue: :social, max_attempts: 1
+  #
+  # Uniqueness: prevent double-posting if cron and a manual `Oban.insert!`
+  # collide, or if a clock anomaly fires the cron twice in one day. Within a
+  # 24h window, only one MOTD job (worker + same args) can be in any of the
+  # listed states at once.
+  use Oban.Worker,
+    queue: :social,
+    max_attempts: 1,
+    unique: [
+      period: 86_400,
+      states: [:available, :scheduled, :executing, :retryable, :completed]
+    ]
 
   require Logger
 
@@ -43,13 +54,13 @@ defmodule MonoPhoenixV01.DailyMonologue.Scheduler do
           {"posted", uri, id, nil}
 
         {{:ok, %{uri: uri}}, {:error, fb_err}} ->
-          {"partial", uri, nil, inspect(fb_err)}
+          {"partial", uri, nil, safe_error(fb_err)}
 
         {{:error, bsky_err}, {:ok, %{id: id}}} ->
-          {"partial", nil, id, inspect(bsky_err)}
+          {"partial", nil, id, safe_error(bsky_err)}
 
         {{:error, bsky_err}, {:error, fb_err}} ->
-          {"failed", nil, nil, inspect(%{bluesky: bsky_err, facebook: fb_err})}
+          {"failed", nil, nil, safe_error(%{bluesky: bsky_err, facebook: fb_err})}
       end
 
     now = DateTime.utc_now() |> DateTime.truncate(:second)
@@ -66,12 +77,19 @@ defmodule MonoPhoenixV01.DailyMonologue.Scheduler do
     )
 
     Logger.info(
-      "[DailyMonologue] monologue_id=#{mono.id} status=#{status} bsky=#{inspect(bsky_result)} fb=#{inspect(fb_result)}"
+      "[DailyMonologue] monologue_id=#{mono.id} status=#{status} bsky=#{safe_error(bsky_result)} fb=#{safe_error(fb_result)}"
     )
 
-    # TODO: emit PostHog event "motd_posted" with {monologue_id, status,
-    # bluesky_uri, facebook_post_id, error} — reuse anthropic_service.ex's
-    # send_to_posthog once it's extracted to a shared helper.
+    MonoPhoenixV01.PostHog.capture("motd_posted", %{
+      monologue_id: mono.id,
+      play_title: mono.play_title,
+      character: mono.character,
+      status: status,
+      bluesky_uri: bluesky_uri,
+      facebook_post_id: fb_post_id,
+      error: error_text,
+      used_short_url: not is_nil(mono.short_url)
+    })
 
     if status == "failed" do
       {:error, error_text}
@@ -79,4 +97,17 @@ defmodule MonoPhoenixV01.DailyMonologue.Scheduler do
       :ok
     end
   end
+
+  # Inspect a value with credentials redacted. Tesla.Env structs may contain
+  # the full request body — including the Facebook access_token, which is
+  # passed in the body — so we strip that before logging or persisting.
+  defp safe_error(term) do
+    inspect(redact(term), limit: 10, printable_limit: 200)
+  end
+
+  defp redact(%Tesla.Env{} = env), do: %{env | body: "[REDACTED]", opts: []}
+  defp redact(t) when is_tuple(t), do: t |> Tuple.to_list() |> Enum.map(&redact/1) |> List.to_tuple()
+  defp redact(l) when is_list(l), do: Enum.map(l, &redact/1)
+  defp redact(m) when is_map(m), do: Map.new(m, fn {k, v} -> {k, redact(v)} end)
+  defp redact(other), do: other
 end
