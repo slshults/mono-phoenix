@@ -42,7 +42,11 @@ defmodule MonoPhoenixV01Web.MonologuesPageController do
           )
 
         rows = MonoPhoenixV01.Repo.all(query)
-        render(conn, "monologues.html", rows: rows)
+
+        render(conn, "monologues.html",
+          rows: rows,
+          layout: {MonoPhoenixV01Web.LayoutView, "static.html"}
+        )
 
       _ ->
         conn
