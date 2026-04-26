@@ -14,10 +14,10 @@ defmodule MonoPhoenixV01.Application do
       MonoPhoenixV01Web.Telemetry,
       # Start the PubSub system
       {Phoenix.PubSub, name: MonoPhoenixV01.PubSub},
+      # Background jobs + daily-monologue cron
+      {Oban, Application.fetch_env!(:mono_phoenix_v01, Oban)},
       # Start the Endpoint (http/https)
       MonoPhoenixV01Web.Endpoint
-      # Start a worker by calling: MonoPhoenixV01.Worker.start_link(arg)
-      # {MonoPhoenixV01.Worker, arg}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

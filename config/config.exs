@@ -50,6 +50,13 @@ config :phoenix, :json_library, Jason
 # Suppress Tesla deprecated builder warning (soft-deprecated, no action needed yet)
 config :tesla, disable_deprecated_builder_warning: true
 
+# Oban background jobs. Cron plugin is added only in production (see
+# `config/runtime.exs`) so local servers don't post to BlueSky/Facebook while
+# we're just developing.
+config :mono_phoenix_v01, Oban,
+  repo: MonoPhoenixV01.Repo,
+  queues: [default: 10, social: 2]
+
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

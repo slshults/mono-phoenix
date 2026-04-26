@@ -106,4 +106,32 @@ if config_env() == :prod do
   config :mono_phoenix_v01, :anthropic,
     api_key: System.get_env("ANTHROPIC_API_KEY"),
     model: "claude-sonnet-4-6"
+
+  # Daily cron for the Monologue of the Day. Runs at 13:00 UTC == 09:00 US
+  # Eastern during DST (08:00 EST outside DST). Repo + queues are defined in
+  # config/config.exs; this just layers the cron plugin on for prod.
+  config :mono_phoenix_v01, Oban,
+    plugins: [
+      {Oban.Plugins.Cron,
+       crontab: [
+         {"0 13 * * *", MonoPhoenixV01.DailyMonologue.Scheduler}
+       ]}
+    ]
 end
+
+# Social posting credentials for the daily "Monologue of the Day" job.
+# Read in every env (dev/test/prod) so local testing via `export VAR=...`
+# works without duplicating config in dev.exs. Adapters return a graceful
+# `:credentials_missing` error if the env vars are unset.
+#
+# Facebook Page Access Tokens derived from a long-lived User token usually
+# have "Expires: Never" (verify in the Graph API Access Token Debugger).
+# If a token is ever revoked, generate a new one and run:
+#   gigalixir config:set FACEBOOK_PAGE_ACCESS_TOKEN=...
+config :mono_phoenix_v01, :bluesky,
+  handle: System.get_env("BLUESKY_HANDLE"),
+  app_password: System.get_env("BLUESKY_APP_PASSWORD")
+
+config :mono_phoenix_v01, :facebook,
+  page_id: System.get_env("FACEBOOK_PAGE_ID"),
+  page_access_token: System.get_env("FACEBOOK_PAGE_ACCESS_TOKEN")
