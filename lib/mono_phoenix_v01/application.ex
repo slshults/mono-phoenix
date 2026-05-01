@@ -16,6 +16,9 @@ defmodule MonoPhoenixV01.Application do
       {Phoenix.PubSub, name: MonoPhoenixV01.PubSub},
       # Background jobs + daily-monologue cron
       {Oban, Application.fetch_env!(:mono_phoenix_v01, Oban)},
+      # Watchdog: restarts Oban if its Notifier connection silently goes
+      # `:isolated` (the documented Cron silent-failure mode on Gigalixir).
+      MonoPhoenixV01.ObanNotifierHealth,
       # Start the Endpoint (http/https)
       MonoPhoenixV01Web.Endpoint
     ]

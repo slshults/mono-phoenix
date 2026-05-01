@@ -30,6 +30,12 @@ if config_env() == :prod do
 
   maybe_ipv6 = if System.get_env("ECTO_IPV6"), do: [:inet6], else: []
 
+  # Postgres connection options for prod. The `keepalive` socket option +
+  # short `idle_interval` keep pool connections warm so Gigalixir's network
+  # layer doesn't drop them after some idle period (we observed
+  # `ssl recv (idle): closed` errors before adding these). This protects the
+  # Repo's pool but does NOT directly protect Oban's separate Notifier
+  # connection — see `lib/mono_phoenix_v01/oban_notifier_health.ex` for that.
   config :mono_phoenix_v01, MonoPhoenixV01.Repo,
     ssl: true,
     ssl_opts: [
@@ -39,7 +45,8 @@ if config_env() == :prod do
     allowed_tls_versions: [:"tlsv1.2"],
     url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "2"),
-    socket_options: maybe_ipv6
+    socket_options: maybe_ipv6 ++ [keepalive: true],
+    idle_interval: 30_000
 
   # The secret key base is used to sign/encrypt cookies and other secrets.
   # A default value is used in config/dev.exs and config/test.exs but you
