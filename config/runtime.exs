@@ -120,19 +120,17 @@ if config_env() == :prod do
     """
   end
 
-  # Oban plugins for prod. CRITICAL: when you set `plugins:` to an explicit
-  # list, you opt OUT of Oban's defaults — Stager, Pruner, and Lifeline. Cron
-  # alone won't keep firing reliably without Stager (which transitions jobs
-  # between scheduled/available/executing states and republishes notifier
-  # blips). Earlier sessions saw cron silently dormant after ~12-24h uptime
-  # due to this exact misconfiguration.
+  # Oban plugins for prod. Note: setting `plugins:` to an explicit list opts
+  # out of any Oban defaults, so we enumerate everything we want here.
+  # Oban 2.17+ folded the old Stager plugin into the queue producers, so
+  # there's no Stager to add here (and trying to load it raises at boot).
   #
-  # Daily cron for the Monologue of the Day fires at 13:00 UTC == 09:00 US
-  # Eastern during DST (08:00 EST outside DST). Repo + queues are defined in
-  # config/config.exs.
+  # Pruner — keeps oban_jobs from growing unbounded
+  # Lifeline — rescues `executing` jobs orphaned by a crashed node
+  # Cron — daily MOTD trigger at 13:00 UTC (== 09:00 US Eastern DST,
+  #        08:00 EST outside DST). Repo + queues live in config/config.exs.
   config :mono_phoenix_v01, Oban,
     plugins: [
-      Oban.Plugins.Stager,
       {Oban.Plugins.Pruner, max_age: 60 * 60 * 24 * 7},
       Oban.Plugins.Lifeline,
       {Oban.Plugins.Cron,
