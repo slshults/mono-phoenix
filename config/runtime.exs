@@ -120,11 +120,21 @@ if config_env() == :prod do
     """
   end
 
-  # Daily cron for the Monologue of the Day. Runs at 13:00 UTC == 09:00 US
+  # Oban plugins for prod. CRITICAL: when you set `plugins:` to an explicit
+  # list, you opt OUT of Oban's defaults — Stager, Pruner, and Lifeline. Cron
+  # alone won't keep firing reliably without Stager (which transitions jobs
+  # between scheduled/available/executing states and republishes notifier
+  # blips). Earlier sessions saw cron silently dormant after ~12-24h uptime
+  # due to this exact misconfiguration.
+  #
+  # Daily cron for the Monologue of the Day fires at 13:00 UTC == 09:00 US
   # Eastern during DST (08:00 EST outside DST). Repo + queues are defined in
-  # config/config.exs; this just layers the cron plugin on for prod.
+  # config/config.exs.
   config :mono_phoenix_v01, Oban,
     plugins: [
+      Oban.Plugins.Stager,
+      {Oban.Plugins.Pruner, max_age: 60 * 60 * 24 * 7},
+      Oban.Plugins.Lifeline,
       {Oban.Plugins.Cron,
        crontab: [
          {"0 13 * * *", MonoPhoenixV01.DailyMonologue.Scheduler}
