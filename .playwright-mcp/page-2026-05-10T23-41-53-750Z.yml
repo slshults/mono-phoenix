@@ -1,0 +1,343 @@
+- generic [ref=e1]:
+  - generic:
+    - heading [level=1]
+  - generic [ref=e2]:
+    - img "Light Mode" [ref=e4]
+    - heading "Shakespeare's Monologues" [level=1] [ref=e6]
+    - generic [ref=e8]:
+      - link "Men" [ref=e9] [cursor=pointer]:
+        - /url: /mens
+      - text: ·
+      - link "Women" [ref=e10] [cursor=pointer]:
+        - /url: /womens
+      - text: ·
+      - link "All" [ref=e11] [cursor=pointer]:
+        - /url: /plays
+      - link "Home" [ref=e12] [cursor=pointer]:
+        - /url: /home
+      - text: ·
+      - link "Help" [ref=e13] [cursor=pointer]:
+        - /url: /faq
+      - text: ·
+      - link "Tip JarTip Jar" [ref=e15] [cursor=pointer]:
+        - /url: https://ko-fi.com/shakesmonos
+        - img "Tip Jar" [ref=e16]
+        - text: Tip Jar
+    - generic [ref=e17]:
+      - table [ref=e18]:
+        - rowgroup [ref=e19]:
+          - row [ref=e20]:
+            - cell [ref=e21]:
+              - table [ref=e22]:
+                - rowgroup [ref=e23]:
+                  - row "Frequently Asked Questions Portrait from cover of First Folio. Click to browse monologues for all genders." [ref=e24]:
+                    - cell "Frequently Asked Questions Portrait from cover of First Folio. Click to browse monologues for all genders." [ref=e25]:
+                      - generic [ref=e26]: Frequently Asked Questions
+                      - link "Portrait from cover of First Folio. Click to browse monologues for all genders." [ref=e28] [cursor=pointer]:
+                        - /url: /plays/
+                        - img "Portrait from cover of First Folio. Click to browse monologues for all genders." [ref=e29]
+              - table [ref=e30]:
+                - rowgroup [ref=e31]:
+                  - row "I don't get it. How do I use this site to find monologues? Why is the text of a monologue on this site a little different from the copy I have? Why are the line numbers on this site different from the line numbers in the copy I have? Why is the search tool not finding the monologue I'm searching for? Can you suggest a monologue for me? I found an error or I have a suggestion. How can I send it in? Why are \"Double Falsehood\", \"The Reign of Edward III\" and other \"lost plays\" not included? What's with The Men and The Women? Why so cis? I don't like ads. Why are there so many ads on this site? Do you have an Android App and/or an iOS app? Do you have a site map? My question isn't answered here. What do I do?" [ref=e32]:
+                    - cell "I don't get it. How do I use this site to find monologues? Why is the text of a monologue on this site a little different from the copy I have? Why are the line numbers on this site different from the line numbers in the copy I have? Why is the search tool not finding the monologue I'm searching for? Can you suggest a monologue for me? I found an error or I have a suggestion. How can I send it in? Why are \"Double Falsehood\", \"The Reign of Edward III\" and other \"lost plays\" not included? What's with The Men and The Women? Why so cis? I don't like ads. Why are there so many ads on this site? Do you have an Android App and/or an iOS app? Do you have a site map? My question isn't answered here. What do I do?" [ref=e33]:
+                      - list [ref=e35]:
+                        - listitem [ref=e36]:
+                          - link "I don't get it. How do I use this site to find monologues?" [ref=e37] [cursor=pointer]:
+                            - /url: "#Q0"
+                        - listitem [ref=e38]:
+                          - link "Why is the text of a monologue on this site a little different from the copy I have?" [ref=e39] [cursor=pointer]:
+                            - /url: "#Q1"
+                        - listitem [ref=e40]:
+                          - link "Why are the line numbers on this site different from the line numbers in the copy I have?" [ref=e41] [cursor=pointer]:
+                            - /url: "#Q2"
+                        - listitem [ref=e42]:
+                          - link "Why is the search tool not finding the monologue I'm searching for?" [ref=e43] [cursor=pointer]:
+                            - /url: "#Q3"
+                        - listitem [ref=e44]:
+                          - link "Can you suggest a monologue for me?" [ref=e45] [cursor=pointer]:
+                            - /url: "#Q4"
+                        - listitem [ref=e46]:
+                          - link "I found an error or I have a suggestion. How can I send it in?" [ref=e47] [cursor=pointer]:
+                            - /url: "#Q5"
+                        - listitem [ref=e48]:
+                          - link "Why are \"Double Falsehood\", \"The Reign of Edward III\" and other \"lost plays\" not included?" [ref=e49] [cursor=pointer]:
+                            - /url: "#Q6"
+                        - listitem [ref=e50]:
+                          - link "What's with The Men and The Women? Why so cis?" [ref=e51] [cursor=pointer]:
+                            - /url: "#Q7"
+                        - listitem [ref=e52]:
+                          - link "I don't like ads. Why are there so many ads on this site?" [ref=e53] [cursor=pointer]:
+                            - /url: "#Q8"
+                        - listitem [ref=e54]:
+                          - link "Do you have an Android App and/or an iOS app?" [ref=e55] [cursor=pointer]:
+                            - /url: "#Q9"
+                        - listitem [ref=e56]:
+                          - link "Do you have a site map?" [ref=e57] [cursor=pointer]:
+                            - /url: "#Q10"
+                        - listitem [ref=e58]:
+                          - link "My question isn't answered here. What do I do?" [ref=e59] [cursor=pointer]:
+                            - /url: "#Q11"
+                  - row "I don't get it. How do I use this site to find monologues? Whether you're having trouble understanding how to use the site, or want to make sure you're getting the most out of the site, this video will walk you through it. The basics of using the site are all covered in the first 4 minutes. You'll know all about using the site after the first 7.5 minutes, and you'll find out about the site's social media presence if you watch all 13.5 minutes. Enjoy:" [ref=e60]:
+                    - cell "I don't get it. How do I use this site to find monologues? Whether you're having trouble understanding how to use the site, or want to make sure you're getting the most out of the site, this video will walk you through it. The basics of using the site are all covered in the first 4 minutes. You'll know all about using the site after the first 7.5 minutes, and you'll find out about the site's social media presence if you watch all 13.5 minutes. Enjoy:" [ref=e61]:
+                      - generic [ref=e62]: I don't get it. How do I use this site to find monologues?
+                      - text: "Whether you're having trouble understanding how to use the site, or want to make sure you're getting the most out of the site, this video will walk you through it. The basics of using the site are all covered in the first 4 minutes. You'll know all about using the site after the first 7.5 minutes, and you'll find out about the site's social media presence if you watch all 13.5 minutes. Enjoy:"
+                      - iframe [ref=e63]:
+                        - generic [active] [ref=f50e1]:
+                          - generic "YouTube Video Player" [ref=f50e3]
+                          - generic [ref=f50e5]:
+                            - generic:
+                              - generic:
+                                - button "Play video" [ref=f50e10] [cursor=pointer]:
+                                  - generic [ref=f50e13]:
+                                    - img
+                                - button "Hide player controls" [ref=f50e14] [cursor=pointer]
+                                - generic [ref=f50e16]:
+                                  - generic [ref=f50e21]:
+                                    - generic [ref=f50e22]:
+                                      - link "How To Use the Shakespeare's Monologues Website" [ref=f50e23] [cursor=pointer]:
+                                        - /url: https://www.youtube.com/watch?v=H6nn_wrTo9A
+                                      - link "shakesmonos" [ref=f50e24] [cursor=pointer]:
+                                        - /url: /channel/UCDJn6Mif7gFpuuIYNRmWJhw
+                                        - generic [ref=f50e25]: shakesmonos
+                                    - generic [ref=f50e26]:
+                                      - button "thumbnail-image" [ref=f50e27] [cursor=pointer]:
+                                        - img "thumbnail-image" [ref=f50e28]
+                                      - generic [ref=f50e30]:
+                                        - generic: shakesmonos
+                                        - generic: 5 subscribers
+                                  - generic [ref=f50e31]:
+                                    - button "Share" [ref=f50e34] [cursor=pointer]:
+                                      - generic [ref=f50e38]:
+                                        - img
+                                    - link "Watch on YouTube" [ref=f50e45] [cursor=pointer]:
+                                      - /url: https://www.youtube.com/watch?v=H6nn_wrTo9A
+                                      - generic [ref=f50e48]:
+                                        - text: Watch on
+                                        - img [ref=f50e50]:
+                                          - generic [ref=f50e52]:
+                                            - img
+                  - row [ref=e64]:
+                    - cell [ref=e65]:
+                      - generic [ref=e66]: Why is the text of a monologue on this site a little different from the copy I have?
+                      - generic [ref=e67]:
+                        - text: Different versions of Shakespeare's works have variations in the text because each publishing house hired a different group of 'editors' who, working primarily with the
+                        - link "First Folio of 1623" [ref=e68] [cursor=pointer]:
+                          - /url: //sceti.library.upenn.edu/sceti/printedbooksNew/index.cfm?TextID=firstfolio&PagePosition=3
+                        - text: ", set to ink their own \"interpretation\" and \"improvements\" upon the text found in the First Folio. The folio is the oldest available"
+                        - emphasis [ref=e69]: full
+                        - text: printing of the complete works, and is closer to how the plays were originally performed.
+                        - link "*" [ref=e70] [cursor=pointer]:
+                          - /url: "#*"
+                        - text: The spellings, punctuation (or lack thereof) and other conventions used in the folio contain hints for actors which are lost in the later versions through "corrections" and other edits made by the editors of more recent generations. This site uses text from The Globe editions because that is the text used by the
+                        - link "Open Source Shakespeare" [ref=e71] [cursor=pointer]:
+                          - /url: //www.opensourceshakespeare.org/
+                        - text: to which I link for each entry.
+                        - text: I suggest you use the
+                        - link "Riverside" [ref=e72] [cursor=pointer]:
+                          - /url: //smile.amazon.com/Riverside-Shakespeare-2nd-William/dp/0395754909
+                        - text: ", the"
+                        - link "Arden" [ref=e73] [cursor=pointer]:
+                          - /url: //smile.amazon.com/Arden-Shakespeare-Complete-Works/dp/1408152010
+                        - text: ", the"
+                        - link "Cambridge" [ref=e74] [cursor=pointer]:
+                          - /url: //smile.amazon.com/s/ref=nb_sb_noss_1?tag=shakessmonolo-20&linkCode=sb1&camp=212353&creative=380553&url=search-alias%3Dstripbooks&field-keywords=The%20New%20Cambridge%20Shakespeare
+                        - text: ", the"
+                        - link "Penguin/Pelican" [ref=e75] [cursor=pointer]:
+                          - /url: //smile.amazon.com/Complete-Pelican-Shakespeare-William/dp/0141000589/ref=sr_1_1?s=books&ie=UTF8&qid=1398033273&sr=1-1&tag=shakessmonolo-20&linkCode=sb1&camp=212353&creative=380553
+                        - text: or the
+                        - link "Folger" [ref=e76] [cursor=pointer]:
+                          - /url: //smile.amazon.com/s/ref=nb_sb_noss_1?tag=shakessmonolo-20&linkCode=sb1&camp=212353&creative=380553&url=search-alias%3Dstripbooks&field-keywords=Folger+shakespeare+library&rh=n%3A283155%2Ck%3AFolger+shakespeare+library
+                        - text: editions of the plays for your audition or classwork.
+                        - text: When in doubt, check
+                        - link "The Folio" [ref=e77] [cursor=pointer]:
+                          - /url: //sceti.library.upenn.edu/sceti/printedbooksNew/index.cfm?TextID=firstfolio&PagePosition=3
+                        - text: .
+                  - row "Why are the line numbers on this site different from the line numbers in the copy I have? The line numbers I've listed in the index of monologues may differ (by up to 10 lines or so) from the hard copy version you have in your home/school/theatre. This is common as the line numbers vary from edition to edition." [ref=e78]:
+                    - cell "Why are the line numbers on this site different from the line numbers in the copy I have? The line numbers I've listed in the index of monologues may differ (by up to 10 lines or so) from the hard copy version you have in your home/school/theatre. This is common as the line numbers vary from edition to edition." [ref=e79]:
+                      - generic [ref=e80]: Why are the line numbers on this site different from the line numbers in the copy I have?
+                      - text: The line numbers I've listed in the index of monologues may differ (by up to 10 lines or so) from the hard copy version you have in your home/school/theatre. This is common as the line numbers vary from edition to edition.
+                  - 'row "Why is the search tool not finding the monologue I''m searching for? The search engine on the site is not as advanced as search websites (e.g. Google.) The search tool on this site will look for exactly what you type, more or less. Punctuation doesn''t matter, but spelling does (note: Elizabethan English had different spellings for many words.)" [ref=e81]':
+                    - 'cell "Why is the search tool not finding the monologue I''m searching for? The search engine on the site is not as advanced as search websites (e.g. Google.) The search tool on this site will look for exactly what you type, more or less. Punctuation doesn''t matter, but spelling does (note: Elizabethan English had different spellings for many words.)" [ref=e82]':
+                      - generic [ref=e83]: Why is the search tool not finding the monologue I'm searching for?
+                      - text: "The search engine on the site is not as advanced as search websites (e.g. Google.) The search tool on this site will look for exactly what you type, more or less. Punctuation doesn't matter, but spelling does (note: Elizabethan English had different spellings for many words.)"
+                  - row "Can you suggest a monologue for me? Alas, no. I cannot. Only someone who has seen you act can suggest an appropriate monologue to show off the uniqueness that is you. Ask a friend, teacher, director, or someone else who has seen you act in class or in performance. Perhaps pose the question to your friends on social media. If you're not an actor, but are required to memorize a monologue for a non-acting class, just pick one you've heard of, or one that sounds interesting to you." [ref=e84]:
+                    - cell "Can you suggest a monologue for me? Alas, no. I cannot. Only someone who has seen you act can suggest an appropriate monologue to show off the uniqueness that is you. Ask a friend, teacher, director, or someone else who has seen you act in class or in performance. Perhaps pose the question to your friends on social media. If you're not an actor, but are required to memorize a monologue for a non-acting class, just pick one you've heard of, or one that sounds interesting to you." [ref=e85]:
+                      - generic [ref=e86]: Can you suggest a monologue for me?
+                      - generic [ref=e87]:
+                        - text: Alas, no. I cannot. Only someone who has seen you act can suggest an appropriate monologue to show off the uniqueness that is you. Ask a friend, teacher, director, or someone else who has seen you act in class or in performance. Perhaps pose the question to your friends on social media.
+                        - text: If you're not an actor, but are required to memorize a monologue for a non-acting class, just pick one you've heard of, or one that sounds interesting to you.
+                  - row "I found an error or I have a suggestion. How can I send it in? Thanks. Please click here to send me a message." [ref=e88]:
+                    - cell "I found an error or I have a suggestion. How can I send it in? Thanks. Please click here to send me a message." [ref=e89]:
+                      - generic [ref=e90]: I found an error or I have a suggestion. How can I send it in?
+                      - generic [ref=e91]:
+                        - text: Thanks. Please
+                        - link "click here to send me a message" [ref=e92] [cursor=pointer]:
+                          - /url: /faq?contact=true
+                        - text: .
+                  - row "Why are \"Double Falsehood\", \"The Reign of Edward III\" and other \"lost plays\" not included? This site is faithful to the First Folio. I'm not interested in any aspects of the \"Authorship Debate\" because the question of \"who really wrote the plays\" is completely irrelevant to acting in, or directing, the plays. The \"lost plays\" or \"new plays\" have become a part of that debate, so to avoid that controversy altogether I stick with the original complete works as published in the First Folio." [ref=e93]:
+                    - cell "Why are \"Double Falsehood\", \"The Reign of Edward III\" and other \"lost plays\" not included? This site is faithful to the First Folio. I'm not interested in any aspects of the \"Authorship Debate\" because the question of \"who really wrote the plays\" is completely irrelevant to acting in, or directing, the plays. The \"lost plays\" or \"new plays\" have become a part of that debate, so to avoid that controversy altogether I stick with the original complete works as published in the First Folio." [ref=e94]:
+                      - generic [ref=e95]: Why are "Double Falsehood", "The Reign of Edward III" and other "lost plays" not included?
+                      - generic [ref=e96]:
+                        - text: This site is faithful to the
+                        - link "First Folio" [ref=e97] [cursor=pointer]:
+                          - /url: https://www.folger.edu/explore/shakespeare-in-print/first-folio/
+                        - text: . I'm not interested in any aspects of the "Authorship Debate" because the question of "who really wrote the plays" is completely irrelevant to acting in, or directing, the plays. The "lost plays" or "new plays" have become a part of that debate, so to avoid that controversy altogether I stick with the original complete works as published in the
+                        - link "First Folio" [ref=e98] [cursor=pointer]:
+                          - /url: https://www.folger.edu/explore/shakespeare-in-print/first-folio/
+                        - text: .
+                  - row "What's with The Men and The Women? Why so cis? We fully support all forms of gender identity and expression. The categories The Men and The Women refer to the gender of the character in the play. Your gender identity does not need to match that of the character when selecting a monologue from Shakespeare's plays, unless you want it to. Remember that in Shakespeare's day all of The Women characters were played by men, and 1/5th of his plays include at least one cross-dressing character. It may also be helpful to remember that Shakespeare died in the year 1616, hundreds of years before our modern cultural divides were being fanned by politicians to gain power, and by cable news to increase ad revenue. Gender fluidity has been part of the human experience all along, and will always be." [ref=e99]:
+                    - cell "What's with The Men and The Women? Why so cis? We fully support all forms of gender identity and expression. The categories The Men and The Women refer to the gender of the character in the play. Your gender identity does not need to match that of the character when selecting a monologue from Shakespeare's plays, unless you want it to. Remember that in Shakespeare's day all of The Women characters were played by men, and 1/5th of his plays include at least one cross-dressing character. It may also be helpful to remember that Shakespeare died in the year 1616, hundreds of years before our modern cultural divides were being fanned by politicians to gain power, and by cable news to increase ad revenue. Gender fluidity has been part of the human experience all along, and will always be." [ref=e100]:
+                      - generic [ref=e102]: What's with The Men and The Women? Why so cis?
+                      - generic [ref=e103]:
+                        - text: We fully support all forms of gender identity and expression.
+                        - text: The categories The Men and The Women refer to the gender of the character in the play. Your gender identity does not need to match that of the character when selecting a monologue from Shakespeare's plays, unless you want it to.
+                        - text: Remember that in Shakespeare's day all of The Women characters were played by men, and 1/5th of his plays include at least one cross-dressing character. It may also be helpful to remember that Shakespeare died in the year 1616, hundreds of years before our modern cultural divides were being fanned by politicians to gain power, and by cable news to increase ad revenue.
+                        - text: Gender fluidity has been part of the human experience all along, and will always be.
+                  - row [ref=e104]:
+                    - cell [ref=e105]:
+                      - generic [ref=e106]: I don't like ads. Why are there so many ads on the site?
+                      - generic [ref=e107]:
+                        - text: For the same reason you see ads in the program when you see a play. Production (of any kind) is not free, so I need to try to recover a little bit of the money I lose on this site (by running ads.)
+                        - text: "In the interest of full transparency: Our ad revenue averages about $200 per month during the school year, and about $100 per month in the summer (the best month ever was $500, but that was back before the economy crashed in 2008.) The ad revenue almost covers the costs of creating and maintaining the site. Almost. Sometimes. Your \"donations\" via the Tip Jar button are much appreciated. (Since the autumn of 2008, donations have totalled less than $200. That's not per year, that's total.)"
+                        - text: "I don't like ads either. I don't mind if you use adblocking software while viewing this site. Here are links to suggested adblocking for web browsers:"
+                        - list [ref=e108]:
+                          - listitem [ref=e109]:
+                            - text: "Chrome (and other Chromium browsers like Vivaldi, Brave, etc):"
+                            - link "uBlock Origin" [ref=e110] [cursor=pointer]:
+                              - /url: https://chromewebstore.google.com/detail/ublock-origin/cjpalhdlnbpafiamejdnhcphjbkeiagm
+                          - listitem [ref=e111]:
+                            - text: "Firefox:"
+                            - link "uBlock Origin" [ref=e112] [cursor=pointer]:
+                              - /url: https://addons.mozilla.org/en-US/firefox/addon/ublock-origin/
+                          - listitem [ref=e113]:
+                            - text: "MS Edge:"
+                            - link "uBlock Origin" [ref=e114] [cursor=pointer]:
+                              - /url: https://microsoftedge.microsoft.com/addons/detail/ublock-origin/odfafepnkmbhccpbejgmiehpchacaeak
+                          - listitem [ref=e115]:
+                            - text: "Safari:"
+                            - link "AdLock" [ref=e116] [cursor=pointer]:
+                              - /url: https://apps.apple.com/us/app/adlock-ads-blocker-privacy/id1506604517
+                          - listitem [ref=e117]:
+                            - text: "Opera:"
+                            - link "Built-in Native" [ref=e118] [cursor=pointer]:
+                              - /url: https://www.opera.com/
+                          - listitem [ref=e119]:
+                            - text: "Konquerer:"
+                            - link "Built-in/Native" [ref=e120] [cursor=pointer]:
+                              - /url: //docs.kde.org/development/en/kde-runtime/kcontrol/khtml-adblock/index.html
+                          - text: "Android:"
+                          - list [ref=e121]:
+                            - listitem [ref=e122]:
+                              - link "Firefox" [ref=e123] [cursor=pointer]:
+                                - /url: https://market.android.com/details?id=org.mozilla.firefox
+                              - text: ":"
+                              - link "uBlock Origin addon" [ref=e124] [cursor=pointer]:
+                                - /url: https://addons.mozilla.org/en-US/android/addon/ublock-origin/
+                            - listitem [ref=e125]:
+                              - text: "Opera:"
+                              - link "Built-in/Native" [ref=e126] [cursor=pointer]:
+                                - /url: https://play.google.com/store/apps/details?id=com.opera.browser&pcampaignid=web_share
+                            - text: and/or
+                            - listitem [ref=e127]:
+                              - text: "Device-wide adblocking:"
+                              - link "Some options listed here" [ref=e128] [cursor=pointer]:
+                                - /url: https://www.androidauthority.com/best-ad-blocker-apps-android-954917/
+                          - listitem [ref=e129]:
+                            - text: "iOS (iPhone/iPad):"
+                            - list [ref=e130]:
+                              - listitem [ref=e131]:
+                                - text: "Opera:"
+                                - link "Built-in/Native" [ref=e132] [cursor=pointer]:
+                                  - /url: https://apps.apple.com/us/app/opera-browser-with-vpn-and-ai/id1411869974
+                          - listitem [ref=e133]: "Windows Mobile: RIP (EoL on Dec. 10, 2019)"
+                          - listitem [ref=e134]: "Blackberry and/or Palm OS: 2003 is calling. It wants its phone back."
+                  - 'row "Do you have an Android App and/or an iOS app? We did, for a few years, but it wasn''t popular enough to warrant spending time and money to keep it alive, so we let it die. However, you can use the \"Add to homescreen\" option in Chrome on Android devices, or the \"Add to Home Screen\" option in Safari on an iPhone. When you tap on the icon on your desktop, it will open in a minimized version of the browser, which behaves just like our app used to. You can find quick and easy instructions here: How to Add Websites to the Home Screen on Any Smartphone or Tablet" [ref=e135]':
+                    - 'cell "Do you have an Android App and/or an iOS app? We did, for a few years, but it wasn''t popular enough to warrant spending time and money to keep it alive, so we let it die. However, you can use the \"Add to homescreen\" option in Chrome on Android devices, or the \"Add to Home Screen\" option in Safari on an iPhone. When you tap on the icon on your desktop, it will open in a minimized version of the browser, which behaves just like our app used to. You can find quick and easy instructions here: How to Add Websites to the Home Screen on Any Smartphone or Tablet" [ref=e136]':
+                      - generic [ref=e137]: Do you have an Android App and/or an iOS app?
+                      - generic [ref=e138]:
+                        - text: We did, for a few years, but it wasn't popular enough to warrant spending time and money to keep it alive, so we let it die. However, you can use the "Add to homescreen" option in Chrome on Android devices, or the "Add to Home Screen" option in Safari on an iPhone. When you tap on the icon on your desktop, it will open in a minimized version of the browser, which behaves just like our app used to.
+                        - text: "You can find quick and easy instructions here:"
+                        - link "How to Add Websites to the Home Screen on Any Smartphone or Tablet" [ref=e139] [cursor=pointer]:
+                          - /url: //www.howtogeek.com/196087/how-to-add-websites-to-the-home-screen-on-any-smartphone-or-tablet/
+                  - 'row "Do you have a site map? We do, but it''s xml. It''s really intended for machines and other website developers: sitemap.xml" [ref=e140]':
+                    - 'cell "Do you have a site map? We do, but it''s xml. It''s really intended for machines and other website developers: sitemap.xml" [ref=e141]':
+                      - generic [ref=e142]: Do you have a site map?
+                      - generic [ref=e143]:
+                        - text: "We do, but it's xml. It's really intended for machines and other website developers:"
+                        - link "sitemap.xml" [ref=e144] [cursor=pointer]:
+                          - /url: /sitemap.xml
+                  - row "My question isn't answered here. What do I do? Please click here to send me a message." [ref=e145]:
+                    - cell "My question isn't answered here. What do I do? Please click here to send me a message." [ref=e146]:
+                      - generic [ref=e147]: My question isn't answered here. What do I do?
+                      - generic [ref=e148]:
+                        - text: Please
+                        - link "click here to send me a message" [ref=e149] [cursor=pointer]:
+                          - /url: /faq?contact=true
+                        - text: .
+      - generic [ref=e151]:
+        - generic [ref=e152]:
+          - link "The Men" [ref=e153] [cursor=pointer]:
+            - /url: /mens
+          - text: ·
+          - link "The Women" [ref=e154] [cursor=pointer]:
+            - /url: /womens
+          - text: ·
+          - link "All" [ref=e155] [cursor=pointer]:
+            - /url: /plays
+          - text: ·
+          - link "Links" [ref=e156] [cursor=pointer]:
+            - /url: /links
+          - text: ·
+          - link "Bluesky" [ref=e157] [cursor=pointer]:
+            - /url: https://bsky.app/profile/shakesmonos.bsky.social
+          - text: ·
+          - link "FB" [ref=e158] [cursor=pointer]:
+            - /url: https://www.facebook.com/ShakespearesMonologues
+          - link "Home" [ref=e159] [cursor=pointer]:
+            - /url: /home
+          - text: ·
+          - link "FAQ" [ref=e160] [cursor=pointer]:
+            - /url: /faq
+          - text: ·
+          - link "About" [ref=e161] [cursor=pointer]:
+            - /url: /aboutus
+          - text: ·
+          - link "Privacy" [ref=e162] [cursor=pointer]:
+            - /url: /privacy
+          - text: ·
+          - link "Contact" [ref=e163] [cursor=pointer]:
+            - /url: /faq?contact=true
+          - text: ·
+          - link "Share" [ref=e165] [cursor=pointer]:
+            - /url: https://www.addtoany.com/share#url=http%3A%2F%2Flocalhost%3A4000%2Ffaq&title=FAQ%20%C2%B7%20Shakespeare%27s%20Monologues
+        - link "Coffee Tip Jar" [ref=e167] [cursor=pointer]:
+          - /url: https://ko-fi.com/shakespearesmonologues
+          - img "Coffee" [ref=e168]
+          - text: Tip Jar
+        - table [ref=e169]:
+          - rowgroup [ref=e170]:
+            - row "The texts of Shakespeare's plays is public domain. This site is licensed under a Creative Commons License. Creative Commons License © 1997 -2026 Steven Shults & Brandon Faloona Contact linked sites regarding their copyrights." [ref=e171]:
+              - cell "The texts of Shakespeare's plays is public domain. This site is licensed under a Creative Commons License. Creative Commons License © 1997 -2026 Steven Shults & Brandon Faloona Contact linked sites regarding their copyrights." [ref=e172]:
+                - text: The texts of Shakespeare's plays is public domain.
+                - generic [ref=e173]:
+                  - text: This site is licensed under a
+                  - link "Creative Commons License" [ref=e174] [cursor=pointer]:
+                    - /url: //creativecommons.org/licenses/by-nc-sa/4.0/
+                  - text: .
+                  - link "Creative Commons License" [ref=e175] [cursor=pointer]:
+                    - /url: //creativecommons.org/licenses/by-nc-sa/4.0/
+                    - img "Creative Commons License" [ref=e176]
+                  - text: © 1997 -2026 Steven Shults & Brandon Faloona
+                  - text: Contact linked sites regarding their copyrights.
+  - generic [ref=e177]:
+    - generic [ref=e178]:
+      - generic [ref=e179]: Support chat
+      - button "Close" [ref=e181] [cursor=pointer]: ✕
+    - generic [ref=e183]:
+      - generic [ref=e184]: Support
+      - generic [ref=e185]: "Hey. I'm just one guy, so please check the FAQ first. Send a message if your question is not answered there. 🙂 (NOTE: This is not live chat. I'll reply within a few days)"
+      - generic [ref=e186]: Just now
+    - generic [ref=e187]:
+      - 'textbox "The more you tell me, the more I can help. Please include the exact text of any error messages you''re seeing... (`shift+enter` for a new line, `enter` to send)" [active] [ref=e188]'
+      - button "Send message" [disabled] [ref=e189]:
+        - img [ref=e190]

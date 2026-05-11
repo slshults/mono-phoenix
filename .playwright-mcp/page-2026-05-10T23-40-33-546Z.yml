@@ -1,0 +1,100 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - paragraph [ref=e4]:
+      - text: This site uses cookies for analytics and advertising.
+      - link "Privacy Policy" [ref=e5] [cursor=pointer]:
+        - /url: /privacy
+    - generic [ref=e6]:
+      - button "Accept" [ref=e7] [cursor=pointer]
+      - button "Decline" [ref=e8] [cursor=pointer]
+  - generic:
+    - heading [level=1]
+  - generic [ref=e9]:
+    - img "Light Mode" [ref=e11]
+    - generic [ref=e14]:
+      - table [ref=e16]:
+        - rowgroup [ref=e17]:
+          - row [ref=e18]:
+            - cell [ref=e19]:
+              - table [ref=e20]:
+                - rowgroup [ref=e21]:
+                  - row "Shakespeare's Monologues Making it easier to find monologues since 1997 The Men The Women Portrait from cover of First Folio. Click to browse monologues for all genders. Built for actors. Used by everyone." [ref=e22]:
+                    - cell "Shakespeare's Monologues Making it easier to find monologues since 1997 The Men The Women Portrait from cover of First Folio. Click to browse monologues for all genders. Built for actors. Used by everyone." [ref=e23]:
+                      - text: Shakespeare's Monologues
+                      - generic [ref=e24]: Making it easier to find monologues since 1997
+                      - generic [ref=e25]:
+                        - link "The Men" [ref=e26] [cursor=pointer]:
+                          - /url: /mens/
+                        - link "The Women" [ref=e27] [cursor=pointer]:
+                          - /url: /womens/
+                      - link "Portrait from cover of First Folio. Click to browse monologues for all genders." [ref=e29] [cursor=pointer]:
+                        - /url: "/plays/\n"
+                        - img "Portrait from cover of First Folio. Click to browse monologues for all genders." [ref=e30]
+                      - generic [ref=e31]:
+                        - text: Built for actors.
+                        - text: Used by everyone.
+                  - 'row "The links above lead to a complete list of Shakespeare''s Monologues, categorized by comedy, history, and tragedy, then organized by play. Browse and/or search for monologues. Each monologue includes the character''s name, the act, scene & line number, the first line of the speech, is noted as verse or prose, and includes the full text of the monologue. Each includes a link to the full scene. You can download each monologue for printing, already double-spaced for scansion and transcription (PDFs are provided courtesy of Tee Quillin.) New: Summaries of plays and scenes (look for the Play summary icon), and paraphrasing of each monologue in modern English (look for the Modern paraphrasing icon at the end of each monologue)!" [ref=e32]':
+                    - 'cell "The links above lead to a complete list of Shakespeare''s Monologues, categorized by comedy, history, and tragedy, then organized by play. Browse and/or search for monologues. Each monologue includes the character''s name, the act, scene & line number, the first line of the speech, is noted as verse or prose, and includes the full text of the monologue. Each includes a link to the full scene. You can download each monologue for printing, already double-spaced for scansion and transcription (PDFs are provided courtesy of Tee Quillin.) New: Summaries of plays and scenes (look for the Play summary icon), and paraphrasing of each monologue in modern English (look for the Modern paraphrasing icon at the end of each monologue)!" [ref=e33]':
+                      - generic [ref=e34]:
+                        - text: The links above lead to a complete list of Shakespeare's Monologues, categorized by comedy, history, and tragedy, then organized by play. Browse and/or search for monologues. Each monologue includes the character's name, the act, scene & line number, the first line of the speech, is noted as verse or prose, and includes the full text of the monologue. Each includes a link to the full scene. You can download each monologue for printing, already double-spaced for scansion and transcription (PDFs are provided courtesy of Tee Quillin.)
+                        - strong [ref=e35]: New
+                        - text: ": Summaries of plays and scenes (look for the"
+                        - img "Play summary" [ref=e36]
+                        - text: icon), and paraphrasing of each monologue in modern English (look for the
+                        - img "Modern paraphrasing" [ref=e37]
+                        - text: icon at the end of each monologue)!
+      - generic [ref=e39]:
+        - generic [ref=e40]:
+          - link "The Men" [ref=e41] [cursor=pointer]:
+            - /url: /mens
+          - text: ·
+          - link "The Women" [ref=e42] [cursor=pointer]:
+            - /url: /womens
+          - text: ·
+          - link "All" [ref=e43] [cursor=pointer]:
+            - /url: /plays
+          - text: ·
+          - link "Links" [ref=e44] [cursor=pointer]:
+            - /url: /links
+          - text: ·
+          - link "Bluesky" [ref=e45] [cursor=pointer]:
+            - /url: https://bsky.app/profile/shakesmonos.bsky.social
+          - text: ·
+          - link "FB" [ref=e46] [cursor=pointer]:
+            - /url: https://www.facebook.com/ShakespearesMonologues
+          - link "Home" [ref=e47] [cursor=pointer]:
+            - /url: /home
+          - text: ·
+          - link "FAQ" [ref=e48] [cursor=pointer]:
+            - /url: /faq
+          - text: ·
+          - link "About" [ref=e49] [cursor=pointer]:
+            - /url: /aboutus
+          - text: ·
+          - link "Privacy" [ref=e50] [cursor=pointer]:
+            - /url: /privacy
+          - text: ·
+          - link "Contact" [ref=e51] [cursor=pointer]:
+            - /url: /faq?contact=true
+          - text: ·
+          - link "Share" [ref=e53] [cursor=pointer]:
+            - /url: https://www.addtoany.com/share#url=http%3A%2F%2Flocalhost%3A4000%2Fhome&title=Shakespeare%27s%20Monologues
+        - link "Coffee Tip Jar" [ref=e55] [cursor=pointer]:
+          - /url: https://ko-fi.com/shakespearesmonologues
+          - img "Coffee" [ref=e56]
+          - text: Tip Jar
+        - table [ref=e57]:
+          - rowgroup [ref=e58]:
+            - row "The texts of Shakespeare's plays is public domain. This site is licensed under a Creative Commons License. Creative Commons License © 1997 -2026 Steven Shults & Brandon Faloona Contact linked sites regarding their copyrights." [ref=e59]:
+              - cell "The texts of Shakespeare's plays is public domain. This site is licensed under a Creative Commons License. Creative Commons License © 1997 -2026 Steven Shults & Brandon Faloona Contact linked sites regarding their copyrights." [ref=e60]:
+                - text: The texts of Shakespeare's plays is public domain.
+                - generic [ref=e61]:
+                  - text: This site is licensed under a
+                  - link "Creative Commons License" [ref=e62] [cursor=pointer]:
+                    - /url: //creativecommons.org/licenses/by-nc-sa/4.0/
+                  - text: .
+                  - link "Creative Commons License" [ref=e63] [cursor=pointer]:
+                    - /url: //creativecommons.org/licenses/by-nc-sa/4.0/
+                    - img "Creative Commons License" [ref=e64]
+                  - text: © 1997 -2026 Steven Shults & Brandon Faloona
+                  - text: Contact linked sites regarding their copyrights.

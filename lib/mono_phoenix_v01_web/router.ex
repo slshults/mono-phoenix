@@ -38,6 +38,12 @@ defmodule MonoPhoenixV01Web.Router do
   #   options "/*path", PosthogProxyController, :proxy
   # end
 
+  scope "/api", MonoPhoenixV01Web do
+    pipe_through(:api)
+
+    post("/posthog/identity", PostHogIdentityController, :sign)
+  end
+
   scope "/", MonoPhoenixV01Web do
     pipe_through(:browser)
 

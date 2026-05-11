@@ -600,6 +600,50 @@ window.addEventListener("phx:posthog_capture", (e) => {
   }
 });
 
+// Verify the visitor's identity to the PostHog support widget by asking the
+// server to HMAC-sign their anonymous distinct_id. Gated on the real posthog
+// SDK being loaded — `setIdentity` is only defined after array.js finishes
+// loading, so checking for it is a reliable readiness signal.
+function verifyPostHogIdentity() {
+  if (typeof posthog === 'undefined') return;
+  if (typeof posthog.get_distinct_id !== 'function') return;
+  if (typeof posthog.setIdentity !== 'function') return;
+
+  var distinctId;
+  try { distinctId = posthog.get_distinct_id(); } catch (e) { return; }
+  if (!distinctId) return;
+
+  fetch('/api/posthog/identity', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({ distinct_id: distinctId }),
+    credentials: 'same-origin'
+  })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(data) {
+      if (!data || !data.hash) return;
+      posthog.setIdentity(distinctId, data.hash);
+    })
+    .catch(function() { /* widget falls back to session-based access */ });
+}
+
+// Poll for the real posthog SDK to finish loading, then verify identity once.
+// Used by both the page-load path (when consent was granted on a previous
+// visit) and the consent-accept path (when consent was just granted). Stops
+// polling after the verification runs or after ~20s of waiting.
+function pollAndVerifyPostHogIdentity() {
+  var attempts = 0;
+  function tick() {
+    if (typeof posthog !== 'undefined' && typeof posthog.setIdentity === 'function') {
+      verifyPostHogIdentity();
+      return;
+    }
+    if (++attempts > 100) return;
+    setTimeout(tick, 200);
+  }
+  tick();
+}
+
 // Click the PostHog widget's "Open chat" button to expand the panel
 function clickOpenChat() {
   var container = document.getElementById('ph-conversations-widget-container');
@@ -782,6 +826,7 @@ document.addEventListener('DOMContentLoaded', function() {
             defaults: '2026-01-30',
             person_profiles: 'identified_only',
         });
+        pollAndVerifyPostHogIdentity();
     }
     banner.style.display = 'none';
   });
@@ -791,6 +836,12 @@ document.addEventListener('DOMContentLoaded', function() {
     banner.style.display = 'none';
   });
 });
+
+// Sign the visitor's anonymous distinct_id for the PostHog support widget on
+// page load — handles the case where consent was granted on a previous visit
+// and the inline snippet in root.html.heex already ran posthog.init() before
+// this script. Polling avoids depending on the stub's queue-replay semantics.
+pollAndVerifyPostHogIdentity();
 
 // connect if there are any LiveViews on the page
 liveSocket.connect()

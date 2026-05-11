@@ -114,16 +114,18 @@ if config_env() == :prod do
     api_key: System.get_env("ANTHROPIC_API_KEY"),
     model: "claude-sonnet-4-6"
 
-  # Validate required social posting credentials at boot. If any are missing
-  # in :prod, raise so the release fails to start and Gigalixir keeps the
-  # previous healthy pod serving traffic. Better to fail loud at startup than
-  # to schedule a daily cron that silently writes "failed" rows.
-  for var <- ~w(BLUESKY_HANDLE BLUESKY_APP_PASSWORD FACEBOOK_PAGE_ID FACEBOOK_PAGE_ACCESS_TOKEN),
+  # Validate required env vars at boot. If any are missing in :prod, raise so
+  # the release fails to start and Gigalixir keeps the previous healthy pod
+  # serving traffic. Better to fail loud at startup than to discover a missing
+  # credential at runtime (a silent daily-cron failure, or a support widget
+  # that can't verify identity).
+  for var <- ~w(BLUESKY_HANDLE BLUESKY_APP_PASSWORD FACEBOOK_PAGE_ID FACEBOOK_PAGE_ACCESS_TOKEN POSTHOG_SECRET_API_KEY),
       System.get_env(var) in [nil, ""] do
     raise """
     Environment variable #{var} is missing or empty in production.
     Set it with: gigalixir config:set #{var}=...
-    Required for the daily Monologue of the Day cron job.
+    Required for production features (daily Monologue of the Day cron,
+    PostHog support widget identity verification).
     """
   end
 
