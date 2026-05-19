@@ -8,7 +8,7 @@
 import Config
 
 config :mono_phoenix_v01,
-  ecto_repos: [MonoPhoenixV01.Repo]
+  ecto_repos: [MonoPhoenixV01.Repo, MonoPhoenixV01.Accounts.Repo]
 
 # Configures the endpoint
 config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
