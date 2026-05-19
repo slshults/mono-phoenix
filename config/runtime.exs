@@ -48,6 +48,26 @@ if config_env() == :prod do
     socket_options: maybe_ipv6 ++ [keepalive: true],
     idle_interval: 30_000
 
+  accounts_database_url =
+    System.get_env("ACCOUNTS_DATABASE_URL") ||
+      raise """
+      environment variable ACCOUNTS_DATABASE_URL is missing.
+      Format: ecto://USER:PASS@HOST/DATABASE
+      Set in Gigalixir: gigalixir config:set ACCOUNTS_DATABASE_URL=ecto://...
+      """
+
+  config :mono_phoenix_v01, MonoPhoenixV01.Accounts.Repo,
+    ssl: true,
+    ssl_opts: [
+      verify: :verify_none,
+      cacerts: :public_key.cacerts_get()
+    ],
+    allowed_tls_versions: [:"tlsv1.2"],
+    url: accounts_database_url,
+    pool_size: String.to_integer(System.get_env("ACCOUNTS_POOL_SIZE") || "2"),
+    socket_options: maybe_ipv6 ++ [keepalive: true],
+    idle_interval: 30_000
+
   # The secret key base is used to sign/encrypt cookies and other secrets.
   # A default value is used in config/dev.exs and config/test.exs but you
   # want to use a different value for prod and you most likely don't want
