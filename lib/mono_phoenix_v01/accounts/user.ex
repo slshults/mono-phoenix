@@ -9,6 +9,14 @@ defmodule MonoPhoenixV01.Accounts.User do
     field :confirmed_at, :naive_datetime
     field :authenticated_at, :naive_datetime, virtual: true
 
+    # Stripe / subscription fields (Phase 2)
+    field :stripe_customer_id, :string
+    field :stripe_subscription_id, :string
+    field :subscription_status, :string, default: "pending_payment"
+    field :current_period_end, :utc_datetime
+    field :billing_period, :string
+    field :welcomed_at, :utc_datetime
+
     timestamps()
   end
 
@@ -128,5 +136,58 @@ defmodule MonoPhoenixV01.Accounts.User do
   def valid_password?(_, _) do
     Bcrypt.no_user_verify()
     false
+  end
+
+  @doc """
+  Changeset for patron signup form. Captures email + billing_period;
+  sets subscription_status = "pending_payment". No password at this stage
+  (magic-link is the default; password is optional via /welcome).
+  """
+  def signup_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:email, :billing_period])
+    |> validate_required([:email, :billing_period])
+    |> validate_inclusion(:billing_period, ~w(monthly yearly))
+    |> validate_format(:email, ~r/^[^@,;\s]+@[^@,;\s]+$/,
+      message: "must have the @ sign and no spaces"
+    )
+    |> validate_length(:email, max: 160)
+    |> put_change(:subscription_status, "pending_payment")
+  end
+
+  @doc """
+  Changeset called after creating a Stripe Customer; attaches the
+  customer ID to the user row.
+  """
+  def stripe_customer_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:stripe_customer_id])
+    |> validate_required([:stripe_customer_id])
+  end
+
+  @doc """
+  Changeset for subscription state transitions. Called from the Stripe
+  success handler and from webhook handlers.
+  """
+  def subscription_changeset(user, attrs) do
+    user
+    |> cast(attrs, [
+      :stripe_subscription_id,
+      :subscription_status,
+      :current_period_end,
+      :billing_period,
+      :confirmed_at
+    ])
+    |> validate_inclusion(:subscription_status,
+      ~w(pending_payment active past_due canceled lapsed)
+    )
+  end
+
+  @doc """
+  Sets `welcomed_at` to now. Used by the /welcome flow to gate the
+  one-time "set a password?" prompt.
+  """
+  def welcomed_changeset(user) do
+    change(user, welcomed_at: DateTime.utc_now() |> DateTime.truncate(:second))
   end
 end
