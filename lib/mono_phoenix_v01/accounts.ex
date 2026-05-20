@@ -281,6 +281,118 @@ defmodule MonoPhoenixV01.Accounts do
     :ok
   end
 
+  ## Patron subscription helpers (Phase 2)
+
+  @doc """
+  Create a `pending_payment` user from the patron-signup form.
+
+  Branches:
+  - No existing user with this email → insert new pending row.
+  - Existing user, status="active" → `{:error, :already_active}` (caller
+    renders the "you already have an account" modal).
+  - Existing user, status="pending_payment" → delete the old row, insert
+    fresh (per spec: dump-and-restart on bail).
+  - Existing user, any other status (canceled/lapsed/past_due) → reuse the
+    row, flip back to pending_payment with the new billing_period.
+  """
+  def create_pending_user(attrs) do
+    email = Map.get(attrs, "email") || Map.get(attrs, :email)
+
+    case get_user_by_email(email) do
+      nil ->
+        insert_pending(attrs)
+
+      %User{subscription_status: "active"} ->
+        {:error, :already_active}
+
+      %User{subscription_status: "pending_payment"} = existing ->
+        Repo.delete!(existing)
+        insert_pending(attrs)
+
+      %User{} = existing ->
+        existing
+        |> User.signup_changeset(attrs)
+        |> Repo.update()
+    end
+  end
+
+  defp insert_pending(attrs) do
+    %User{}
+    |> User.signup_changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Attach a Stripe customer ID to the user after creating the customer.
+  """
+  def attach_stripe_customer(user, stripe_customer_id) do
+    user
+    |> User.stripe_customer_changeset(%{stripe_customer_id: stripe_customer_id})
+    |> Repo.update()
+  end
+
+  @doc """
+  Flip the user to active status with subscription metadata. Called from
+  the /signup/success handler and from `checkout.session.completed`
+  webhook (belt-and-suspenders; idempotent).
+
+  Also sets `confirmed_at` since we treat verified Stripe payment as
+  proof of email control (matches gen.auth's confirmation step).
+  """
+  def mark_subscription_active(user, stripe_data) do
+    attrs =
+      %{
+        stripe_subscription_id: stripe_data[:stripe_subscription_id],
+        subscription_status: "active",
+        current_period_end: stripe_data[:current_period_end],
+        billing_period: stripe_data[:billing_period],
+        confirmed_at:
+          NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      }
+
+    user
+    |> User.subscription_changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Generic subscription state update. Webhook handlers use this for
+  customer.subscription.updated, customer.subscription.deleted,
+  invoice.payment_failed.
+  """
+  def update_subscription_status(user, attrs) do
+    user
+    |> User.subscription_changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Delete a pending_payment user. Refuses to delete anything else
+  (belt-and-suspenders against webhook race deleting a paying user).
+  """
+  def delete_pending_user(%User{subscription_status: "pending_payment"} = user) do
+    Repo.delete(user)
+  end
+
+  def delete_pending_user(_user), do: {:error, :not_pending}
+
+  @doc """
+  Look up a user by Stripe customer ID. Used by webhook handlers.
+  """
+  def get_user_by_stripe_customer_id(stripe_customer_id)
+      when is_binary(stripe_customer_id) do
+    Repo.get_by(User, stripe_customer_id: stripe_customer_id)
+  end
+
+  def get_user_by_stripe_customer_id(_), do: nil
+
+  @doc "Mark the welcome-prompt as dismissed (either by 'Set a password' or 'Skip')."
+  def mark_welcomed(user) do
+    user
+    |> User.welcomed_changeset()
+    |> Repo.update()
+  end
+
   ## Token helper
 
   defp update_user_and_delete_all_tokens(changeset) do
