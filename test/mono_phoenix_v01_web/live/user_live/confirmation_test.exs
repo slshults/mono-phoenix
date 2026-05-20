@@ -33,7 +33,12 @@ defmodule MonoPhoenixV01Web.UserLive.ConfirmationTest do
       assert html =~ "Keep me logged in"
     end
 
-    test "confirms the given token once", %{conn: conn, unconfirmed_user: user} do
+    test "confirms the given token once but blocks session creation for pending_payment status",
+         %{conn: conn, unconfirmed_user: user} do
+      # Phase 2 behavior: confirmation flips confirmed_at, but the
+      # default fixture leaves the user in pending_payment status, so
+      # UserAuth.maybe_log_in_user does NOT create a session and
+      # instead flashes "still processing".
       token =
         extract_user_token(fn url ->
           Accounts.deliver_login_instructions(user, url)
@@ -47,11 +52,12 @@ defmodule MonoPhoenixV01Web.UserLive.ConfirmationTest do
       conn = follow_trigger_action(form, conn)
 
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~
-               "User confirmed successfully"
+               "We're still processing your payment"
 
       assert Accounts.get_user!(user.id).confirmed_at
-      # we are logged in now
-      assert get_session(conn, :user_token)
+      # No session created — pending_payment users go to home with the
+      # "still processing" flash.
+      refute get_session(conn, :user_token)
       assert redirected_to(conn) == ~p"/"
 
       # log out, new conn

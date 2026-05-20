@@ -86,7 +86,13 @@ defmodule MonoPhoenixV01Web.UserSessionControllerTest do
       assert redirected_to(conn, 301) == ~p"/home"
     end
 
-    test "confirms unconfirmed user", %{conn: conn, unconfirmed_user: user} do
+    test "confirms unconfirmed user but blocks session creation for pending_payment status",
+         %{conn: conn, unconfirmed_user: user} do
+      # Phase 2 behavior: confirming an unconfirmed user via magic link
+      # still flips confirmed_at, but UserAuth.maybe_log_in_user gates
+      # session creation by subscription_status. The default fixture
+      # leaves the user in "pending_payment" → no session, flash
+      # "still processing", redirect home.
       {token, _hashed_token} = generate_user_magic_link_token(user)
       refute user.confirmed_at
 
@@ -96,15 +102,14 @@ defmodule MonoPhoenixV01Web.UserSessionControllerTest do
           "_action" => "confirmed"
         })
 
-      assert get_session(conn, :user_token)
+      refute get_session(conn, :user_token)
       assert redirected_to(conn) == ~p"/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "User confirmed successfully."
 
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~
+               "We're still processing your payment"
+
+      # confirmed_at still gets set even though no session was created
       assert Accounts.get_user!(user.id).confirmed_at
-
-      # Follow redirect to home page (this app redirects / → /home; nav links added in Phase 2)
-      conn = get(conn, redirected_to(conn))
-      assert redirected_to(conn, 301) == ~p"/home"
     end
 
     test "redirects to login page when magic link is invalid", %{conn: conn} do

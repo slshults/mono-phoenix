@@ -38,6 +38,56 @@ defmodule MonoPhoenixV01.AccountsFixtures do
     {:ok, {user, _expired_tokens}} =
       Accounts.login_user_by_magic_link(token)
 
+    # In tests we treat fully-confirmed users as having an active
+    # subscription, so the Phase-2 lapsed-gating in UserAuth doesn't
+    # redirect them to /account/lapsed. Tests that specifically need
+    # other subscription states should call `lapsed_user_fixture/0`
+    # or update the row directly.
+    make_active(user)
+  end
+
+  @doc """
+  Flip a user to status="active" with a synthetic stripe_subscription_id
+  so tests that go through `UserAuth.maybe_log_in_user` get a real
+  session instead of the lapsed-modal redirect.
+  """
+  def make_active(user) do
+    user
+    |> Ecto.Changeset.change(%{
+      subscription_status: "active",
+      stripe_customer_id: "cus_test_#{user.id}",
+      stripe_subscription_id: "sub_test_#{user.id}",
+      current_period_end: DateTime.utc_now() |> DateTime.add(30, :day) |> DateTime.truncate(:second),
+      billing_period: "yearly"
+    })
+    |> MonoPhoenixV01.Accounts.Repo.update!()
+  end
+
+  @doc """
+  Fixture for a user whose subscription has lapsed (canceled). Tests
+  exercising the lapsed-modal path use this.
+  """
+  def lapsed_user_fixture(attrs \\ %{}) do
+    user = user_fixture(attrs)
+
+    user
+    |> Ecto.Changeset.change(%{subscription_status: "canceled"})
+    |> MonoPhoenixV01.Accounts.Repo.update!()
+  end
+
+  @doc """
+  Fixture for a user still in pending_payment (hasn't completed Stripe
+  Checkout yet).
+  """
+  def pending_user_fixture(attrs \\ %{}) do
+    {:ok, user} =
+      attrs
+      |> Enum.into(%{
+        "email" => unique_user_email(),
+        "billing_period" => "yearly"
+      })
+      |> Accounts.create_pending_user()
+
     user
   end
 

@@ -45,6 +45,12 @@ defmodule MonoPhoenixV01Web.Router do
     pipe_through(:api)
 
     post("/posthog/identity", PostHogIdentityController, :sign)
+
+    # Stripe webhook. The :api pipeline omits :protect_from_forgery so
+    # external POSTs from Stripe aren't rejected by CSRF. Signature
+    # verification (via Billing.construct_webhook_event) provides
+    # authenticity.
+    post("/stripe/webhook", StripeWebhookController, :create)
   end
 
   scope "/", MonoPhoenixV01Web do
@@ -231,6 +237,8 @@ defmodule MonoPhoenixV01Web.Router do
       on_mount: [{MonoPhoenixV01Web.UserAuth, :require_authenticated}] do
       live "/users/settings", UserLive.Settings, :edit
       live "/users/settings/confirm-email/:token", UserLive.Settings, :confirm_email
+      live "/welcome", WelcomeLive, :show
+      live "/account", AccountLive, :show
     end
 
     post "/users/update-password", UserSessionController, :update_password
@@ -244,9 +252,16 @@ defmodule MonoPhoenixV01Web.Router do
       live "/users/register", UserLive.Registration, :new
       live "/users/log-in", UserLive.Login, :new
       live "/users/log-in/:token", UserLive.Confirmation, :new
+      live "/signup", PatronSignupLive, :new
+      live "/account/lapsed", LapsedLive, :show
     end
 
     post "/users/log-in", UserSessionController, :create
     delete "/users/log-out", UserSessionController, :delete
+
+    # Stripe Checkout callback targets. Plain controller actions
+    # (not LiveView) because they manipulate the session for auto-login.
+    get "/signup/success", SignupController, :success
+    get "/signup/cancel", SignupController, :cancel
   end
 end
