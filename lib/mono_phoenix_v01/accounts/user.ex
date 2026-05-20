@@ -152,6 +152,7 @@ defmodule MonoPhoenixV01.Accounts.User do
       message: "must have the @ sign and no spaces"
     )
     |> validate_length(:email, max: 160)
+    |> unique_constraint(:email)
     |> put_change(:subscription_status, "pending_payment")
   end
 
