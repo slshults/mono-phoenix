@@ -23,6 +23,11 @@ config :mono_phoenix_v01, :scopes,
 config :mono_phoenix_v01,
   ecto_repos: [MonoPhoenixV01.Repo, MonoPhoenixV01.Accounts.Repo]
 
+# Tell Ecto where to find Accounts.Repo migrations (avoids default
+# "priv/repo/migrations" which collides with MonoPhoenixV01.Repo).
+config :mono_phoenix_v01, MonoPhoenixV01.Accounts.Repo,
+  priv: "priv/accounts_repo"
+
 # Configures the endpoint
 config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
   url: [host: "localhost"],
