@@ -60,7 +60,8 @@ defmodule MonoPhoenixV01.MixProject do
       {:floki, ">= 0.34.2", only: :test},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:earmark, "~> 1.4"},
-      {:oban, "~> 2.22"}
+      {:oban, "~> 2.22"},
+      {:bcrypt_elixir, "~> 3.0"}
     ]
   end
 
