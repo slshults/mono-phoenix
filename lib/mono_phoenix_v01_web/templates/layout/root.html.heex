@@ -288,6 +288,7 @@
       window.__h82AlnkH6D91__("WyJwdWItNTIzNjA5NTM4OTkwNTkxMCIsW251bGwsbnVsbCxudWxsLCJodHRwczovL2Z1bmRpbmdjaG9pY2VzbWVzc2FnZXMuZ29vZ2xlLmNvbS9iL3B1Yi01MjM2MDk1Mzg5OTA1OTEwIl0sbnVsbCxudWxsLCJodHRwczovL2Z1bmRpbmdjaG9pY2VzbWVzc2FnZXMuZ29vZ2xlLmNvbS9lbC9BR1NLV3hXMkIzOXR1RTY5UWhDMEhyYnR1cnYtb21abkd4YTNMSGJqMVlhU2dkcmhWaHRqelpWa01JWFVkQkh4VUhhLTVsTEZRamFDWm16ekVCdm9PNTVvTjlYaGFnXHUwMDNkXHUwMDNkP3RlXHUwMDNkVE9LRU5fRVhQT1NFRCIsImh0dHBzOi8vZnVuZGluZ2Nob2ljZXNtZXNzYWdlcy5nb29nbGUuY29tL2VsL0FHU0tXeFhIYkdiblRWd3lqZnBxd1ZwMVI1LXNqUTU1MVFrUkNYN3JGUWg2cFpyQTh6ekZvSW85bVVSRFRVMWJOUlo2ZzZWTHA0SjNwMkNKcTV6YlRRSXNKZnA2WmdcdTAwM2RcdTAwM2Q/YWJcdTAwM2QxXHUwMDI2c2JmXHUwMDNkMSIsImh0dHBzOi8vZnVuZGluZ2Nob2ljZXNtZXNzYWdlcy5nb29nbGUuY29tL2VsL0FHU0tXeFU0aC1ad0FPS0V1RHd5bkpveXdFbENubHEzWG1odTBCV1Q0V0RhWXFTelU0SnhDTmdId3VDRHZBZnFIRWhxRFFwSTRxc3RIblFFNzl0TlFRWXk4dXl0ZmdcdTAwM2RcdTAwM2Q/YWJcdTAwM2QyXHUwMDI2c2JmXHUwMDNkMSIsImh0dHBzOi8vZnVuZGluZ2Nob2ljZXNtZXNzYWdlcy5nb29nbGUuY29tL2VsL0FHU0tXeFdXZC1JSGhGcnBOYUN6X1dKZkhmajItVW9adnVvNlRVRm9nQW44dW1nNFFVQXplbXo2eURFdHFRaE1sbHBYLVN5dklQZEpQSHFrRjdNMFpxcWEybXByREFcdTAwM2RcdTAwM2Q/c2JmXHUwMDNkMiIsImRpdi1ncHQtYWQiLDIwLDEwMCwiY0hWaUxUVXlNell3T1RVek9EazVNRFU5TVRBXHUwMDNkIixbbnVsbCxudWxsLG51bGwsImh0dHBzOi8vd3d3LmdzdGF0aWMuY29tLzBlbW4vZi9wL3B1Yi01MjM2MDk1Mzg5OTA1OTEwLmpzP3VzcXBcdTAwM2RDQWsiXSwiaHR0cHM6Ly9mdW5kaW5nY2hvaWNlc21lc3NhZ2VzLmdvb2dsZS5jb20vZWwvQUdTS1d4VldyblVKRmJuLU9GaHhzQVdvLUM0MjRPUEdGbFhjbXJWNmtiVC0zVy1HTUJSYzhxS2NCV0FpVmlpYm5vb3VJNmxoWVVLTlRaU2VBZU53dkt0Q2NZSm1kd1x1MDAzZFx1MDAzZCJd");
     </script>
     -->
+    <%= if MonoPhoenixV01Web.UserAuth.show_ads?(@conn.assigns[:current_scope]) do %>
     <!-- begin google adsense ad code -->
     <script
       async
@@ -296,6 +297,7 @@
     >
     </script>
     <!-- end google adsense page-level mobile ads -->
+    <% end %>
 
 <script>
     !function(t,e){var o,n,p,r;e.__SV||(window.posthog && window.posthog.__loaded)||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js?v=<%= Date.utc_today() %>",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init ns hs wi ls ds rs os capture calculateEventProperties fs register register_once register_for_session unregister unregister_for_session bs getFeatureFlag getFeatureFlagPayload getFeatureFlagResult isFeatureEnabled reloadFeatureFlags updateFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey displaySurvey cancelPendingSurvey canRenderSurvey canRenderSurveyAsync identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException startExceptionAutocapture stopExceptionAutocapture loadToolbar get_property getSessionProperty gs cs createPersonProfile setInternalOrTestUser ts ys opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing get_explicit_consent_status is_capturing clear_opt_in_out_capturing vs debug M ps getPageViewId captureTraceFeedback captureTraceMetric Xr".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
@@ -337,7 +339,7 @@
       <%= @inner_content %>
       <!-- end dynamic inner content -->
     </div>
-    <%= if @conn.request_path != "/home" do %>
+    <%= if @conn.request_path != "/home" and MonoPhoenixV01Web.UserAuth.show_ads?(@conn.assigns[:current_scope]) do %>
     <!-- Adblocker detection probe: adblockers hide/remove this element -->
     <div id="adblock-probe" class="adsbox" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;pointer-events:none;" aria-hidden="true"></div>
     <!-- Adblocker notice modal -->
