@@ -36,21 +36,23 @@ defmodule MonoPhoenixV01Web.CoreComponents do
     """
   end
 
-  @doc "Renders an input with label and error messages."
+  @doc "Renders an input with label and error messages. Accepts a form field or explicit attrs."
   attr :id, :any, default: nil
   attr :name, :any, default: nil
   attr :label, :string, default: nil
   attr :value, :any, default: nil
   attr :type, :string, default: "text"
+  attr :field, :any, default: nil
   attr :errors, :list, default: []
-  attr :checked, :boolean, doc: "the checked flag for checkbox inputs"
+  attr :checked, :boolean, default: false
   attr :prompt, :string, default: nil
-  attr :options, :list, doc: "the options to pass to Phoenix.HTML.Form.options_for_select/2"
+  attr :options, :list, default: []
   attr :multiple, :boolean, default: false
-  attr :field, Phoenix.HTML.FormField, doc: "a form field struct"
-  attr :rest, :global, include: ~w(accept autocomplete capture cols disabled form list max maxlength min minmax multiple pattern placeholder readonly required rows size step phx-mounted phx-debounce)
+  attr :rest, :global,
+    include: ~w(accept autocomplete capture cols disabled form list max maxlength min
+                multiple pattern placeholder readonly required rows size step phx-mounted phx-debounce)
 
-  def input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
+  def input(%{field: field} = assigns) when not is_nil(field) do
     errors =
       Enum.map(field.errors, fn {msg, opts} ->
         Regex.replace(~r"%{(\w+)}", msg, fn _, key ->
@@ -59,10 +61,13 @@ defmodule MonoPhoenixV01Web.CoreComponents do
       end)
 
     assigns
-    |> assign(field: nil, id: assigns.id || field.id)
-    |> assign(:errors, errors)
-    |> assign_new(:name, fn -> if assigns.multiple, do: field.name <> "[]", else: field.name end)
-    |> assign_new(:value, fn -> field.value end)
+    |> assign(
+      field: nil,
+      id: assigns.id || field.id,
+      name: (if assigns.multiple, do: field.name <> "[]", else: field.name),
+      value: field.value,
+      errors: errors
+    )
     |> input()
   end
 
@@ -80,10 +85,9 @@ defmodule MonoPhoenixV01Web.CoreComponents do
   end
 
   def input(%{type: "checkbox"} = assigns) do
-    assigns =
-      assign_new(assigns, :checked, fn ->
-        Phoenix.HTML.Form.normalize_value("checkbox", assigns[:value])
-      end)
+    assigns = assign_new(assigns, :checked, fn ->
+      Phoenix.HTML.Form.normalize_value("checkbox", assigns[:value])
+    end)
 
     ~H"""
     <div>

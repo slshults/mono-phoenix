@@ -29,7 +29,8 @@ defmodule MonoPhoenixV01Web.UserLive.ConfirmationTest do
 
       {:ok, _lv, html} = live(conn, ~p"/users/log-in/#{token}")
       refute html =~ "Confirm my account"
-      assert html =~ "Log in"
+      # Confirmed users see "Keep me logged in" instead of "Log in" (no current_scope)
+      assert html =~ "Keep me logged in"
     end
 
     test "confirms the given token once", %{conn: conn, unconfirmed_user: user} do

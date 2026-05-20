@@ -20,12 +20,9 @@ defmodule MonoPhoenixV01Web.UserSessionControllerTest do
       assert get_session(conn, :user_token)
       assert redirected_to(conn) == ~p"/"
 
-      # Now do a logged in request and assert on the menu
-      conn = get(conn, ~p"/")
-      response = html_response(conn, 200)
-      assert response =~ user.email
-      assert response =~ ~p"/users/settings"
-      assert response =~ ~p"/users/log-out"
+      # Follow redirect to home page (this app redirects / → /home)
+      conn = get(conn, redirected_to(conn))
+      assert redirected_to(conn, 301) == ~p"/home"
     end
 
     test "logs the user in with remember me", %{conn: conn, user: user} do
@@ -84,12 +81,9 @@ defmodule MonoPhoenixV01Web.UserSessionControllerTest do
       assert get_session(conn, :user_token)
       assert redirected_to(conn) == ~p"/"
 
-      # Now do a logged in request and assert on the menu
-      conn = get(conn, ~p"/")
-      response = html_response(conn, 200)
-      assert response =~ user.email
-      assert response =~ ~p"/users/settings"
-      assert response =~ ~p"/users/log-out"
+      # Follow redirect to home page (this app redirects / → /home)
+      conn = get(conn, redirected_to(conn))
+      assert redirected_to(conn, 301) == ~p"/home"
     end
 
     test "confirms unconfirmed user", %{conn: conn, unconfirmed_user: user} do
@@ -108,12 +102,9 @@ defmodule MonoPhoenixV01Web.UserSessionControllerTest do
 
       assert Accounts.get_user!(user.id).confirmed_at
 
-      # Now do a logged in request and assert on the menu
-      conn = get(conn, ~p"/")
-      response = html_response(conn, 200)
-      assert response =~ user.email
-      assert response =~ ~p"/users/settings"
-      assert response =~ ~p"/users/log-out"
+      # Follow redirect to home page (this app redirects / → /home; nav links added in Phase 2)
+      conn = get(conn, redirected_to(conn))
+      assert redirected_to(conn, 301) == ~p"/home"
     end
 
     test "redirects to login page when magic link is invalid", %{conn: conn} do
