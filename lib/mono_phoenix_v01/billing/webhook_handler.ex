@@ -61,7 +61,7 @@ defmodule MonoPhoenixV01.Billing.WebhookHandler do
         }
         |> maybe_put_period_end(get(subscription, "current_period_end"))
 
-      Accounts.update_subscription_status(user, attrs)
+      update_status(user, attrs)
     end
 
     :ok
@@ -70,7 +70,7 @@ defmodule MonoPhoenixV01.Billing.WebhookHandler do
   defp dispatch("customer.subscription.deleted", subscription) do
     with cus_id when is_binary(cus_id) <- get(subscription, "customer"),
          %_{} = user <- Accounts.get_user_by_stripe_customer_id(cus_id) do
-      Accounts.update_subscription_status(user, %{subscription_status: "canceled"})
+      update_status(user, %{subscription_status: "canceled", current_period_end: nil})
     end
 
     :ok
@@ -79,7 +79,7 @@ defmodule MonoPhoenixV01.Billing.WebhookHandler do
   defp dispatch("invoice.payment_failed", invoice) do
     with cus_id when is_binary(cus_id) <- get(invoice, "customer"),
          %_{} = user <- Accounts.get_user_by_stripe_customer_id(cus_id) do
-      Accounts.update_subscription_status(user, %{subscription_status: "past_due"})
+      update_status(user, %{subscription_status: "past_due"})
     end
 
     :ok
@@ -127,12 +127,39 @@ defmodule MonoPhoenixV01.Billing.WebhookHandler do
 
   defp unix_to_datetime(other), do: other
 
-  # Stripe statuses → our internal vocabulary.
+  # Stripe statuses → our internal vocabulary. Stripe's subscription
+  # status enum is: trialing, active, past_due, canceled, unpaid,
+  # incomplete, incomplete_expired, paused. We collapse them into our
+  # five-value vocabulary (pending_payment / active / past_due /
+  # canceled / lapsed).
   defp normalize_status("active"), do: "active"
+  defp normalize_status("trialing"), do: "active"
   defp normalize_status("past_due"), do: "past_due"
   defp normalize_status("canceled"), do: "canceled"
   defp normalize_status("unpaid"), do: "lapsed"
   defp normalize_status("incomplete_expired"), do: "lapsed"
+  defp normalize_status("paused"), do: "lapsed"
+  defp normalize_status("incomplete"), do: "pending_payment"
   defp normalize_status(nil), do: nil
   defp normalize_status(other) when is_binary(other), do: other
+
+  # Update the user's subscription state, logging any changeset failure
+  # so a future drift between Stripe's enum and our normalize_status/1
+  # mapping doesn't silently swallow state changes. We still return :ok
+  # to Stripe — a 5xx triggers a retry that would compound the drift,
+  # not fix it.
+  defp update_status(user, attrs) do
+    case Accounts.update_subscription_status(user, attrs) do
+      {:ok, _} ->
+        :ok
+
+      {:error, changeset} ->
+        Logger.error(
+          "webhook update_subscription_status failed for user_id=#{user.id} " <>
+            "attrs=#{inspect(attrs)} errors=#{inspect(changeset.errors)}"
+        )
+
+        :ok
+    end
+  end
 end
