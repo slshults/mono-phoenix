@@ -8,7 +8,6 @@ defmodule MonoPhoenixV01Web.StripeWebhookControllerTest do
   defp post_webhook(conn, body, sig) do
     conn =
       conn
-      |> Plug.Conn.assign(:raw_body, body)
       |> Plug.Conn.put_req_header("stripe-signature", sig)
       |> Plug.Conn.put_req_header("content-type", "application/json")
 

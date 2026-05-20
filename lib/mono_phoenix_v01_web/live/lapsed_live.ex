@@ -66,7 +66,7 @@ defmodule MonoPhoenixV01Web.LapsedLive do
           <button phx-click="renew" class="btn btn-primary">
             Click here to renew and access your favorites
           </button>
-          <p class="text-center text-sm text-gray-600">— or —</p>
+          <p class="text-center text-sm text-gray-600">Or</p>
           <button phx-click="continue_with_ads" class="btn btn-soft">
             Continue with ads and without favorites
           </button>

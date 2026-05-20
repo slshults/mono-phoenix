@@ -310,8 +310,15 @@ defmodule MonoPhoenixV01.Accounts do
         insert_pending(attrs)
 
       %User{} = existing ->
+        # Re-using a canceled/lapsed/past_due row for resignup. Clear
+        # the stale stripe_subscription_id and current_period_end so a
+        # late webhook for the OLD subscription can't re-flip the user
+        # to canceled. We keep stripe_customer_id — same human, same
+        # Stripe Customer.
         existing
         |> User.signup_changeset(attrs)
+        |> Ecto.Changeset.put_change(:stripe_subscription_id, nil)
+        |> Ecto.Changeset.put_change(:current_period_end, nil)
         |> Repo.update()
     end
   end

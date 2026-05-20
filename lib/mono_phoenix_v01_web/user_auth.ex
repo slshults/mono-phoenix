@@ -69,7 +69,13 @@ defmodule MonoPhoenixV01Web.UserAuth do
         |> redirect(to: ~p"/")
 
       _other ->
-        log_in_user(conn, user, params)
+        # Unknown / future status. Fail closed: route through the
+        # lapsed-modal path rather than logging in. Better to make a
+        # confused user click "Renew" than to grant access we can't
+        # account for.
+        conn
+        |> put_session(:lapsed_user_id, user.id)
+        |> redirect(to: ~p"/account/lapsed")
     end
   end
 

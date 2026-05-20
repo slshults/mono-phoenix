@@ -45,7 +45,7 @@ defmodule MonoPhoenixV01Web.LapsedLiveTest do
 
       {:ok, lv, _html} = live(conn, ~p"/account/lapsed")
 
-      assert lv |> element("button", "renew") |> render_click() ==
+      assert lv |> element(~s|button[phx-click="renew"]|) |> render_click() ==
                {:error, {:redirect, %{to: "https://stripe/renew", status: 302}}}
     end
   end
@@ -57,7 +57,7 @@ defmodule MonoPhoenixV01Web.LapsedLiveTest do
 
       {:ok, lv, _html} = live(conn, ~p"/account/lapsed")
 
-      assert lv |> element("button", "Continue with ads") |> render_click() ==
+      assert lv |> element(~s|button[phx-click="continue_with_ads"]|) |> render_click() ==
                {:error, {:redirect, %{to: "/", status: 302}}}
     end
   end
