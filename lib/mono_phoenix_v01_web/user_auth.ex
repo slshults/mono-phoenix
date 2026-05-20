@@ -41,6 +41,61 @@ defmodule MonoPhoenixV01Web.UserAuth do
   end
 
   @doc """
+  Attempt to log in, gated by subscription status.
+
+  - status="active" → log in as usual.
+  - status in ("canceled", "lapsed", "past_due") → no session created;
+    redirect to /account/lapsed with the user id stashed in the
+    session so LapsedLive can render the renew-vs-continue modal.
+  - status="pending_payment" → no session; redirect home with a "still
+    processing" flash.
+
+  Used by UserSessionController (password + magic-link login) and the
+  magic-link confirmation LiveView.
+  """
+  def maybe_log_in_user(conn, %MonoPhoenixV01.Accounts.User{subscription_status: status} = user, params \\ %{}) do
+    case status do
+      "active" ->
+        log_in_user(conn, user, params)
+
+      lapsed when lapsed in ~w(canceled lapsed past_due) ->
+        conn
+        |> put_session(:lapsed_user_id, user.id)
+        |> redirect(to: ~p"/account/lapsed")
+
+      "pending_payment" ->
+        conn
+        |> put_flash(:info, "We're still processing your payment, hold tight.")
+        |> redirect(to: ~p"/")
+
+      _other ->
+        log_in_user(conn, user, params)
+    end
+  end
+
+  @doc """
+  Returns true if the user has an active paid subscription. Used by
+  ad-gating templates, patron-only routes, and the heart-toggle event
+  handler (Phase 4).
+  """
+  def patron?(nil), do: false
+
+  def patron?(%MonoPhoenixV01.Accounts.User{subscription_status: "active"}),
+    do: true
+
+  def patron?(_), do: false
+
+  @doc """
+  Convenience for layout helpers — returns true unless the current
+  scope's user is an active patron. Handles the nil-scope case
+  defensively.
+  """
+  def show_ads?(scope) do
+    user = scope && scope.user
+    not patron?(user)
+  end
+
+  @doc """
   Logs the user out.
 
   It clears all session data for safety. See renew_session.
