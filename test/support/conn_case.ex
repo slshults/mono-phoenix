@@ -24,15 +24,6 @@ defmodule MonoPhoenixV01Web.ConnCase do
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 
-  @doc "Logs the given user into the conn (for authenticated-route tests)."
-  def log_in_user(conn, user) do
-    token = MonoPhoenixV01.Accounts.generate_user_session_token(user)
-
-    conn
-    |> Phoenix.ConnTest.init_test_session(%{})
-    |> Plug.Conn.put_session(:user_token, token)
-  end
-
   @doc """
   Setup helper that registers and logs in users.
 
