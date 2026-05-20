@@ -387,4 +387,65 @@ defmodule MonoPhoenixV01Web.UserAuthTest do
       }
     end
   end
+
+  describe "patron?/1" do
+    test "returns true for an active patron" do
+      user = user_fixture()
+      assert UserAuth.patron?(user)
+    end
+
+    test "returns false for a lapsed/canceled/past_due/pending user" do
+      refute UserAuth.patron?(lapsed_user_fixture())
+      refute UserAuth.patron?(pending_user_fixture())
+    end
+
+    test "returns false for nil and non-user values" do
+      refute UserAuth.patron?(nil)
+      refute UserAuth.patron?(%{not: "a user"})
+    end
+  end
+
+  describe "show_ads?/1" do
+    test "returns false for a scope wrapping an active user" do
+      user = user_fixture()
+      scope = Scope.for_user(user)
+      refute UserAuth.show_ads?(scope)
+    end
+
+    test "returns true for nil scope (logged-out visitor)" do
+      assert UserAuth.show_ads?(nil)
+    end
+
+    test "returns true for a scope wrapping a lapsed user" do
+      user = lapsed_user_fixture()
+      scope = Scope.for_user(user)
+      assert UserAuth.show_ads?(scope)
+    end
+  end
+
+  describe "maybe_log_in_user/3" do
+    test "creates a session for an active user", %{conn: conn} do
+      user = user_fixture()
+      conn = UserAuth.maybe_log_in_user(conn, user)
+      assert get_session(conn, :user_token)
+      assert redirected_to(conn) == ~p"/"
+    end
+
+    test "redirects lapsed user to /account/lapsed with no session", %{conn: conn} do
+      user = lapsed_user_fixture()
+      conn = UserAuth.maybe_log_in_user(conn, user)
+      refute get_session(conn, :user_token)
+      assert get_session(conn, :lapsed_user_id) == user.id
+      assert redirected_to(conn) == ~p"/account/lapsed"
+    end
+
+    test "redirects pending_payment user home with flash, no session",
+         %{conn: conn} do
+      user = pending_user_fixture()
+      conn = conn |> fetch_flash() |> UserAuth.maybe_log_in_user(user)
+      refute get_session(conn, :user_token)
+      assert redirected_to(conn) == ~p"/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "still processing"
+    end
+  end
 end

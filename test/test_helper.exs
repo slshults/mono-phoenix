@@ -5,3 +5,11 @@ ExUnit.start()
 # Add `Sandbox.mode(MonoPhoenixV01.Repo, :manual)` back here when the first
 # test that touches the main repo lands (likely Phase 2+ with favorites).
 Ecto.Adapters.SQL.Sandbox.mode(MonoPhoenixV01.Accounts.Repo, :manual)
+
+# Mox mock for the Stripe client. config/test.exs sets
+# :stripe_client → MonoPhoenixV01.BillingMock; Billing reads that and
+# routes all Stripe calls through this mock in tests. Per-test
+# expectations live in the individual test files.
+Mox.defmock(MonoPhoenixV01.BillingMock,
+  for: MonoPhoenixV01.Billing.StripeClient
+)
