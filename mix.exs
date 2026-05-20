@@ -61,7 +61,9 @@ defmodule MonoPhoenixV01.MixProject do
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:earmark, "~> 1.4"},
       {:oban, "~> 2.22"},
-      {:bcrypt_elixir, "~> 3.0"}
+      {:bcrypt_elixir, "~> 3.0"},
+      {:stripity_stripe, "~> 3.2"},
+      {:mox, "~> 1.1", only: :test}
     ]
   end
 

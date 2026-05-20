@@ -68,6 +68,17 @@ config :phoenix, :json_library, Jason
 # Suppress Tesla deprecated builder warning (soft-deprecated, no action needed yet)
 config :tesla, disable_deprecated_builder_warning: true
 
+# Stripe configuration (stripity_stripe). API key + price IDs come from
+# environment variables, sourced from `config/.env` in dev or Gigalixir
+# env vars in production (see `config/runtime.exs`).
+config :stripity_stripe,
+  api_key: System.get_env("STRIPE_SECRET_KEY")
+
+config :mono_phoenix_v01, :stripe,
+  price_id_monthly: System.get_env("STRIPE_PRICE_ID_MONTHLY"),
+  price_id_yearly: System.get_env("STRIPE_PRICE_ID_YEARLY"),
+  webhook_secret: System.get_env("STRIPE_WEBHOOK_SECRET")
+
 # Oban background jobs. Cron plugin is added only in production (see
 # `config/runtime.exs`) so local servers don't post to BlueSky/Facebook while
 # we're just developing.

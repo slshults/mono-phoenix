@@ -134,6 +134,17 @@ if config_env() == :prod do
     api_key: System.get_env("ANTHROPIC_API_KEY"),
     model: "claude-sonnet-4-6"
 
+  # Stripe production keys. Use fetch_env! so the release fails fast at
+  # boot if any are missing — preferable to discovering a missing key
+  # during a real signup.
+  config :stripity_stripe,
+    api_key: System.fetch_env!("STRIPE_SECRET_KEY")
+
+  config :mono_phoenix_v01, :stripe,
+    price_id_monthly: System.fetch_env!("STRIPE_PRICE_ID_MONTHLY"),
+    price_id_yearly: System.fetch_env!("STRIPE_PRICE_ID_YEARLY"),
+    webhook_secret: System.fetch_env!("STRIPE_WEBHOOK_SECRET")
+
   # Validate required env vars at boot. If any are missing in :prod, raise so
   # the release fails to start and Gigalixir keeps the previous healthy pod
   # serving traffic. Better to fail loud at startup than to discover a missing
