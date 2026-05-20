@@ -80,6 +80,32 @@ defmodule MonoPhoenixV01.Billing.WebhookHandlerTest do
       assert :ok = WebhookHandler.handle(event("customer.subscription.updated", sub))
       assert Accounts.get_user!(user.id).subscription_status == "lapsed"
     end
+
+    test "recovers a past_due user back to active with a fresh period_end" do
+      user = user_fixture()
+
+      # Push the row into past_due so the recovery has somewhere to come
+      # from.
+      {:ok, user} =
+        Accounts.update_subscription_status(user, %{subscription_status: "past_due"})
+
+      assert user.subscription_status == "past_due"
+
+      fresh_period_end =
+        DateTime.utc_now() |> DateTime.add(30, :day) |> DateTime.to_unix()
+
+      sub = %{
+        "customer" => user.stripe_customer_id,
+        "status" => "active",
+        "current_period_end" => fresh_period_end
+      }
+
+      assert :ok = WebhookHandler.handle(event("customer.subscription.updated", sub))
+
+      reloaded = Accounts.get_user!(user.id)
+      assert reloaded.subscription_status == "active"
+      assert DateTime.to_unix(reloaded.current_period_end) == fresh_period_end
+    end
   end
 
   describe "customer.subscription.deleted" do

@@ -64,6 +64,42 @@ defmodule MonoPhoenixV01Web.SignupControllerTest do
       assert redirected_to(conn) == ~p"/"
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Missing"
     end
+
+    test "is idempotent: a second hit on the same session_id doesn't corrupt user state",
+         %{conn: conn} do
+      user = pending_user_fixture()
+      future = DateTime.utc_now() |> DateTime.add(365, :day) |> DateTime.to_unix()
+
+      session_payload = %Stripe.Checkout.Session{
+        payment_status: "paid",
+        client_reference_id: to_string(user.id),
+        metadata: %{"billing_period" => "yearly", "user_id" => to_string(user.id)},
+        subscription: %Stripe.Subscription{
+          id: "sub_TEST",
+          current_period_end: future
+        }
+      }
+
+      MonoPhoenixV01.BillingMock
+      |> expect(:retrieve_checkout_session, 2, fn _id, _opts -> {:ok, session_payload} end)
+
+      conn1 = get(conn, ~p"/signup/success?session_id=cs_TEST")
+      assert get_session(conn1, :user_token)
+      assert redirected_to(conn1) == ~p"/welcome"
+      first = Accounts.get_user!(user.id)
+      assert first.subscription_status == "active"
+      assert first.stripe_subscription_id == "sub_TEST"
+
+      # Second hit (e.g. user reloads the success URL) — should still
+      # redirect cleanly and must not regress the user's state.
+      conn2 = get(build_conn(), ~p"/signup/success?session_id=cs_TEST")
+      assert redirected_to(conn2) == ~p"/welcome"
+
+      reloaded = Accounts.get_user!(user.id)
+      assert reloaded.subscription_status == "active"
+      assert reloaded.stripe_subscription_id == "sub_TEST"
+      assert reloaded.billing_period == "yearly"
+    end
   end
 
   describe "GET /signup/cancel" do
