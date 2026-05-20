@@ -1,0 +1,177 @@
+defmodule MonoPhoenixV01.Billing do
+  @moduledoc """
+  Stripe wrapper for patron subscriptions.
+
+  App code calls these functions, not `Stripe.*` directly, so we can
+  mock the Stripe client in tests via `Application.get_env(:mono_phoenix_v01,
+  :stripe_client)`.
+
+  All functions return `{:ok, value}` or `{:error, reason}`.
+
+  ## stripity_stripe 3.x API notes
+
+  - Checkout sessions live at `Stripe.Checkout.Session.create/1` (not
+    `Stripe.Session` as some older docs suggest).
+  - Customer Portal lives at `Stripe.BillingPortal.Session.create/1`.
+  - Webhook events come in as `Stripe.Event` with `data` as a `term` (a
+    bare map; stripity_stripe does NOT decode `data.object` into a typed
+    struct). Webhook handlers must work with map access.
+  """
+
+  alias MonoPhoenixV01.Accounts
+  alias MonoPhoenixV01.Accounts.User
+
+  @doc """
+  Returns the configured Stripe client module. Defaults to the
+  `MonoPhoenixV01.Billing.StripeClient` adapter that wraps real
+  `Stripe.*` calls. Tests inject a Mox-defined mock via config.
+  """
+  def stripe_client do
+    Application.get_env(
+      :mono_phoenix_v01,
+      :stripe_client,
+      MonoPhoenixV01.Billing.StripeClient
+    )
+  end
+
+  @doc """
+  Create a Stripe Customer for `user` (if not already created) and
+  attach the customer_id to the user row. Idempotent: returns the
+  existing user unchanged if it already has a customer ID.
+  """
+  def ensure_stripe_customer(%User{stripe_customer_id: cus_id} = user)
+      when is_binary(cus_id) and cus_id != "" do
+    {:ok, user}
+  end
+
+  def ensure_stripe_customer(%User{} = user) do
+    case stripe_client().create_customer(%{
+           email: user.email,
+           metadata: %{"user_id" => to_string(user.id)}
+         }) do
+      {:ok, %{id: cus_id}} ->
+        Accounts.attach_stripe_customer(user, cus_id)
+
+      {:error, _} = err ->
+        err
+    end
+  end
+
+  @doc """
+  Build a Stripe Checkout Session for `user` and the chosen billing
+  period. Returns `{:ok, %{url: url, id: id}}` on success.
+  """
+  def create_checkout_session(%User{} = user, billing_period)
+      when billing_period in ["monthly", "yearly"] do
+    config = Application.fetch_env!(:mono_phoenix_v01, :stripe)
+
+    price_id =
+      case billing_period do
+        "monthly" -> config[:price_id_monthly]
+        "yearly" -> config[:price_id_yearly]
+      end
+
+    stripe_client().create_checkout_session(%{
+      mode: "subscription",
+      customer: user.stripe_customer_id,
+      client_reference_id: to_string(user.id),
+      metadata: %{
+        "user_id" => to_string(user.id),
+        "billing_period" => billing_period
+      },
+      line_items: [%{price: price_id, quantity: 1}],
+      allow_promotion_codes: true,
+      success_url: success_url(),
+      cancel_url: cancel_url()
+    })
+  end
+
+  defp success_url do
+    base = MonoPhoenixV01Web.Endpoint.url()
+    base <> "/signup/success?session_id={CHECKOUT_SESSION_ID}"
+  end
+
+  defp cancel_url do
+    base = MonoPhoenixV01Web.Endpoint.url()
+    base <> "/signup/cancel?session_id={CHECKOUT_SESSION_ID}"
+  end
+
+  @doc """
+  Verify a Checkout Session is paid; return enriched subscription data
+  ready for `Accounts.mark_subscription_active/2`.
+  """
+  def verify_checkout_session(session_id) when is_binary(session_id) do
+    with {:ok, session} <-
+           stripe_client().retrieve_checkout_session(session_id, %{
+             expand: ["subscription"]
+           }),
+         "paid" <- session.payment_status do
+      sub = session.subscription
+      metadata = session.metadata || %{}
+
+      data = %{
+        stripe_subscription_id: sub.id,
+        current_period_end: DateTime.from_unix!(sub.current_period_end),
+        billing_period: Map.get(metadata, "billing_period"),
+        user_id:
+          metadata
+          |> Map.get("user_id", session.client_reference_id)
+          |> to_integer()
+      }
+
+      {:ok, data}
+    else
+      status when is_binary(status) ->
+        {:error, {:not_paid, status}}
+
+      {:error, _} = err ->
+        err
+    end
+  end
+
+  defp to_integer(value) when is_integer(value), do: value
+  defp to_integer(value) when is_binary(value), do: String.to_integer(value)
+
+  @doc """
+  Retrieve a Stripe Subscription by ID. Used by the webhook handler
+  when the event only carries the subscription ID.
+  """
+  def retrieve_subscription(sub_id) when is_binary(sub_id) do
+    stripe_client().retrieve_subscription(sub_id)
+  end
+
+  @doc """
+  Retrieve a Checkout Session by ID without expanding subscription.
+  Used by the cancel-handler to find which pending user to delete.
+  """
+  def retrieve_checkout_session(session_id) when is_binary(session_id) do
+    stripe_client().retrieve_checkout_session(session_id, %{})
+  end
+
+  @doc """
+  Build a Customer Portal session URL for `user`.
+  """
+  def create_portal_session(%User{stripe_customer_id: cus_id})
+      when is_binary(cus_id) and cus_id != "" do
+    stripe_client().create_portal_session(%{
+      customer: cus_id,
+      return_url: MonoPhoenixV01Web.Endpoint.url() <> "/account"
+    })
+  end
+
+  def create_portal_session(_), do: {:error, :no_stripe_customer}
+
+  @doc """
+  Verify a Stripe webhook signature and return the parsed event.
+  """
+  def construct_webhook_event(payload, sig_header)
+      when is_binary(payload) and is_binary(sig_header) do
+    secret =
+      Application.fetch_env!(:mono_phoenix_v01, :stripe)[:webhook_secret]
+
+    stripe_client().construct_webhook_event(payload, sig_header, secret)
+  end
+
+  def construct_webhook_event(_, _),
+    do: {:error, :missing_payload_or_signature}
+end
