@@ -20,6 +20,19 @@ if System.get_env("PHX_SERVER") do
   config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint, server: true
 end
 
+# Stripe dev keys. Read at boot from environment (set via `source config/.env`
+# in the shell before `mix phx.server`). Done at runtime — NOT compile time —
+# so a missing env var during compile doesn't bake a nil value into the BEAM.
+if config_env() == :dev do
+  config :stripity_stripe,
+    api_key: System.get_env("STRIPE_SECRET_KEY")
+
+  config :mono_phoenix_v01, :stripe,
+    price_id_monthly: System.get_env("STRIPE_PRICE_ID_MONTHLY"),
+    price_id_yearly: System.get_env("STRIPE_PRICE_ID_YEARLY"),
+    webhook_secret: System.get_env("STRIPE_WEBHOOK_SECRET")
+end
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||

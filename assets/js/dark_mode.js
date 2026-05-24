@@ -35,11 +35,16 @@ function toggleDarkMode() {
   setDarkModePreference(!isDarkMode);
 }
 
-// Attach the toggleDarkMode function to the click event of the dark mode icon
-var darkModeIcon = document.getElementById('dark-mode-icon');
-if (darkModeIcon) {
-  darkModeIcon.addEventListener('click', toggleDarkMode);
-}
+// Event delegation: catches clicks on the dark-mode-icon (or its child <img>s)
+// regardless of whether the element was present at script-load time, was
+// replaced during a LiveView morph, or got re-rendered later. More robust
+// than `getElementById(...).addEventListener(...)`, which only binds once
+// to whatever element happened to exist at that moment.
+document.addEventListener('click', function(e) {
+  if (e.target.closest && e.target.closest('#dark-mode-icon')) {
+    toggleDarkMode();
+  }
+});
 
 // Set the initial dark mode preference based on localStorage
 var initialDarkMode = localStorage.getItem('darkMode') === 'true';

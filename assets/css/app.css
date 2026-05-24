@@ -768,3 +768,426 @@ span.toggle-control>a.toggle-mono>img {
     height: 16px;
     border: none;
 }
+
+/* ============================================================
+   Auth / patron pages (signup, login, welcome, account, settings)
+   Styles the Phoenix 1.8 gen.auth-generated LiveViews to match
+   the site's existing visual conventions: Georgia/IM Fell fonts,
+   #5E2612 brand color, dark-mode contrast.
+   ============================================================ */
+
+.auth-page-wrapper {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 20px 80px 20px;
+    font-family: 'IM Fell DW Pica', serif;
+    font-size: 17px;
+    color: #111;
+    line-height: 1.5;
+}
+
+.auth-page-wrapper h1,
+.auth-page-wrapper h2,
+.auth-page-wrapper h3 {
+    font-family: 'IM Fell DW Pica', serif;
+    color: #111;
+    font-weight: 400;
+    margin-top: 1.2em;
+    margin-bottom: 0.6em;
+    line-height: 1.2;
+}
+
+/* phx.gen.auth's .header component renders <h1 class="text-2xl font-semibold">,
+   which would otherwise outweigh the site title in live.html.heex. Pin auth
+   page h1 to font-weight 400 (so site title stays heavier) but make it
+   genuinely heading-sized (~32px). px (not rem) because Bootstrap and
+   application.css both set `html { font-size: 10px }` — so 1rem = 10px,
+   and the earlier 2rem was actually rendering at 20px (too small). */
+.auth-page-wrapper h1.text-2xl,
+.auth-page-wrapper h1 {
+    font-size: 32px !important;
+    font-weight: 400;
+}
+
+/* .header's subtitle paragraph — render as a smaller heading-like element
+   rather than tiny gray body text. */
+.auth-page-wrapper .header-subtitle,
+.auth-page-wrapper h1 + p,
+.auth-page-wrapper .text-2xl + p {
+    font-size: 20px !important;
+    color: #333;
+    margin-top: 0.25em;
+}
+
+body.dark-mode .auth-page-wrapper .header-subtitle,
+body.dark-mode .auth-page-wrapper h1 + p,
+body.dark-mode .auth-page-wrapper .text-2xl + p {
+    color: #E0E0C0;
+}
+
+.auth-page-wrapper p,
+.auth-page-wrapper label,
+.auth-page-wrapper legend,
+.auth-page-wrapper li,
+.auth-page-wrapper span,
+.auth-page-wrapper div {
+    font-family: 'IM Fell DW Pica', serif;
+}
+
+/* Left-aligned variant for the account page (no centering) */
+.auth-page-wrapper.account-page {
+    text-align: left;
+    margin-left: 0;
+}
+
+.auth-page-wrapper label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 6px;
+    margin-top: 12px;
+}
+
+.auth-page-wrapper input[type="text"],
+.auth-page-wrapper input[type="email"],
+.auth-page-wrapper input[type="password"],
+.auth-page-wrapper input[type="tel"],
+.auth-page-wrapper input[type="url"] {
+    width: 100%;
+    max-width: 420px;
+    padding: 8px 12px;
+    font-family: Georgia, serif;
+    font-size: 16px;
+    border: 1px solid #c0b8a8;
+    background: #fff;
+    color: #111;
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+
+.auth-page-wrapper input:focus {
+    outline: 2px solid #5E2612;
+    outline-offset: 1px;
+}
+
+.auth-page-wrapper fieldset {
+    border: none;
+    padding: 0;
+    margin: 1em 0;
+}
+
+.auth-page-wrapper fieldset legend {
+    font-weight: bold;
+    margin-bottom: 8px;
+    padding: 0;
+}
+
+/* Override Bootstrap's blue .btn-primary (and DaisyUI-style btn-soft)
+   so the site brand color carries through on auth pages. */
+.auth-page-wrapper .btn,
+.auth-page-wrapper button[type="submit"],
+.auth-page-wrapper .btn-primary,
+.auth-page-wrapper .btn-soft,
+.auth-page-wrapper .button {
+    display: inline-block;
+    max-width: 320px;
+    background: #5E2612;
+    background-image: none;
+    color: #fff !important;
+    border: none;
+    padding: 9px 22px;
+    font-family: Georgia, serif;
+    font-size: 15px;
+    cursor: pointer;
+    border-radius: 3px;
+    text-decoration: none;
+    line-height: 1.2;
+    margin-top: 4px;
+}
+
+/* Inputs and buttons that explicitly set .w-full still expand inside
+   their .max-w-* container; we want a sane proportion, not stretch. */
+.auth-page-wrapper .w-full {
+    width: auto;
+}
+
+/* Password input + eye-toggle wrapper. Constrain to input width so the
+   eye icon sits right next to the field, not 300px off to the right. */
+.auth-page-wrapper .password-toggle-wrapper {
+    display: block;
+    max-width: 420px;
+    position: relative;
+}
+
+/* /account: "Your account" heading is centered above left-aligned content */
+.auth-page-wrapper.account-page h1,
+.auth-page-wrapper.account-page .text-2xl {
+    text-align: center;
+    margin-bottom: 1em;
+}
+
+/* `!important` on background/border to win against Bootstrap's compound
+   pseudo-class rules (.btn-primary:active:hover etc, which have the same
+   specificity as mine and load later from the CDN). */
+.auth-page-wrapper .btn:hover,
+.auth-page-wrapper button[type="submit"]:hover,
+.auth-page-wrapper .btn-primary:hover,
+.auth-page-wrapper .btn-soft:hover,
+.auth-page-wrapper .btn:focus,
+.auth-page-wrapper button[type="submit"]:focus,
+.auth-page-wrapper .btn-primary:focus,
+.auth-page-wrapper .btn-soft:focus,
+.auth-page-wrapper .btn-primary:active,
+.auth-page-wrapper .btn-soft:active {
+    background: #4a1d0e !important;
+    background-image: none !important;
+    border-color: #4a1d0e !important;
+    color: #fff !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    transform: translateY(-1px);
+    transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.auth-page-wrapper .btn:disabled,
+.auth-page-wrapper button[type="submit"]:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* phx.gen.auth components use these Tailwind utility classes that have
+   no CSS backing them. Map them to site-appropriate styling. */
+.auth-page-wrapper .text-gray-700,
+.auth-page-wrapper .text-gray-600,
+.auth-page-wrapper .text-gray-500 {
+    color: #333;
+}
+
+.auth-page-wrapper .text-red-600,
+.auth-page-wrapper .text-error,
+.auth-page-wrapper .invalid-feedback {
+    color: #b00020;
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+.auth-page-wrapper .alert {
+    padding: 14px 18px;
+    border-radius: 4px;
+    background: #f5f0e8;
+    border: 1px solid #c9c0b0;
+    margin: 14px 0;
+}
+
+.auth-page-wrapper .alert-info {
+    background: #f5f0e8;
+    border-color: #c9c0b0;
+}
+
+.auth-page-wrapper a {
+    color: #5E2612;
+    text-decoration: underline;
+}
+
+.auth-page-wrapper a:hover {
+    color: #4a1d0e;
+}
+
+/* Layout utilities used by the phx.gen.auth templates */
+.auth-page-wrapper .space-y-4 > * + * { margin-top: 1rem; }
+.auth-page-wrapper .space-y-3 > * + * { margin-top: 0.75rem; }
+.auth-page-wrapper .space-y-2 > * + * { margin-top: 0.5rem; }
+.auth-page-wrapper .mt-8 { margin-top: 2rem; }
+.auth-page-wrapper .mt-4 { margin-top: 1rem; }
+.auth-page-wrapper .mt-3 { margin-top: 0.75rem; }
+.auth-page-wrapper .mt-2 { margin-top: 0.5rem; }
+.auth-page-wrapper .mt-1 { margin-top: 0.25rem; }
+.auth-page-wrapper .mb-4 { margin-bottom: 1rem; }
+.auth-page-wrapper .mb-2 { margin-bottom: 0.5rem; }
+.auth-page-wrapper .mx-auto { margin-left: auto; margin-right: auto; }
+/* max-w-md / max-w-sm / max-w-2xl: in the original DaisyUI/Tailwind setup these
+   constrain content to mobile-ish widths. Inside the auth wrapper they make
+   the form look like a phone mockup on a desktop. We let the wrapper's own
+   max-width (760px) govern instead. */
+.auth-page-wrapper .max-w-md,
+.auth-page-wrapper .max-w-sm,
+.auth-page-wrapper .max-w-2xl { max-width: 100%; }
+.auth-page-wrapper .w-full { width: 100%; }
+.auth-page-wrapper .text-center { text-align: center; }
+.auth-page-wrapper .text-sm { font-size: 16px; }
+.auth-page-wrapper .font-semibold { font-weight: 600; }
+.auth-page-wrapper .font-medium { font-weight: 500; }
+.auth-page-wrapper .flex { display: flex; }
+.auth-page-wrapper .flex-col { flex-direction: column; }
+.auth-page-wrapper .gap-2 { gap: 0.5rem; }
+.auth-page-wrapper .gap-4 { gap: 1rem; }
+.auth-page-wrapper .block { display: block; }
+
+/* Buttons that are also links (e.g. /account "Change email or password")
+   inherit the `.auth-page-wrapper a` underline by default. Strip it in
+   both modes — the dark-mode override (further down) would otherwise win
+   on /account due to higher specificity. */
+.auth-page-wrapper a.btn,
+.auth-page-wrapper a.btn-primary,
+.auth-page-wrapper a.btn-soft,
+body.dark-mode .auth-page-wrapper a.btn,
+body.dark-mode .auth-page-wrapper a.btn-primary,
+body.dark-mode .auth-page-wrapper a.btn-soft {
+    text-decoration: none !important;
+}
+
+/* ===== Dark mode overrides for auth pages ===== */
+body.dark-mode .auth-page-wrapper,
+body.dark-mode .auth-page-wrapper p,
+body.dark-mode .auth-page-wrapper label,
+body.dark-mode .auth-page-wrapper legend,
+body.dark-mode .auth-page-wrapper li,
+body.dark-mode .auth-page-wrapper span,
+body.dark-mode .auth-page-wrapper div {
+    color: #F9F9DF;
+}
+
+body.dark-mode .auth-page-wrapper h1,
+body.dark-mode .auth-page-wrapper h2,
+body.dark-mode .auth-page-wrapper h3 {
+    color: #F9F9DF;
+}
+
+body.dark-mode .auth-page-wrapper input[type="text"],
+body.dark-mode .auth-page-wrapper input[type="email"],
+body.dark-mode .auth-page-wrapper input[type="password"],
+body.dark-mode .auth-page-wrapper input[type="tel"],
+body.dark-mode .auth-page-wrapper input[type="url"] {
+    background: #2b2a2a;
+    color: #F9F9DF;
+    border-color: #555;
+}
+
+body.dark-mode .auth-page-wrapper input:focus {
+    outline-color: #F9F9DF;
+}
+
+body.dark-mode .auth-page-wrapper .text-gray-700,
+body.dark-mode .auth-page-wrapper .text-gray-600,
+body.dark-mode .auth-page-wrapper .text-gray-500 {
+    color: #E0E0C0;
+}
+
+body.dark-mode .auth-page-wrapper a {
+    color: #F9F9DF;
+    text-decoration: underline;
+}
+
+body.dark-mode .auth-page-wrapper a:hover {
+    color: #79b3ff;
+}
+
+body.dark-mode .auth-page-wrapper .alert,
+body.dark-mode .auth-page-wrapper .alert-info {
+    background: #2b2a2a;
+    border-color: #555;
+    color: #F9F9DF;
+}
+
+/* Buttons keep their brand color in both modes — same as the site's
+   Accept and adblock-dismiss buttons. */
+body.dark-mode .auth-page-wrapper .btn,
+body.dark-mode .auth-page-wrapper button[type="submit"],
+body.dark-mode .auth-page-wrapper .btn-primary,
+body.dark-mode .auth-page-wrapper .btn-soft {
+    background: #5E2612;
+    color: #fff !important;
+}
+
+/* Flash messages on auth pages — phx.gen.auth uses .flash-notice / .flash-info /
+   .flash-error. Style them as prominent banners so a success/info message
+   ("Password updated successfully!", "Login link sent") is unmissable. */
+.auth-page-wrapper .flash-notice,
+.auth-page-wrapper .flash-info,
+.auth-page-wrapper .flash-error {
+    display: block;
+    padding: 14px 20px;
+    margin: 0 auto 18px auto;
+    max-width: 600px;
+    border-radius: 4px;
+    font-family: Georgia, serif;
+    font-size: 16px;
+    line-height: 1.4;
+    border: 2px solid #5E2612;
+    background: #fff;
+    color: #111;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.auth-page-wrapper .flash-error {
+    border-color: #b00020;
+    color: #b00020;
+}
+
+body.dark-mode .auth-page-wrapper .flash-notice,
+body.dark-mode .auth-page-wrapper .flash-info {
+    background: #2b2a2a;
+    color: #F9F9DF;
+    border-color: #F9F9DF;
+}
+
+body.dark-mode .auth-page-wrapper .flash-error {
+    background: #2b2a2a;
+    color: #ff8a8a;
+    border-color: #ff8a8a;
+}
+
+/* ===== Site-wide flash banner (rendered in live.html.heex above every
+   LiveView page). Theme-aware: parchment in light mode, dark in dark mode. */
+.site-flash {
+    max-width: 640px;
+    margin: 14px auto;
+    padding: 14px 44px 14px 20px;
+    border-radius: 4px;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 16px;
+    line-height: 1.4;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+/* Light mode: parchment background to match site, brown accent border */
+.site-flash-info {
+    background: #F9F9DF;
+    border: 2px solid #5E2612;
+    color: #111;
+}
+
+.site-flash-error {
+    background: #F9F9DF;
+    border: 2px solid #b00020;
+    color: #b00020;
+}
+
+/* Dark mode: dark surface with light text */
+body.dark-mode .site-flash-info {
+    background: #2b2a2a;
+    border-color: #c9b894;
+    color: #F9F9DF;
+}
+
+body.dark-mode .site-flash-error {
+    background: #2b2a2a;
+    border-color: #ff8a8a;
+    color: #ff8a8a;
+}
+
+.site-flash-dismiss {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    color: #888;
+    line-height: 1;
+    padding: 0;
+}
+
+body.dark-mode .site-flash-dismiss {
+    color: #aaa;
+}

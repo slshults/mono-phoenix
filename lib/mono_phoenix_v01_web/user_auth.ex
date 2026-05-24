@@ -33,12 +33,22 @@ defmodule MonoPhoenixV01Web.UserAuth do
   or falls back to the `signed_in_path/1`.
   """
   def log_in_user(conn, user, params \\ %{}) do
-    user_return_to = get_session(conn, :user_return_to)
+    user_return_to = effective_return_to(get_session(conn, :user_return_to))
 
     conn
     |> create_or_extend_session(user, params)
+    |> delete_session(:user_return_to)
     |> redirect(to: user_return_to || signed_in_path(conn))
   end
+
+  # /users/settings is the gen.auth sudo-mode default return target —
+  # if the user logs in via that bounce, landing on the settings page
+  # with no further action makes the success flash feel useless. Send
+  # them to signed_in_path (/plays) instead. Genuine return_to targets
+  # (like /welcome for Stripe success, or /account from password change)
+  # still pass through unchanged.
+  defp effective_return_to("/users/settings"), do: nil
+  defp effective_return_to(value), do: value
 
   @doc """
   Attempt to log in, gated by subscription status.
@@ -320,7 +330,7 @@ defmodule MonoPhoenixV01Web.UserAuth do
   @doc "Returns the path to redirect to after log in."
   # the user was already logged in, redirect to settings
   def signed_in_path(%Plug.Conn{assigns: %{current_scope: %Scope{user: %Accounts.User{}}}}) do
-    ~p"/users/settings"
+    ~p"/plays"
   end
 
   def signed_in_path(_), do: ~p"/"

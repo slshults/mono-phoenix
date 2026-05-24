@@ -1,9 +1,39 @@
+<!-- Flash messages (rendered above the page header so they're hard to miss).
+     Visual styling lives in assets/css/app.css under .site-flash so dark
+     mode and light mode can theme it consistently. -->
+<%= if Phoenix.Flash.get(@flash, :info) do %>
+  <div id="site-flash-info" role="alert" class="site-flash site-flash-info">
+    <%= Phoenix.Flash.get(@flash, :info) %>
+    <button
+      type="button"
+      onclick="this.parentElement.style.display='none'"
+      aria-label="Dismiss"
+      class="site-flash-dismiss"
+    >&times;</button>
+  </div>
+<% end %>
+<%= if Phoenix.Flash.get(@flash, :error) do %>
+  <div id="site-flash-error" role="alert" class="site-flash site-flash-error">
+    <%= Phoenix.Flash.get(@flash, :error) %>
+    <button
+      type="button"
+      onclick="this.parentElement.style.display='none'"
+      aria-label="Dismiss"
+      class="site-flash-dismiss"
+    >&times;</button>
+  </div>
+<% end %>
+
 <!-- The site heading, or banner, or title or whatso'er shall please you -->
 <div class="col-md-12 text-center accent-font" style="padding-top: 0; padding-bottom: 0;">
-  <!-- Dark Mode Toggle -->
+  <!-- Dark Mode Toggle.
+       phx-update="ignore" keeps LiveView's morphdom from replacing the
+       icon during navigation — preserves the click listener attached
+       by assets/js/dark_mode.js on initial page load. -->
   <div
     id="dark-mode-icon"
     class="dark-mode-icon-class"
+    phx-update="ignore"
     style="text-align: left; padding-left: 0; padding-top: 10px;"
   >
     <img

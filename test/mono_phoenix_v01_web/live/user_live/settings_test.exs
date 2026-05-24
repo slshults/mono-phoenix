@@ -113,7 +113,8 @@ defmodule MonoPhoenixV01Web.UserLive.SettingsTest do
 
       new_password_conn = follow_trigger_action(form, conn)
 
-      assert redirected_to(new_password_conn) == ~p"/users/settings"
+      # Redirects to /account after password change (UX choice, 2026-05-23)
+      assert redirected_to(new_password_conn) == ~p"/account"
 
       assert get_session(new_password_conn, :user_token) != get_session(conn, :user_token)
 

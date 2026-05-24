@@ -14,12 +14,15 @@ defmodule MonoPhoenixV01Web.Layouts do
   """
   attr :flash, :map, required: true
   attr :current_scope, :any, default: nil
+  attr :page_class, :string, default: nil
   slot :inner_block, required: true
 
+  # The live.html.heex layout already renders flash messages globally at the
+  # top of every LiveView page, so we don't render <.flash_group> here (doing
+  # so would show the same message twice).
   def app(assigns) do
     ~H"""
-    <div class="auth-page-wrapper">
-      <.flash_group flash={@flash} />
+    <div class={["auth-page-wrapper", @page_class]}>
       <main class="auth-main">
         {render_slot(@inner_block)}
       </main>

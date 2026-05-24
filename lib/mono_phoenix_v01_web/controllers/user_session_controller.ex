@@ -38,9 +38,14 @@ defmodule MonoPhoenixV01Web.UserSessionController do
       |> put_flash(:info, info)
       |> UserAuth.maybe_log_in_user(user, user_params)
     else
-      # In order to prevent user enumeration attacks, don't disclose whether the email is registered.
+      # Generic wording so we don't disclose whether the email is registered
+      # (basic user-enumeration hygiene), but also hint at the email-link
+      # option for users who never set a password.
       conn
-      |> put_flash(:error, "Invalid email or password")
+      |> put_flash(
+        :error,
+        "Couldn't sign you in with that email and password. If you haven't set a password yet, use the email-link option above."
+      )
       |> put_flash(:email, String.slice(email, 0, 160))
       |> redirect(to: ~p"/users/log-in")
     end
@@ -54,8 +59,12 @@ defmodule MonoPhoenixV01Web.UserSessionController do
     # disconnect all existing LiveViews with old sessions
     UserAuth.disconnect_sessions(expired_tokens)
 
+    # Send the user to /account after a successful password change.
+    # The gen.auth default returns them to /users/settings (where they just
+    # were), which makes the success flash feel pointless. /account is a
+    # useful landing page that confirms they're logged in.
     conn
-    |> put_session(:user_return_to, ~p"/users/settings")
+    |> put_session(:user_return_to, ~p"/account")
     |> create(params, "Password updated successfully!")
   end
 

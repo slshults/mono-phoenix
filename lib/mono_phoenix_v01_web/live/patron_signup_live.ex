@@ -1,6 +1,8 @@
 defmodule MonoPhoenixV01Web.PatronSignupLive do
   use MonoPhoenixV01Web, :live_view
 
+  require Logger
+
   alias MonoPhoenixV01.Accounts
   alias MonoPhoenixV01.Accounts.User
   alias MonoPhoenixV01.Billing
@@ -14,7 +16,7 @@ defmodule MonoPhoenixV01Web.PatronSignupLive do
           <.header>
             Support the site
             <:subtitle>
-              Patron accounts remove ads and unlock favorites.
+              to remove all ads and use favorites
             </:subtitle>
           </.header>
         </div>
@@ -32,25 +34,6 @@ defmodule MonoPhoenixV01Web.PatronSignupLive do
           </div>
         <% else %>
           <.form for={@form} id="patron_signup_form" phx-change="validate" phx-submit="submit">
-            <div class="instructional text-sm text-gray-700 mb-4">
-              <p>
-                We're not going to make you verify your email address because we have no
-                intent to spam you. But it is <strong>very important</strong> you enter a
-                real email address and enter it correctly so that you will be able to
-                reset your password if you need to, and more importantly so you can
-                cancel your payment in the future if you decide to.
-              </p>
-            </div>
-
-            <.input
-              field={@form[:email]}
-              type="email"
-              label="Email"
-              autocomplete="username"
-              required
-              phx-mounted={JS.focus()}
-            />
-
             <fieldset class="mt-4">
               <legend class="font-medium mb-2">Choose your support level</legend>
               <label class="block">
@@ -86,9 +69,26 @@ defmodule MonoPhoenixV01Web.PatronSignupLive do
               </p>
             </div>
 
+            <.input
+              field={@form[:email]}
+              type="email"
+              label="Email"
+              autocomplete="username"
+              required
+              phx-mounted={JS.focus()}
+            />
+
+            <div class="instructional text-sm text-gray-700 mt-4 mb-4">
+              <p>
+                We're not going to make you verify your email address, but it is <strong>very important</strong> you enter a
+                real email address, and enter it correctly, in case you forget your password. You also need to use a real email address so you can
+                cancel payments in the future.
+              </p>
+            </div>
+
             <.button
               phx-disable-with="Redirecting to payment…"
-              class="btn btn-primary w-full"
+              class="btn btn-primary mt-3"
             >
               Support the site →
             </.button>
@@ -131,7 +131,11 @@ defmodule MonoPhoenixV01Web.PatronSignupLive do
           {:ok, %{url: url}} ->
             {:noreply, redirect(socket, external: url)}
 
-          {:error, _reason} ->
+          {:error, reason} ->
+            Logger.error(
+              "PatronSignupLive checkout failed for user_id=#{user.id} (#{user.email}): #{inspect(reason)}"
+            )
+
             {:noreply,
              socket
              |> put_flash(

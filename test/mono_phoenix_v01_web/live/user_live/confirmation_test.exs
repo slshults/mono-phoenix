@@ -18,7 +18,9 @@ defmodule MonoPhoenixV01Web.UserLive.ConfirmationTest do
         end)
 
       {:ok, _lv, html} = live(conn, ~p"/users/log-in/#{token}")
-      assert html =~ "Confirm and stay logged in"
+      # Simplified confirmation page (2026-05-23): single "Continue" CTA
+      assert html =~ "Log in to Shakespeare&#39;s Monologues"
+      assert html =~ "Continue"
     end
 
     test "renders login page for confirmed user", %{conn: conn, confirmed_user: user} do
@@ -29,8 +31,7 @@ defmodule MonoPhoenixV01Web.UserLive.ConfirmationTest do
 
       {:ok, _lv, html} = live(conn, ~p"/users/log-in/#{token}")
       refute html =~ "Confirm my account"
-      # Confirmed users see "Keep me logged in" instead of "Log in" (no current_scope)
-      assert html =~ "Keep me logged in"
+      assert html =~ "Continue"
     end
 
     test "confirms the given token once but blocks session creation for pending_payment status",

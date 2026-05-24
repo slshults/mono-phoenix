@@ -64,7 +64,7 @@ defmodule MonoPhoenixV01Web.UserSessionControllerTest do
           "user" => %{"email" => user.email, "password" => "invalid_password"}
         })
 
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Invalid email or password"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't sign you in"
       assert redirected_to(conn) == ~p"/users/log-in"
     end
   end

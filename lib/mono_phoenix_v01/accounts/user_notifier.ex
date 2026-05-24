@@ -5,11 +5,13 @@ defmodule MonoPhoenixV01.Accounts.UserNotifier do
   alias MonoPhoenixV01.Accounts.User
 
   # Delivers the email using the application mailer.
+  # TODO before launch: confirm the from-address is one your Gmail SMTP relay
+  # actually accepts (or update the mailer config). Display name is final.
   defp deliver(recipient, subject, body) do
     email =
       new()
       |> to(recipient)
-      |> from({"MonoPhoenixV01", "contact@example.com"})
+      |> from({"Shakespeare's Monologues", "noreply@shakespeare-monologues.org"})
       |> subject(subject)
       |> text_body(body)
 
@@ -22,7 +24,7 @@ defmodule MonoPhoenixV01.Accounts.UserNotifier do
   Deliver instructions to update a user email.
   """
   def deliver_update_email_instructions(user, url) do
-    deliver(user.email, "Update email instructions", """
+    deliver(user.email, "Update your Shakespeare's Monologues email", """
 
     ==============================
 
@@ -49,7 +51,7 @@ defmodule MonoPhoenixV01.Accounts.UserNotifier do
   end
 
   defp deliver_magic_link_instructions(user, url) do
-    deliver(user.email, "Log in instructions", """
+    deliver(user.email, "Login link for Shakespeare's Monologues", """
 
     ==============================
 
@@ -66,7 +68,7 @@ defmodule MonoPhoenixV01.Accounts.UserNotifier do
   end
 
   defp deliver_confirmation_instructions(user, url) do
-    deliver(user.email, "Confirmation instructions", """
+    deliver(user.email, "Confirm your Shakespeare's Monologues account", """
 
     ==============================
 

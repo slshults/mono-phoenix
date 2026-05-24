@@ -14,7 +14,7 @@ defmodule MonoPhoenixV01Web.CoreComponents do
   def header(assigns) do
     ~H"""
     <div class="mb-4">
-      <h1 class="text-2xl font-semibold">{render_slot(@inner_block)}</h1>
+      <h1 class="text-2xl">{render_slot(@inner_block)}</h1>
       <p :if={@subtitle != []} class="mt-1 text-sm text-gray-600">
         {render_slot(@subtitle)}
       </p>
@@ -29,8 +29,17 @@ defmodule MonoPhoenixV01Web.CoreComponents do
   slot :inner_block, required: true
 
   def button(assigns) do
+    variant_class =
+      case assigns[:variant] do
+        "primary" -> "btn btn-primary"
+        "soft" -> "btn btn-soft"
+        _ -> nil
+      end
+
+    assigns = assign(assigns, :variant_class, variant_class)
+
     ~H"""
-    <button class={[@class]} {@rest}>
+    <button class={[@variant_class, @class]} {@rest}>
       {render_slot(@inner_block)}
     </button>
     """
@@ -96,6 +105,46 @@ defmodule MonoPhoenixV01Web.CoreComponents do
         <input type="checkbox" id={@id} name={@name} value="true" checked={@checked} {@rest} />
         {@label}
       </label>
+      <p :for={error <- @errors} class="mt-1 text-sm text-red-600">{error}</p>
+    </div>
+    """
+  end
+
+  def input(%{type: "password"} = assigns) do
+    ~H"""
+    <div>
+      <label :if={@label} for={@id} class="block text-sm font-medium">{@label}</label>
+      <div
+        id={"password-toggle-#{@id}"}
+        phx-hook="PasswordToggle"
+        class="password-toggle-wrapper"
+        style="position: relative;"
+      >
+        <input
+          type={@type}
+          name={@name}
+          id={@id}
+          value={Phoenix.HTML.Form.normalize_value(@type, @value)}
+          class="mt-1 block w-full border border-gray-300 rounded"
+          style="padding-right: 42px;"
+          {@rest}
+        />
+        <button
+          type="button"
+          title="Show password"
+          aria-label="Show password"
+          class="password-toggle-btn"
+          tabindex="-1"
+          style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: transparent; border: none; cursor: pointer; padding: 6px; line-height: 0; color: #5E2612; display: inline-flex; align-items: center; justify-content: center;"
+        >
+          <span class="eye-open" style="display: inline-flex; align-items: center;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
+          </span>
+          <span class="eye-shut" style="display: none; align-items: center;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" /><line x1="1" y1="1" x2="23" y2="23" /></svg>
+          </span>
+        </button>
+      </div>
       <p :for={error <- @errors} class="mt-1 text-sm text-red-600">{error}</p>
     </div>
     """

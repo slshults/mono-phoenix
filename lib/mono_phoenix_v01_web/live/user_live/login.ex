@@ -13,7 +13,7 @@ defmodule MonoPhoenixV01Web.UserLive.Login do
             <p>Log in</p>
             <:subtitle>
               <%= if @current_scope do %>
-                You need to reauthenticate to perform sensitive actions on your account.
+                Log in again to remove the ads and access your favorites.
               <% else %>
                 Don't have an account? <.link
                   navigate={~p"/users/register"}
@@ -117,7 +117,7 @@ defmodule MonoPhoenixV01Web.UserLive.Login do
     end
 
     info =
-      "If your email is in our system, you will receive instructions for logging in shortly."
+      "If you have used that email address to create an account in the past, we have sent you a login link. Check your inbox. If you don't find the email there, check your spam folder."
 
     {:noreply,
      socket

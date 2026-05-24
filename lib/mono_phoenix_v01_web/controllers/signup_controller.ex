@@ -23,7 +23,6 @@ defmodule MonoPhoenixV01Web.SignupController do
          {:ok, user} <- Accounts.mark_subscription_active(user, data) do
       conn
       |> put_session(:user_return_to, ~p"/welcome")
-      |> put_flash(:info, "Welcome! Thanks for supporting the site 🙏")
       |> UserAuth.log_in_user(user)
     else
       error ->

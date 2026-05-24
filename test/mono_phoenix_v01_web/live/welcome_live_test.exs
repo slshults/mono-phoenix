@@ -19,9 +19,9 @@ defmodule MonoPhoenixV01Web.WelcomeLiveTest do
       {:ok, _lv, html} = live(conn, ~p"/welcome")
 
       assert html =~ "Welcome!"
-      assert html =~ "Want to set a password"
+      assert html =~ "Password or emailed login link"
       assert html =~ "Set a password"
-      assert html =~ "Skip"
+      assert html =~ "Email me a login link"
     end
 
     test "hides the prompt when welcomed_at is set", %{conn: conn} do
@@ -32,19 +32,19 @@ defmodule MonoPhoenixV01Web.WelcomeLiveTest do
       {:ok, _lv, html} = live(conn, ~p"/welcome")
 
       assert html =~ "Welcome!"
-      refute html =~ "Want to set a password"
+      refute html =~ "Password or emailed login link"
     end
   end
 
   describe "Skip click" do
-    test "marks welcomed and redirects to /", %{conn: conn} do
+    test "marks welcomed, sets flash, and redirects to /plays", %{conn: conn} do
       user = user_fixture()
       conn = log_in_user(conn, user)
 
       {:ok, lv, _html} = live(conn, ~p"/welcome")
 
-      assert lv |> element("button", "Skip") |> render_click() ==
-               {:error, {:live_redirect, %{kind: :push, to: "/"}}}
+      result = lv |> element("button[phx-click=\"skip\"]") |> render_click()
+      assert {:error, {:live_redirect, %{kind: :push, to: "/plays", flash: _}}} = result
 
       assert Accounts.get_user!(user.id).welcomed_at
     end

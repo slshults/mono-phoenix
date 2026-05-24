@@ -24,8 +24,24 @@ defmodule MonoPhoenixV01Web.WelcomeLive do
 
   @impl true
   def handle_event("skip", _, socket) do
-    {:ok, _user} = Accounts.mark_welcomed(socket.assigns.current_scope.user)
-    {:noreply, push_navigate(socket, to: ~p"/")}
+    user = socket.assigns.current_scope.user
+    {:ok, _user} = Accounts.mark_welcomed(user)
+
+    # Send a magic-link email immediately. The user is already logged in,
+    # but emailing the link now (a) verifies their email address works and
+    # (b) primes them for future logins.
+    Accounts.deliver_login_instructions(
+      user,
+      &url(~p"/users/log-in/#{&1}")
+    )
+
+    {:noreply,
+     socket
+     |> put_flash(
+       :info,
+       "Check your email for a login link. If you don't see it, check your spam folder."
+     )
+     |> push_navigate(to: ~p"/plays")}
   end
 
   def handle_event("set_password", _, socket) do
@@ -40,23 +56,19 @@ defmodule MonoPhoenixV01Web.WelcomeLive do
       <div class="mx-auto max-w-md space-y-4 welcome-container">
         <div class="text-center">
           <.header>
-            Welcome! Thanks for supporting the site 🙏
+            Welcome! Thanks for supporting the site!
           </.header>
         </div>
 
         <%= if @show_prompt do %>
           <div class="welcome-prompt space-y-3">
-            <p class="font-semibold">Want to set a password for next time?</p>
-            <p class="text-sm text-gray-700">
-              You can also just have us email you a one-time sign-in link whenever
-              you come back — works fine, no password to remember.
-            </p>
-            <div class="welcome-actions flex flex-col gap-2">
+            <p class="font-semibold">Password or emailed login link?</p>
+            <div class="welcome-actions flex gap-4 mt-4">
               <button phx-click="set_password" class="btn btn-primary">
                 Set a password
               </button>
               <button phx-click="skip" class="btn btn-soft">
-                Skip — email me a link when I want to sign in
+                Email me a login link
               </button>
             </div>
           </div>

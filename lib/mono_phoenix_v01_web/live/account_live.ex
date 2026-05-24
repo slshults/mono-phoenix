@@ -38,41 +38,26 @@ defmodule MonoPhoenixV01Web.AccountLive do
     assigns = assign(assigns, :user, user)
 
     ~H"""
-    <Layouts.app flash={@flash} current_scope={@current_scope}>
-      <div class="mx-auto max-w-md space-y-4 account-container">
+    <Layouts.app flash={@flash} current_scope={@current_scope} page_class="account-page">
+      <div class="account-container space-y-4">
         <.header>Your account</.header>
 
-        <dl class="account-fields space-y-2">
-          <div>
-            <dt class="font-semibold">Email</dt>
-            <dd>{@user.email}</dd>
-          </div>
+        <div class="account-fields space-y-2">
+          <p><strong>Email:</strong> {@user.email}</p>
+          <p><strong>Subscription status:</strong> {status_label(@user.subscription_status)}</p>
+          <p :if={@user.current_period_end}>
+            <strong>Next renewal:</strong>
+            {Calendar.strftime(@user.current_period_end, "%B %-d, %Y")}
+          </p>
+          <p><strong>Plan:</strong> {@user.billing_period || "—"}</p>
+        </div>
 
-          <div>
-            <dt class="font-semibold">Subscription status</dt>
-            <dd>{status_label(@user.subscription_status)}</dd>
-          </div>
-
-          <div :if={@user.current_period_end}>
-            <dt class="font-semibold">Next renewal</dt>
-            <dd>{Calendar.strftime(@user.current_period_end, "%B %-d, %Y")}</dd>
-          </div>
-
-          <div>
-            <dt class="font-semibold">Plan</dt>
-            <dd>{@user.billing_period || "—"}</dd>
-          </div>
-        </dl>
-
-        <div class="account-actions flex flex-col gap-2 mt-4">
+        <div class="account-actions flex gap-2 mt-4">
           <button phx-click="open_portal" class="btn btn-primary">
             Manage subscription
           </button>
           <.link href={~p"/users/settings"} class="btn btn-soft">
             Change email or password
-          </.link>
-          <.link href={~p"/users/log-out"} method="delete" class="btn btn-soft">
-            Log out
           </.link>
         </div>
       </div>
