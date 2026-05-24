@@ -2,6 +2,7 @@ defmodule MonoPhoenixV01Web.PlayPageLive do
   use MonoPhoenixV01Web, :live_view
   alias MonoPhoenixV01Web.Router.Helpers, as: Routes
   import Ecto.Query
+  import MonoPhoenixV01Web.Components.HeartIcon
 
   @impl true
   def mount(%{"playid" => playid_str}, _session, socket) do

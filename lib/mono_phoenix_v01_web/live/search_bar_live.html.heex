@@ -43,7 +43,11 @@
                       title="Show scene summary">
                   <img src={Routes.static_path(@conn, "/images/scroll-summary-icon.svg")} alt="Scene summary" />
                 </span>&nbsp; &middot; 
-                <span class="monologue-actscene"><%= row.style %></span>
+                <span class="monologue-actscene"><%= row.style %></span><%= if @is_patron do %><.heart_icon
+                  monologue_id={row.monologues}
+                  filled={MapSet.member?(@favorited_ids, row.monologues)}
+                  auth_state={:patron}
+                /><% end %>
                 <br />
                 <span class="monologue-character"><%= row.character %></span>
                 <br />

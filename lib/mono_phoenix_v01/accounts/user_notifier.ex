@@ -11,7 +11,7 @@ defmodule MonoPhoenixV01.Accounts.UserNotifier do
     email =
       new()
       |> to(recipient)
-      |> from({"Shakespeare's Monologues", "noreply@shakespeare-monologues.org"})
+      |> from({"Shakespeare's Monologues", "tipjar@shakespeare-monologues.org"})
       |> subject(subject)
       |> text_body(body)
 

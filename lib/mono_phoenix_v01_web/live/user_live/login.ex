@@ -16,10 +16,10 @@ defmodule MonoPhoenixV01Web.UserLive.Login do
                 Log in again to remove the ads and access your favorites.
               <% else %>
                 Don't have an account? <.link
-                  navigate={~p"/users/register"}
+                  navigate={~p"/signup"}
                   class="font-semibold text-brand hover:underline"
                   phx-no-format
-                >Sign up</.link> for an account now.
+                >Sign up</.link> for an ad-free account.
               <% end %>
             </:subtitle>
           </.header>

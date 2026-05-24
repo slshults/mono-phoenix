@@ -12,7 +12,10 @@
       MonoPhoenixV01Web.SearchBarLive,
       id: "searchbar",
       class:
-        "search-box-dark search-box-default input-group accent-font form-control monologue-list"
+        "search-box-dark search-box-default input-group accent-font form-control monologue-list",
+      session: %{
+        "user_id" => MonoPhoenixV01Web.LiveFavoritesHelpers.user_id_from_scope(@current_scope)
+      }
     ) %>
   </div>
   <!-- Exeunt The Search Box -->

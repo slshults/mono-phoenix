@@ -1191,3 +1191,187 @@ body.dark-mode .site-flash-error {
 body.dark-mode .site-flash-dismiss {
     color: #aaa;
 }
+
+/* ============================================================
+   Phase 4: Favorites
+   ============================================================ */
+
+/* Heart icon button next to the verse/prose marker on monologue
+   cards. Color inherits from surrounding text via `currentColor` so
+   it tracks light/dark mode automatically. */
+.heart-icon-btn {
+    background: transparent;
+    border: none;
+    padding: 0 4px;
+    margin: 0 2px;
+    cursor: pointer;
+    color: inherit;
+    line-height: 0;
+    vertical-align: middle;
+    display: inline-flex;
+    align-items: center;
+}
+
+.heart-icon-btn svg {
+    display: block;
+}
+
+.heart-icon-btn:hover {
+    transform: scale(1.12);
+    transition: transform 0.1s ease;
+}
+
+.heart-icon-btn:focus-visible {
+    outline: 2px solid #5E2612;
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+/* Filled state — same color, fill comes from SVG attributes. */
+.heart-icon-filled {
+    color: #5E2612;
+}
+
+body.dark-mode .heart-icon-filled {
+    color: #F9F9DF;
+}
+
+/* Auth-prompt modal shown to unauthenticated visitors on heart
+   or Favs-link click. */
+.favs-auth-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.favs-auth-modal {
+    position: relative;
+    background: #F9F9DF;
+    color: #333;
+    border-radius: 6px;
+    padding: 32px 28px 24px;
+    max-width: 460px;
+    width: 100%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    font-family: 'IM Fell DW Pica', Georgia, serif;
+}
+
+body.dark-mode .favs-auth-modal {
+    background: #2b2b2b;
+    color: #F9F9DF;
+}
+
+.favs-auth-modal-title {
+    font-size: 18px;
+    line-height: 1.35;
+    margin: 0 0 18px;
+    text-align: center;
+}
+
+.favs-auth-modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.favs-auth-modal-actions .btn,
+.favs-auth-modal-actions .btn-primary,
+.favs-auth-modal-actions .btn-soft {
+    display: inline-block;
+    background: #5E2612;
+    color: #fff !important;
+    border: none;
+    padding: 9px 22px;
+    font-family: Georgia, serif;
+    font-size: 15px;
+    cursor: pointer;
+    border-radius: 3px;
+    text-decoration: none;
+    line-height: 1.2;
+}
+
+.favs-auth-modal-actions .btn-soft {
+    background: #8a4a30;
+}
+
+.favs-auth-modal-actions .btn:hover,
+.favs-auth-modal-actions .btn-primary:hover,
+.favs-auth-modal-actions .btn-soft:hover {
+    background: #4a1d0e;
+    transform: translateY(-1px);
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.favs-auth-modal-close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    line-height: 1;
+    color: #888;
+    padding: 0;
+}
+
+body.dark-mode .favs-auth-modal-close {
+    color: #aaa;
+}
+
+/* /favorites page — row layout matches the play/menplay/womenplay
+   monologue listings (single column with inline metadata, expandable
+   first line). Sort controls live in a button bar at the top. */
+.favorites-page {
+    margin-top: 14px;
+}
+
+.favorites-sort-bar {
+    margin: 12px 0 14px;
+    font-size: 95%;
+    line-height: 1.8;
+    text-align: center;
+}
+
+.favorites-sort-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 2px 8px;
+    margin: 0 2px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    border-radius: 3px;
+}
+
+.favorites-sort-btn:hover {
+    text-decoration: underline;
+}
+
+.favorites-sort-btn-active {
+    border-color: currentColor;
+    font-weight: 600;
+}
+
+.favorites-row-heart {
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+.favorite-confirm-modal {
+    max-width: 420px;
+}
+
+.favorites-empty {
+    margin-top: 24px;
+    text-align: center;
+    line-height: 1.6;
+}
+

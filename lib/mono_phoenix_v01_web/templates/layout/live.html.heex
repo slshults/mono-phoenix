@@ -72,16 +72,10 @@
     <a href="/mens">Men</a>&nbsp; · <a href="/womens">Women</a>&nbsp; · <a href="/plays">All</a>
     <br />
     <div align="center">
-      <a href="/home">Home</a>&nbsp; · <a href="/faq">Help</a>&nbsp; ·
-      <div style="display: inline; height:0px;width:0px;min-width:0px;padding:0px;accent-font;">
-        <a
-          class="a2a_dd"
-          href="https://www.addtoany.com/share"
-          style="display: inline; height:0px;width:0px;min-width:0px;padding:0px;accent-font;"
-        >
-          Share
-        </a>
-      </div>
+      <a href="/home">Home</a>&nbsp; · <a
+        href={MonoPhoenixV01Web.UserAuth.favs_target(assigns[:current_scope])}
+        phx-click={if assigns[:auth_state] != :patron, do: "show_favs_auth_modal"}
+      >Favs</a>&nbsp; · <a href="/faq">Help</a>
     </div>
     <div class="link-menu-left accent-font" style="font-size: 14px; position: relative;">
       <a href="https://ko-fi.com/shakespearesmonologues" target="_blank" id="kofi-left-direct-btn" style="display: inline-block; background-color: #F9F9DF; border: 1px solid #E0E0C0; border-radius: 3px; padding: 4px 6px; cursor: pointer; color: #111; font-size: 12px; text-decoration: none;">
@@ -121,7 +115,10 @@
       >Bluesky</a>&nbsp; ·
       <a href="https://www.facebook.com/ShakespearesMonologues" target="_blank">FB</a>
       <br />
-      <a href="/home">Home</a>&nbsp; · <a href="/faq">FAQ &nbsp;</a>&nbsp; · <a href="/aboutus">About</a>&nbsp; · <a href="/privacy">Privacy</a>&nbsp; · <a href="/faq?contact=true">Contact</a>&nbsp; ·
+      <a href="/home">Home</a>&nbsp; · <a
+        href={MonoPhoenixV01Web.UserAuth.favs_target(assigns[:current_scope])}
+        phx-click={if assigns[:auth_state] != :patron, do: "show_favs_auth_modal"}
+      >Favs</a>&nbsp; · <a href="/faq">FAQ &nbsp;</a>&nbsp; · <a href="/aboutus">About</a>&nbsp; · <a href="/privacy">Privacy</a>&nbsp; · <a href="/faq?contact=true">Contact</a>&nbsp; ·
       <div style="display: inline; height:0px;width:0px;min-width:0px;padding:0px;accent-font;">
         <a
           class="a2a_dd"
@@ -260,7 +257,11 @@
     <hr style="width:75px;  noshade;" />
   </div>
   <!-- begin rightcol google graphic ad -->
-                
+
                 <!-- end rightcol unmatched responsive -->
                     <!-- end right column -->
 </div>
+
+<MonoPhoenixV01Web.Components.FavsAuthModal.favs_auth_modal
+  open={assigns[:show_favs_auth_modal] || false}
+/>

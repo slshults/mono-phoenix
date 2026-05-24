@@ -112,6 +112,37 @@ defmodule MonoPhoenixV01Web.UserAuth do
   end
 
   @doc """
+  Classifies the current visitor for the favorites feature:
+
+  - `:unauthenticated` — no scope or no user
+  - `:patron` — active paying subscriber
+  - `:lapsed` — logged-in user whose subscription is not "active"
+    (canceled, past_due, lapsed, pending_payment, …)
+
+  Used by the heart-icon component and the Favs nav link to decide
+  what happens on click.
+  """
+  def auth_state(nil), do: :unauthenticated
+  def auth_state(%Scope{user: nil}), do: :unauthenticated
+
+  def auth_state(%Scope{user: %MonoPhoenixV01.Accounts.User{subscription_status: "active"}}),
+    do: :patron
+
+  def auth_state(%Scope{user: %MonoPhoenixV01.Accounts.User{}}), do: :lapsed
+
+  @doc """
+  Target href for the `Favs` nav link. Patrons get the real `/favorites`
+  page; everyone else gets `#` (the JS-driven auth-prompt modal is
+  triggered by the click handler).
+  """
+  def favs_target(scope) do
+    case auth_state(scope) do
+      :patron -> "/favorites"
+      _ -> "#"
+    end
+  end
+
+  @doc """
   Logs the user out.
 
   It clears all session data for safety. See renew_session.

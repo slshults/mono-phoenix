@@ -76,16 +76,16 @@ defmodule MonoPhoenixV01Web.UserLive.LoginTest do
   end
 
   describe "login navigation" do
-    test "redirects to registration page when the Register button is clicked", %{conn: conn} do
+    test "redirects to patron signup when the Sign up link is clicked", %{conn: conn} do
       {:ok, lv, _html} = live(conn, ~p"/users/log-in")
 
-      {:ok, _login_live, login_html} =
+      {:ok, _signup_live, signup_html} =
         lv
         |> element("main a", "Sign up")
         |> render_click()
-        |> follow_redirect(conn, ~p"/users/register")
+        |> follow_redirect(conn, ~p"/signup")
 
-      assert login_html =~ "Register"
+      assert signup_html =~ "ad-free" or signup_html =~ "Support" or signup_html =~ "monthly"
     end
   end
 
