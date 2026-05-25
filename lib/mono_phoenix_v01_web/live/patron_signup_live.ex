@@ -40,17 +40,17 @@ defmodule MonoPhoenixV01Web.PatronSignupLive do
                 <input
                   type="radio"
                   name="user[billing_period]"
-                  value="yearly"
-                  checked={@billing_period == "yearly"}
-                /> $10 per year (best value)
+                  value="monthly"
+                  checked={@billing_period == "monthly"}
+                /> $1.25 per month
               </label>
               <label class="block">
                 <input
                   type="radio"
                   name="user[billing_period]"
-                  value="monthly"
-                  checked={@billing_period == "monthly"}
-                /> $1.25 per month
+                  value="yearly"
+                  checked={@billing_period == "yearly"}
+                /> $10 per year (best value)
               </label>
               <p :for={error <- billing_period_errors(@form)} class="mt-1 text-sm text-red-600">
                 {error}
@@ -101,13 +101,13 @@ defmodule MonoPhoenixV01Web.PatronSignupLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    changeset = User.signup_changeset(%User{}, %{"billing_period" => "yearly"})
+    changeset = User.signup_changeset(%User{}, %{"billing_period" => "monthly"})
 
     {:ok,
      socket
      |> assign(:page_title, "Support the site")
      |> assign(:already_active_email, nil)
-     |> assign(:billing_period, "yearly")
+     |> assign(:billing_period, "monthly")
      |> assign(:show_ph_widget, true)
      |> assign(:hide_launch_promo, true)
      |> assign_form(changeset)}

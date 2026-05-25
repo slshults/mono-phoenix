@@ -1375,6 +1375,13 @@ body.dark-mode .favs-auth-modal-close {
     line-height: 1.6;
 }
 
+.favorites-manage-account {
+    margin: -10px 0 12px 0;
+    padding-left: 7px;
+    font-size: 85%;
+    text-align: left;
+}
+
 /* Phase 4 launch promo: announces paid accounts to first-time
    visitors. Top-center of viewport, dismissed for 30 days via
    localStorage, only rendered for unauthenticated visitors. */

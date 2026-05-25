@@ -47,7 +47,7 @@ defmodule MonoPhoenixV01Web.Components.FavsAuthModal do
           >&times;</button>
 
           <h2 id="favs-auth-modal-title" class="favs-auth-modal-title">
-            Save your favorite monologues with an ad-free account
+            Log in or support the site to remove ads and use the 'Favorites' feature
           </h2>
 
           <div class="favs-auth-modal-actions">

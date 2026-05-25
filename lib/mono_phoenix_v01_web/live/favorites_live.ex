@@ -130,6 +130,9 @@ defmodule MonoPhoenixV01Web.FavoritesLive do
     <div class="favorites-page">
       <div class="center-column-header accent-font">
         <h3>Your favorites</h3>
+        <p class="favorites-manage-account">
+          <.link href={~p"/account"}>Manage Account</.link>
+        </p>
       </div>
 
       <%= if @rows == [] do %>
