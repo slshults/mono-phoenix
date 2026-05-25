@@ -30,7 +30,7 @@
       <p class="paid-accounts-promo-body">
         You can now support the site to <strong>remove ads</strong> and use a <strong>favorites list</strong> to keep track of your monologues!
       </p>
-      <p class="paid-accounts-promo-price">$1.25usd/mo or $10/year.</p>
+      <p class="paid-accounts-promo-price">$1.25/mo or $10/year.</p>
       <div class="paid-accounts-promo-actions">
         <button type="button" id="paid-accounts-promo-dismiss" class="btn btn-soft">
           No, I love ads
@@ -43,47 +43,58 @@
   </div>
   <script>
     (function() {
-      // The layout re-renders on every LV navigation; without this
-      // guard we'd attach duplicate listeners (and double-fire the
-      // PostHog events) every time the user navigates.
+      // Guard so the layout re-running (it re-renders on every LV
+      // navigation) doesn't double-show the modal or re-attach the
+      // document-level click listener below.
       if (window.__paidAccountsPromoInit) return;
       window.__paidAccountsPromoInit = true;
 
-      var elem = document.getElementById('paid-accounts-promo');
-      if (!elem) return;
       var key = 'paid_accounts_promo_dismissed_at';
       var thirtyDays = 30 * 24 * 60 * 60 * 1000;
-      var dismissedAt = parseInt(localStorage.getItem(key) || '0', 10);
-      if (dismissedAt && (Date.now() - dismissedAt) < thirtyDays) return;
 
-      elem.style.display = 'flex';
-      if (typeof posthog !== 'undefined') {
-        posthog.capture('paid_accounts_promo_shown');
+      function reveal() {
+        var elem = document.getElementById('paid-accounts-promo');
+        if (!elem) return;
+        var dismissedAt = parseInt(localStorage.getItem(key) || '0', 10);
+        if (dismissedAt && (Date.now() - dismissedAt) < thirtyDays) return;
+        elem.style.display = 'flex';
+        if (typeof posthog !== 'undefined') {
+          posthog.capture('paid_accounts_promo_shown');
+        }
       }
 
       function dismiss(reason) {
         localStorage.setItem(key, Date.now().toString());
-        elem.style.display = 'none';
+        var elem = document.getElementById('paid-accounts-promo');
+        if (elem) elem.style.display = 'none';
         if (typeof posthog !== 'undefined') {
           posthog.capture('paid_accounts_promo_dismissed', { reason: reason });
         }
       }
 
-      document.getElementById('paid-accounts-promo-dismiss').addEventListener('click', function() {
-        dismiss('love_ads');
-      });
-      document.getElementById('paid-accounts-promo-close').addEventListener('click', function() {
-        dismiss('closed_x');
-      });
-      document.getElementById('paid-accounts-promo-accept').addEventListener('click', function() {
-        // Stamp the localStorage entry before navigation so the user
-        // doesn't see this again on the post-Checkout / back navigation.
-        localStorage.setItem(key, Date.now().toString());
-        if (typeof posthog !== 'undefined') {
-          posthog.capture('paid_accounts_promo_accepted');
+      // Document-level event delegation — works regardless of how LV
+      // re-renders the surrounding DOM, and the listener only ever
+      // attaches once (guarded by __paidAccountsPromoInit above).
+      document.addEventListener('click', function(e) {
+        var t = e.target;
+        if (!t || !t.closest) return;
+
+        if (t.closest('#paid-accounts-promo-dismiss')) {
+          dismiss('love_ads');
+        } else if (t.closest('#paid-accounts-promo-close')) {
+          dismiss('closed_x');
+        } else if (t.closest('#paid-accounts-promo-accept')) {
+          // Stamp the localStorage entry before the link navigates
+          // so the user doesn't see this again on the post-Checkout
+          // back-navigation. Don't preventDefault — let the <a> go.
+          localStorage.setItem(key, Date.now().toString());
+          if (typeof posthog !== 'undefined') {
+            posthog.capture('paid_accounts_promo_accepted');
+          }
         }
-        // Let the <a> navigate normally to /signup.
       });
+
+      reveal();
     })();
   </script>
 <% end %>
