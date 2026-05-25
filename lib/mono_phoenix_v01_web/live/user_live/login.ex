@@ -100,7 +100,13 @@ defmodule MonoPhoenixV01Web.UserLive.Login do
 
     form = to_form(%{"email" => email}, as: "user")
 
-    {:ok, assign(socket, form: form, trigger_submit: false, show_ph_widget: true)}
+    {:ok,
+     assign(socket,
+       form: form,
+       trigger_submit: false,
+       show_ph_widget: true,
+       hide_launch_promo: true
+     )}
   end
 
   @impl true

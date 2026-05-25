@@ -109,6 +109,7 @@ defmodule MonoPhoenixV01Web.PatronSignupLive do
      |> assign(:already_active_email, nil)
      |> assign(:billing_period, "yearly")
      |> assign(:show_ph_widget, true)
+     |> assign(:hide_launch_promo, true)
      |> assign_form(changeset)}
   end
 

@@ -18,39 +18,52 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
 
   @impl true
   def handle_event("toggle_favorite", %{"monologue-id" => mid_str}, socket) do
-    if socket.assigns.is_patron do
-      monologue_id = String.to_integer(mid_str)
-      user_id = socket.assigns.user_id
-      current = socket.assigns.favorited_ids
-
-      {new_ids, event} =
-        if MapSet.member?(current, monologue_id) do
-          :ok = Favorites.remove(user_id, monologue_id)
-          {MapSet.delete(current, monologue_id), "favorite_removed"}
-        else
-          case Favorites.add(user_id, monologue_id) do
-            {:ok, _} -> {MapSet.put(current, monologue_id), "favorite_added"}
-            _ -> {current, nil}
-          end
-        end
-
-      socket = assign(socket, :favorited_ids, new_ids)
-
-      socket =
-        if event do
-          LiveFavoritesHelpers.push_posthog(socket, event, %{
-            monologue_id: monologue_id,
-            source: "search_results"
-          })
-        else
-          socket
-        end
-
-      {:noreply, socket}
+    with true <- socket.assigns.is_patron,
+         {:ok, monologue_id} <- parse_monologue_id(mid_str) do
+      do_toggle(socket, monologue_id)
     else
-      {:noreply, socket}
+      _ -> {:noreply, socket}
     end
   end
+
+  defp do_toggle(socket, monologue_id) do
+    user_id = socket.assigns.user_id
+    current = socket.assigns.favorited_ids
+
+    {new_ids, event} =
+      if MapSet.member?(current, monologue_id) do
+        :ok = Favorites.remove(user_id, monologue_id)
+        {MapSet.delete(current, monologue_id), "favorite_removed"}
+      else
+        case Favorites.add(user_id, monologue_id) do
+          {:ok, _} -> {MapSet.put(current, monologue_id), "favorite_added"}
+          _ -> {current, nil}
+        end
+      end
+
+    socket = assign(socket, :favorited_ids, new_ids)
+
+    socket =
+      if event do
+        LiveFavoritesHelpers.push_posthog(socket, event, %{
+          monologue_id: monologue_id,
+          source: "search_results"
+        })
+      else
+        socket
+      end
+
+    {:noreply, socket}
+  end
+
+  defp parse_monologue_id(str) when is_binary(str) do
+    case Integer.parse(str) do
+      {id, ""} when id > 0 -> {:ok, id}
+      _ -> :error
+    end
+  end
+
+  defp parse_monologue_id(_), do: :error
 
   ## socket assigns
 

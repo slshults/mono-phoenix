@@ -1,9 +1,12 @@
-<%= if assigns[:auth_state] in [:unauthenticated, nil] do %>
+<%= if assigns[:auth_state] in [:unauthenticated, nil] and !assigns[:hide_launch_promo] do %>
   <%!--
     Phase 4 launch promo: announces paid accounts to first-time
-    visitors. Shown once per 30 days per device via localStorage,
-    only to logged-out visitors (patrons + lapsed users skip — they
-    already know about paid accounts).
+    visitors. Shown once per 30 days per device via localStorage.
+    Skipped for:
+      - patrons + lapsed users (already know about paid accounts)
+      - LVs that set `@hide_launch_promo` (login + signup pages —
+        visitor is already in the conversion funnel, the modal would
+        be off-message)
   --%>
   <%!--
     phx-update="ignore" keeps LV's morphdom from reverting the

@@ -91,8 +91,13 @@ defmodule MonoPhoenixV01.Billing do
   # URL we hand to Stripe. The success handler refuses to auto-login
   # without a valid token for the matching user — closes the "anyone
   # who learns the cs_… session id can claim the account" hole.
+  #
+  # 5-minute max_age — long enough to cover Stripe checkout (typically
+  # under a minute), short enough to limit the replay window if the
+  # token leaks via Referer to web-server logs (security review #2
+  # SHOULD #1).
   @signup_token_salt "signup_success"
-  @signup_token_max_age 1800
+  @signup_token_max_age 300
 
   defp success_url(user_id) do
     base = MonoPhoenixV01Web.Endpoint.url()

@@ -21,7 +21,7 @@ defmodule MonoPhoenixV01Web.SignupController do
     token = params["t"]
 
     with {:ok, data} <- Billing.verify_checkout_session(session_id),
-         %_{} = user <- Accounts.get_user(data.user_id),
+         %_{} = user <- Accounts.get_user(data.user_id) || {:error, {:user_not_found, data.user_id}},
          {:ok, user} <- Accounts.mark_subscription_active(user, data) do
       # Auto-login is gated by the signup token. The token is bound to
       # the user_id at Checkout-creation time and lives 30 min — anyone
