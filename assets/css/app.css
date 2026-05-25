@@ -1375,3 +1375,106 @@ body.dark-mode .favs-auth-modal-close {
     line-height: 1.6;
 }
 
+/* Phase 4 launch promo: announces paid accounts to first-time
+   visitors. Top-center of viewport, dismissed for 30 days via
+   localStorage, only rendered for unauthenticated visitors. */
+.paid-accounts-promo {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9100;
+    width: calc(100% - 32px);
+    max-width: 480px;
+    justify-content: center;
+}
+
+.paid-accounts-promo-card {
+    position: relative;
+    background: #F9F9DF;
+    color: #333;
+    border-radius: 6px;
+    padding: 18px 26px 16px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.28);
+    font-family: 'IM Fell DW Pica', Georgia, serif;
+    text-align: center;
+    width: 100%;
+    border: 1px solid #E0E0C0;
+}
+
+body.dark-mode .paid-accounts-promo-card {
+    background: #2b2b2b;
+    color: #F9F9DF;
+    border-color: #444;
+}
+
+.paid-accounts-promo-title {
+    margin: 0 0 6px;
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.paid-accounts-promo-body {
+    margin: 0 0 6px;
+    line-height: 1.45;
+    font-size: 15px;
+}
+
+.paid-accounts-promo-price {
+    margin: 6px 0 12px;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.paid-accounts-promo-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.paid-accounts-promo-actions .btn,
+.paid-accounts-promo-actions .btn-primary,
+.paid-accounts-promo-actions .btn-soft {
+    display: inline-block;
+    background: #5E2612;
+    color: #fff !important;
+    border: none;
+    padding: 9px 20px;
+    font-family: Georgia, serif;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 3px;
+    text-decoration: none;
+    line-height: 1.2;
+}
+
+.paid-accounts-promo-actions .btn-soft {
+    background: #8a4a30;
+}
+
+.paid-accounts-promo-actions .btn:hover,
+.paid-accounts-promo-actions .btn-primary:hover,
+.paid-accounts-promo-actions .btn-soft:hover {
+    background: #4a1d0e;
+    transform: translateY(-1px);
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.paid-accounts-promo-close {
+    position: absolute;
+    top: 6px;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 22px;
+    line-height: 1;
+    color: #888;
+    padding: 0;
+}
+
+body.dark-mode .paid-accounts-promo-close {
+    color: #aaa;
+}
+

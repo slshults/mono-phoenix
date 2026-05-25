@@ -1,3 +1,74 @@
+<%= if assigns[:auth_state] in [:unauthenticated, nil] do %>
+  <%!--
+    Phase 4 launch promo: announces paid accounts to first-time
+    visitors. Shown once per 30 days per device via localStorage,
+    only to logged-out visitors (patrons + lapsed users skip — they
+    already know about paid accounts).
+  --%>
+  <div id="paid-accounts-promo" class="paid-accounts-promo" style="display:none;" role="dialog" aria-labelledby="paid-accounts-promo-title">
+    <div class="paid-accounts-promo-card">
+      <button
+        type="button"
+        id="paid-accounts-promo-close"
+        class="paid-accounts-promo-close"
+        aria-label="Close"
+      >&times;</button>
+      <h3 id="paid-accounts-promo-title" class="paid-accounts-promo-title">New:</h3>
+      <p class="paid-accounts-promo-body">
+        You can now support the site to remove ads and use a favorites list to keep track of your monologues!
+      </p>
+      <p class="paid-accounts-promo-price">$1.25usd/mo or $10/year.</p>
+      <div class="paid-accounts-promo-actions">
+        <button type="button" id="paid-accounts-promo-dismiss" class="btn btn-soft">
+          No, I love ads
+        </button>
+        <a id="paid-accounts-promo-accept" href="/signup" class="btn btn-primary">
+          Support the site
+        </a>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function() {
+      var elem = document.getElementById('paid-accounts-promo');
+      if (!elem) return;
+      var key = 'paid_accounts_promo_dismissed_at';
+      var thirtyDays = 30 * 24 * 60 * 60 * 1000;
+      var dismissedAt = parseInt(localStorage.getItem(key) || '0', 10);
+      if (dismissedAt && (Date.now() - dismissedAt) < thirtyDays) return;
+
+      elem.style.display = 'flex';
+      if (typeof posthog !== 'undefined') {
+        posthog.capture('paid_accounts_promo_shown');
+      }
+
+      function dismiss(reason) {
+        localStorage.setItem(key, Date.now().toString());
+        elem.style.display = 'none';
+        if (typeof posthog !== 'undefined') {
+          posthog.capture('paid_accounts_promo_dismissed', { reason: reason });
+        }
+      }
+
+      document.getElementById('paid-accounts-promo-dismiss').addEventListener('click', function() {
+        dismiss('love_ads');
+      });
+      document.getElementById('paid-accounts-promo-close').addEventListener('click', function() {
+        dismiss('closed_x');
+      });
+      document.getElementById('paid-accounts-promo-accept').addEventListener('click', function() {
+        // Stamp the localStorage entry before navigation so the user
+        // doesn't see this again on the post-Checkout / back navigation.
+        localStorage.setItem(key, Date.now().toString());
+        if (typeof posthog !== 'undefined') {
+          posthog.capture('paid_accounts_promo_accepted');
+        }
+        // Let the <a> navigate normally to /signup.
+      });
+    })();
+  </script>
+<% end %>
+
 <%= if assigns[:show_ph_widget] do %>
   <%!--
     Enable the PostHog conversations widget on this LiveView page.

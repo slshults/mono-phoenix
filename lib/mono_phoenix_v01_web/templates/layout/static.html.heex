@@ -64,9 +64,9 @@
       <a href="/home">Home</a>&nbsp; · <a
         href={MonoPhoenixV01Web.UserAuth.favs_target(@conn.assigns[:current_scope])}
         onclick={if MonoPhoenixV01Web.UserAuth.auth_state(@conn.assigns[:current_scope]) != :patron, do: "document.getElementById('favs-static-modal').style.display='flex'; if(typeof posthog!=='undefined')posthog.capture('favorite_modal_shown',{source:'favs_nav_link'}); return false;"}
-      >Favs</a>&nbsp; · <a href="/faq">Help</a>&nbsp; ·
-      <span class="link-menu-left accent-font" style="font-size: 14px">
-        <a href="https://ko-fi.com/shakesmonos" target="_blank" style="color: inherit; text-decoration: none; font-size: 12px;">
+      >Favs</a>&nbsp; · <a href="/faq">Help</a>
+      <div class="link-menu-left accent-font" style="font-size: 14px; position: relative;">
+        <a href="https://ko-fi.com/shakespearesmonologues" target="_blank" id="kofi-left-direct-btn-static" style="display: inline-block; background-color: #F9F9DF; border: 1px solid #E0E0C0; border-radius: 3px; padding: 4px 6px; cursor: pointer; color: #111; font-size: 12px; text-decoration: none;">
           <img src="https://storage.ko-fi.com/cdn/cup-border.png" alt="Tip Jar" style="width: 14px; height: 12px; vertical-align: middle; margin-right: 3px; animation: kofi-wiggle 3s infinite;">Tip Jar
         </a>
         <style>
@@ -82,7 +82,7 @@
             100% { transform: rotate(0) scale(1) }
           }
         </style>
-      </span>
+      </div>
     <% end %>
   </div>
   <!-- left_column_ads -->
