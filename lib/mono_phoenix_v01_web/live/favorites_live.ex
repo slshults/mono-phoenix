@@ -42,6 +42,7 @@ defmodule MonoPhoenixV01Web.FavoritesLive do
      |> assign(:sort_direction, :desc)
      |> assign(:rows, sort_rows(rows, :added, :desc))
      |> assign(:removing_monologue_id, nil)
+     |> assign(:show_ph_widget, true)
      |> LiveFavoritesHelpers.push_posthog("favorites_page_viewed", %{
        favorite_count: length(rows)
      })}
