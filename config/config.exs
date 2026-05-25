@@ -68,6 +68,18 @@ config :phoenix, :json_library, Jason
 # Suppress Tesla deprecated builder warning (soft-deprecated, no action needed yet)
 config :tesla, disable_deprecated_builder_warning: true
 
+# Force hackney to negotiate HTTP/1.1 (not HTTP/2) on outbound calls.
+# hackney 4.0 defaults to advertising HTTP/2 via ALPN, but stripity_stripe
+# still injects a `Connection: keep-alive` header on every request — that
+# header is forbidden in HTTP/2 (RFC 7540 §8.1.2.2). On the new Stripe
+# account's live API endpoint the negotiation lands on HTTP/2, hackney
+# emits the disallowed header, the receiver rejects the frame, and the
+# whole request fails with `{:error, %Stripe.Error{extra: %{hackney_reason:
+# :protocol_error}}}`. Until stripity_stripe stops sending that header
+# (tracked in stripity-stripe issue #905), pinning to HTTP/1.1 here keeps
+# Stripe Checkout, webhook fetches, and Customer Portal sessions working.
+config :hackney, default_protocols: [:http1]
+
 # Stripe configuration (stripity_stripe). API key + price IDs come from
 # environment variables, sourced from `config/.env` in dev or Gigalixir
 # env vars in production (see `config/runtime.exs`).
