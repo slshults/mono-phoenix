@@ -17,13 +17,37 @@ defmodule MonoPhoenixV01Web.SignupController do
   alias MonoPhoenixV01.Billing
   alias MonoPhoenixV01Web.UserAuth
 
-  def success(conn, %{"session_id" => session_id}) when is_binary(session_id) do
+  def success(conn, %{"session_id" => session_id} = params) when is_binary(session_id) do
+    token = params["t"]
+
     with {:ok, data} <- Billing.verify_checkout_session(session_id),
-         %_{} = user <- Accounts.get_user!(data.user_id),
+         %_{} = user <- Accounts.get_user(data.user_id),
          {:ok, user} <- Accounts.mark_subscription_active(user, data) do
-      conn
-      |> put_session(:user_return_to, ~p"/welcome")
-      |> UserAuth.log_in_user(user)
+      # Auto-login is gated by the signup token. The token is bound to
+      # the user_id at Checkout-creation time and lives 30 min — anyone
+      # who later acquires the cs_… session id alone (web-server logs,
+      # referrer leaks, etc.) can't claim the account.
+      case Billing.verify_signup_token(token) do
+        {:ok, token_user_id} when token_user_id == user.id ->
+          conn
+          |> put_session(:user_return_to, ~p"/welcome")
+          |> UserAuth.log_in_user(user)
+
+        _ ->
+          # Payment is real (we already flipped the row to active) but
+          # we don't auto-login. Send them through the front door.
+          Logger.info(
+            "Signup success without matching token for user_id=#{user.id}; " <>
+              "asking them to log in"
+          )
+
+          conn
+          |> put_flash(
+            :info,
+            "Your payment was received. Please log in to access your account."
+          )
+          |> redirect(to: ~p"/users/log-in")
+      end
     else
       error ->
         Logger.warning(

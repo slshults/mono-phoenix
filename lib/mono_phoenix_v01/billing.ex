@@ -81,20 +81,53 @@ defmodule MonoPhoenixV01.Billing do
       },
       line_items: [%{price: price_id, quantity: 1}],
       allow_promotion_codes: true,
-      success_url: success_url(),
+      success_url: success_url(user.id),
       cancel_url: cancel_url()
     })
   end
 
-  defp success_url do
+  # Phoenix.Token-signed value bound to the user_id and the endpoint's
+  # secret_key_base, embedded as the `t=...` query param in the success
+  # URL we hand to Stripe. The success handler refuses to auto-login
+  # without a valid token for the matching user — closes the "anyone
+  # who learns the cs_… session id can claim the account" hole.
+  @signup_token_salt "signup_success"
+  @signup_token_max_age 1800
+
+  defp success_url(user_id) do
     base = MonoPhoenixV01Web.Endpoint.url()
-    base <> "/signup/success?session_id={CHECKOUT_SESSION_ID}"
+    token = sign_signup_token(user_id)
+    base <> "/signup/success?session_id={CHECKOUT_SESSION_ID}&t=#{URI.encode_www_form(token)}"
   end
 
   defp cancel_url do
     base = MonoPhoenixV01Web.Endpoint.url()
     base <> "/signup/cancel?session_id={CHECKOUT_SESSION_ID}"
   end
+
+  @doc """
+  Sign a short-lived token binding the user_id to the success URL we
+  hand to Stripe. Lives 30 minutes (more than enough for a Checkout
+  flow, less than enough for a leaked URL in old logs to stay live).
+  """
+  def sign_signup_token(user_id) when is_integer(user_id) do
+    Phoenix.Token.sign(MonoPhoenixV01Web.Endpoint, @signup_token_salt, user_id)
+  end
+
+  @doc """
+  Verify the signup token from the success URL. Returns
+  `{:ok, user_id}` or `{:error, reason}`.
+  """
+  def verify_signup_token(token) when is_binary(token) do
+    Phoenix.Token.verify(
+      MonoPhoenixV01Web.Endpoint,
+      @signup_token_salt,
+      token,
+      max_age: @signup_token_max_age
+    )
+  end
+
+  def verify_signup_token(_), do: {:error, :missing}
 
   @doc """
   Verify a Checkout Session is paid; return enriched subscription data

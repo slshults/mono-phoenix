@@ -26,6 +26,7 @@ defmodule MonoPhoenixV01Web.FavoritesLive do
 
   alias MonoPhoenixV01.Favorites
   alias MonoPhoenixV01Web.Components.FavoriteConfirmModal
+  alias MonoPhoenixV01Web.LiveFavoritesHelpers
 
   @allowed_sort_columns ~w(added play style character)a
 
@@ -40,7 +41,10 @@ defmodule MonoPhoenixV01Web.FavoritesLive do
      |> assign(:sort_column, :added)
      |> assign(:sort_direction, :desc)
      |> assign(:rows, sort_rows(rows, :added, :desc))
-     |> assign(:removing_monologue_id, nil)}
+     |> assign(:removing_monologue_id, nil)
+     |> LiveFavoritesHelpers.push_posthog("favorites_page_viewed", %{
+       favorite_count: length(rows)
+     })}
   end
 
   @impl true
@@ -60,7 +64,11 @@ defmodule MonoPhoenixV01Web.FavoritesLive do
      socket
      |> assign(:sort_column, new_column)
      |> assign(:sort_direction, new_direction)
-     |> assign(:rows, rows)}
+     |> assign(:rows, rows)
+     |> LiveFavoritesHelpers.push_posthog("favorites_page_sorted", %{
+       column: Atom.to_string(new_column),
+       direction: Atom.to_string(new_direction)
+     })}
   end
 
   # Heart-click flow on /favorites: surface the Yes/No confirm modal
@@ -69,30 +77,51 @@ defmodule MonoPhoenixV01Web.FavoritesLive do
   # LiveFavoritesHelpers hook's catch-all lets the event reach us.
   @impl true
   def handle_event("confirm_remove_favorite", %{"monologue-id" => mid_str}, socket) do
-    {:noreply, assign(socket, :removing_monologue_id, String.to_integer(mid_str))}
+    case parse_monologue_id(mid_str) do
+      {:ok, id} -> {:noreply, assign(socket, :removing_monologue_id, id)}
+      :error -> {:noreply, socket}
+    end
   end
 
   @impl true
   def handle_event("do_remove_favorite", %{"monologue-id" => mid_str}, socket) do
-    monologue_id = String.to_integer(mid_str)
-    user_id = socket.assigns.current_scope.user.id
+    case parse_monologue_id(mid_str) do
+      :error ->
+        {:noreply, assign(socket, :removing_monologue_id, nil)}
 
-    :ok = Favorites.remove(user_id, monologue_id)
+      {:ok, monologue_id} ->
+        user_id = socket.assigns.current_scope.user.id
 
-    rows = Enum.reject(socket.assigns.rows, &(&1.monologue_id == monologue_id))
-    favorited_ids = MapSet.delete(socket.assigns.favorited_ids, monologue_id)
+        :ok = Favorites.remove(user_id, monologue_id)
 
-    {:noreply,
-     socket
-     |> assign(:rows, rows)
-     |> assign(:favorited_ids, favorited_ids)
-     |> assign(:removing_monologue_id, nil)}
+        rows = Enum.reject(socket.assigns.rows, &(&1.monologue_id == monologue_id))
+        favorited_ids = MapSet.delete(socket.assigns.favorited_ids, monologue_id)
+
+        {:noreply,
+         socket
+         |> assign(:rows, rows)
+         |> assign(:favorited_ids, favorited_ids)
+         |> assign(:removing_monologue_id, nil)
+         |> LiveFavoritesHelpers.push_posthog("favorite_removed", %{
+           monologue_id: monologue_id,
+           source: "favorites_page"
+         })}
+    end
   end
 
   @impl true
   def handle_event("cancel_remove_favorite", _params, socket) do
     {:noreply, assign(socket, :removing_monologue_id, nil)}
   end
+
+  defp parse_monologue_id(str) when is_binary(str) do
+    case Integer.parse(str) do
+      {id, ""} when id > 0 -> {:ok, id}
+      _ -> :error
+    end
+  end
+
+  defp parse_monologue_id(_), do: :error
 
   @impl true
   def render(assigns) do

@@ -51,14 +51,30 @@ defmodule MonoPhoenixV01Web.LapsedLiveTest do
   end
 
   describe "Continue with ads button" do
-    test "redirects home with NO session created", %{conn: conn} do
+    test "redirects through dismiss endpoint (clears :lapsed_user_id), no session created",
+         %{conn: conn} do
       user = lapsed_user_fixture()
       conn = put_lapsed_user(conn, user)
 
       {:ok, lv, _html} = live(conn, ~p"/account/lapsed")
 
+      # The LV redirects to the controller endpoint that drops
+      # `:lapsed_user_id` from the session — see SHOULD #6 from the
+      # security review.
       assert lv |> element(~s|button[phx-click="continue_with_ads"]|) |> render_click() ==
-               {:error, {:redirect, %{to: "/", status: 302}}}
+               {:error, {:redirect, %{to: "/account/lapsed/dismiss", status: 302}}}
+    end
+
+    test "/account/lapsed/dismiss clears :lapsed_user_id and redirects home",
+         %{conn: conn} do
+      user = lapsed_user_fixture()
+      conn = put_lapsed_user(conn, user)
+
+      conn = get(conn, ~p"/account/lapsed/dismiss")
+
+      assert redirected_to(conn) == "/"
+      assert get_session(conn, :lapsed_user_id) == nil
+      refute get_session(conn, :user_token)
     end
   end
 end

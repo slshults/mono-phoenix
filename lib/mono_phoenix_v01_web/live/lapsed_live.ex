@@ -49,10 +49,11 @@ defmodule MonoPhoenixV01Web.LapsedLive do
   end
 
   def handle_event("continue_with_ads", _, socket) do
-    {:noreply,
-     socket
-     |> clear_flash()
-     |> redirect(to: ~p"/")}
+    # Bounce through the controller to actually drop `:lapsed_user_id`
+    # from the session — LiveView can't modify session cookies, so a
+    # plain socket redirect would leave the stale id (and the previous
+    # user's email) reachable by revisiting /account/lapsed.
+    {:noreply, redirect(socket, to: ~p"/account/lapsed/dismiss")}
   end
 
   @impl true

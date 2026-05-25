@@ -24,20 +24,42 @@ defmodule MonoPhoenixV01.Favorites do
     |> Repo.all()
   end
 
+  # Per-user cap on favorites — defense against scripted flooding of
+  # the table. Site has ~360 monologues total, so a real human will
+  # never approach this number. Set well above realistic use so
+  # legitimate users never hit it.
+  @max_favorites_per_user 1_000
+
   @doc """
   Idempotent insert: if the user already has this monologue favorited,
   returns the existing row. Otherwise inserts and returns the new row.
+
+  Returns `{:error, :too_many_favorites}` if the user is already at the
+  per-user cap (well above realistic use; defense against scripted
+  flooding).
   """
   def add(user_id, monologue_id) do
     case Repo.get_by(Favorite, user_id: user_id, monologue_id: monologue_id) do
       nil ->
-        %Favorite{}
-        |> Favorite.changeset(%{user_id: user_id, monologue_id: monologue_id})
-        |> Repo.insert()
+        if count_for_user(user_id) >= @max_favorites_per_user do
+          {:error, :too_many_favorites}
+        else
+          %Favorite{}
+          |> Favorite.changeset(%{user_id: user_id, monologue_id: monologue_id})
+          |> Repo.insert()
+        end
 
       existing ->
         {:ok, existing}
     end
+  end
+
+  defp count_for_user(user_id) do
+    Repo.aggregate(
+      from(f in Favorite, where: f.user_id == ^user_id),
+      :count,
+      :id
+    )
   end
 
   @doc """

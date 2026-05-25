@@ -101,11 +101,19 @@ defmodule MonoPhoenixV01.Billing.WebhookHandler do
 
   # Helpers — Stripe payloads can come back with string-key maps or
   # struct-like atom-key maps depending on source (live vs test fixtures).
+  # `String.to_existing_atom` (not `to_atom`) so untrusted webhook input
+  # can never inflate the atom table.
   defp get(map, key) when is_map(map) do
-    Map.get(map, key) || Map.get(map, String.to_atom(key))
+    Map.get(map, key) || atom_lookup(map, key)
   end
 
   defp get(_, _), do: nil
+
+  defp atom_lookup(map, key) do
+    Map.get(map, String.to_existing_atom(key))
+  rescue
+    ArgumentError -> nil
+  end
 
   defp get_metadata_billing_period(session) do
     case get(session, "metadata") do

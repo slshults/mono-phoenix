@@ -23,35 +23,33 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
       user_id = socket.assigns.user_id
       current = socket.assigns.favorited_ids
 
-      new_ids =
+      {new_ids, event} =
         if MapSet.member?(current, monologue_id) do
           :ok = Favorites.remove(user_id, monologue_id)
-          MapSet.delete(current, monologue_id)
+          {MapSet.delete(current, monologue_id), "favorite_removed"}
         else
           case Favorites.add(user_id, monologue_id) do
-            {:ok, _} -> MapSet.put(current, monologue_id)
-            _ -> current
+            {:ok, _} -> {MapSet.put(current, monologue_id), "favorite_added"}
+            _ -> {current, nil}
           end
         end
 
-      {:noreply, assign(socket, :favorited_ids, new_ids)}
+      socket = assign(socket, :favorited_ids, new_ids)
+
+      socket =
+        if event do
+          LiveFavoritesHelpers.push_posthog(socket, event, %{
+            monologue_id: monologue_id,
+            source: "search_results"
+          })
+        else
+          socket
+        end
+
+      {:noreply, socket}
     else
       {:noreply, socket}
     end
-  end
-
-  defp assign_favorites_state(socket, session) do
-    user_id = Map.get(session, "user_id")
-    is_patron = LiveFavoritesHelpers.patron_id?(user_id)
-
-    favorited_ids =
-      if is_patron, do: Favorites.favorited_ids_for(user_id), else: MapSet.new()
-
-    assign(socket,
-      user_id: user_id,
-      is_patron: is_patron,
-      favorited_ids: favorited_ids
-    )
   end
 
   ## socket assigns
@@ -507,5 +505,19 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
     </style>
     <% end %>
     """
+  end
+
+  defp assign_favorites_state(socket, session) do
+    user_id = Map.get(session, "user_id")
+    is_patron = LiveFavoritesHelpers.patron_id?(user_id)
+
+    favorited_ids =
+      if is_patron, do: Favorites.favorited_ids_for(user_id), else: MapSet.new()
+
+    assign(socket,
+      user_id: user_id,
+      is_patron: is_patron,
+      favorited_ids: favorited_ids
+    )
   end
 end

@@ -35,7 +35,11 @@ defmodule MonoPhoenixV01Web.StripeWebhookControllerTest do
       assert conn.status == 400
     end
 
-    test "400 when payload is empty (missing raw_body)", %{conn: conn} do
+    test "503 when payload is empty (StripeBodyReader didn't capture)", %{conn: conn} do
+      # Missing raw_body assigns indicates our plug didn't run or
+      # didn't capture the body. That's a server-side bug, not a
+      # client problem — return 503 so Stripe retries instead of
+      # giving up like it would for a 400.
       conn =
         conn
         |> Plug.Conn.put_req_header("stripe-signature", "t=1,v1=anything")
@@ -50,7 +54,7 @@ defmodule MonoPhoenixV01Web.StripeWebhookControllerTest do
           ""
         )
 
-      assert conn.status == 400
+      assert conn.status == 503
     end
   end
 end

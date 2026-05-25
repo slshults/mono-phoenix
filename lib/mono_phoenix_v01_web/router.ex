@@ -288,6 +288,7 @@ defmodule MonoPhoenixV01Web.Router do
 
     post "/users/log-in", UserSessionController, :create
     delete "/users/log-out", UserSessionController, :delete
+    get "/account/lapsed/dismiss", UserSessionController, :dismiss_lapsed
 
     # Stripe Checkout callback targets. Plain controller actions
     # (not LiveView) because they manipulate the session for auto-login.

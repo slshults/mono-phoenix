@@ -60,6 +60,13 @@ defmodule MonoPhoenixV01.Accounts do
   """
   def get_user!(id), do: Repo.get!(User, id)
 
+  @doc """
+  Get a user by id, returning nil on miss instead of raising. Used by
+  flows where a missing user shouldn't be a 500 (e.g. the Stripe success
+  handler — `data.user_id` could be malformed by the time we get back).
+  """
+  def get_user(id), do: Repo.get(User, id)
+
   ## User registration
 
   @doc """
@@ -315,10 +322,16 @@ defmodule MonoPhoenixV01.Accounts do
         # late webhook for the OLD subscription can't re-flip the user
         # to canceled. We keep stripe_customer_id — same human, same
         # Stripe Customer.
+        #
+        # Also clear `welcomed_at` so the returning patron sees the
+        # one-time "set a password / email login link" prompt again on
+        # /welcome — they may have signed up a long time ago and want
+        # to re-pick that choice.
         existing
         |> User.signup_changeset(attrs)
         |> Ecto.Changeset.put_change(:stripe_subscription_id, nil)
         |> Ecto.Changeset.put_change(:current_period_end, nil)
+        |> Ecto.Changeset.put_change(:welcomed_at, nil)
         |> Repo.update()
     end
   end
@@ -347,15 +360,26 @@ defmodule MonoPhoenixV01.Accounts do
   proof of email control (matches gen.auth's confirmation step).
   """
   def mark_subscription_active(user, stripe_data) do
+    base_attrs = %{
+      stripe_subscription_id: stripe_data[:stripe_subscription_id],
+      subscription_status: "active",
+      current_period_end: stripe_data[:current_period_end],
+      billing_period: stripe_data[:billing_period]
+    }
+
+    # Only set confirmed_at the first time. Webhook + success-handler
+    # both call this idempotently; stomping `confirmed_at` to "now" on
+    # every replay makes audit timestamps drift.
     attrs =
-      %{
-        stripe_subscription_id: stripe_data[:stripe_subscription_id],
-        subscription_status: "active",
-        current_period_end: stripe_data[:current_period_end],
-        billing_period: stripe_data[:billing_period],
-        confirmed_at:
+      if is_nil(user.confirmed_at) do
+        Map.put(
+          base_attrs,
+          :confirmed_at,
           NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-      }
+        )
+      else
+        base_attrs
+      end
 
     user
     |> User.subscription_changeset(attrs)

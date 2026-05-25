@@ -27,13 +27,15 @@ defmodule MonoPhoenixV01Web.WelcomeLive do
     user = socket.assigns.current_scope.user
     {:ok, _user} = Accounts.mark_welcomed(user)
 
-    # Send a magic-link email immediately. The user is already logged in,
-    # but emailing the link now (a) verifies their email address works and
-    # (b) primes them for future logins.
-    Accounts.deliver_login_instructions(
-      user,
-      &url(~p"/users/log-in/#{&1}")
-    )
+    # Send a magic-link email in a separate process so SMTP latency
+    # (which can be several seconds on Workspace SMTP) doesn't block the
+    # LiveView reply. Fire-and-forget — if delivery fails, the user can
+    # always request another from /users/log-in.
+    login_url_fn = &url(~p"/users/log-in/#{&1}")
+
+    Task.start(fn ->
+      Accounts.deliver_login_instructions(user, login_url_fn)
+    end)
 
     {:noreply,
      socket

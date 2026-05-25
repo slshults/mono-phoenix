@@ -126,13 +126,17 @@ if config_env() == :prod do
   #
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
 
-  # Configure mailer for production - using Google Workspace SMTP with app password
+  # Configure mailer for production - using Google Workspace SMTP with app password.
+  # fetch_env! so the release fails at boot if either credential is
+  # missing — the gen.auth flow's magic-link and password-reset email
+  # paths silently fail without these, which is worse than crashing
+  # loudly.
   config :mono_phoenix_v01, MonoPhoenixV01.Mailer,
     adapter: Swoosh.Adapters.SMTP,
     relay: "smtp.gmail.com",
     port: 587,
-    username: System.get_env("SMTP_USERNAME"),
-    password: System.get_env("SMTP_PASSWORD"),
+    username: System.fetch_env!("SMTP_USERNAME"),
+    password: System.fetch_env!("SMTP_PASSWORD"),
     ssl: false,
     tls: :always,
     tls_options: [verify: :verify_none],

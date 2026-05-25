@@ -18,7 +18,7 @@ defmodule MonoPhoenixV01Web.LiveFavoritesHelpers do
   """
 
   import Phoenix.Component, only: [assign: 3]
-  import Phoenix.LiveView, only: [attach_hook: 4, push_navigate: 2]
+  import Phoenix.LiveView, only: [attach_hook: 4, push_event: 3, push_navigate: 2]
 
   alias MonoPhoenixV01.Favorites
   alias MonoPhoenixV01Web.UserAuth
@@ -73,25 +73,41 @@ defmodule MonoPhoenixV01Web.LiveFavoritesHelpers do
   end
 
   defp handle_favs_event("toggle_favorite", %{"monologue-id" => mid_str}, socket) do
-    monologue_id = String.to_integer(mid_str)
+    case parse_monologue_id(mid_str) do
+      :error ->
+        # Garbage phx-value from a malformed client. Drop silently
+        # rather than crashing the LV process.
+        {:halt, socket}
 
-    # Authoritative source for auth state is the socket. The phx-value
-    # the client sends is advisory only (could be stale if a tab sat
-    # open across a subscription change).
-    case socket.assigns[:auth_state] do
-      :unauthenticated ->
-        {:halt, assign(socket, :show_favs_auth_modal, true)}
+      {:ok, monologue_id} ->
+        # Authoritative source for auth state is the socket. The
+        # phx-value the client sends is advisory only (could be stale
+        # if a tab sat open across a subscription change).
+        case socket.assigns[:auth_state] do
+          :unauthenticated ->
+            socket =
+              socket
+              |> assign(:show_favs_auth_modal, true)
+              |> push_posthog("favorite_modal_shown", %{source: "heart_click"})
 
-      :lapsed ->
-        {:halt, push_navigate(socket, to: "/account/lapsed")}
+            {:halt, socket}
 
-      :patron ->
-        {:halt, toggle(socket, monologue_id)}
+          :lapsed ->
+            {:halt, push_navigate(socket, to: "/account/lapsed")}
+
+          :patron ->
+            {:halt, toggle(socket, monologue_id)}
+        end
     end
   end
 
   defp handle_favs_event("show_favs_auth_modal", _params, socket) do
-    {:halt, assign(socket, :show_favs_auth_modal, true)}
+    socket =
+      socket
+      |> assign(:show_favs_auth_modal, true)
+      |> push_posthog("favorite_modal_shown", %{source: "favs_nav_link"})
+
+    {:halt, socket}
   end
 
   defp handle_favs_event("close_favs_auth_modal", _params, socket) do
@@ -100,21 +116,50 @@ defmodule MonoPhoenixV01Web.LiveFavoritesHelpers do
 
   defp handle_favs_event(_event, _params, socket), do: {:cont, socket}
 
+  defp parse_monologue_id(str) when is_binary(str) do
+    case Integer.parse(str) do
+      {id, ""} when id > 0 -> {:ok, id}
+      _ -> :error
+    end
+  end
+
+  defp parse_monologue_id(_), do: :error
+
   defp toggle(socket, monologue_id) do
     user_id = socket.assigns.current_scope.user.id
     current = socket.assigns.favorited_ids
 
     if MapSet.member?(current, monologue_id) do
       :ok = Favorites.remove(user_id, monologue_id)
-      assign(socket, :favorited_ids, MapSet.delete(current, monologue_id))
+
+      socket
+      |> assign(:favorited_ids, MapSet.delete(current, monologue_id))
+      |> push_posthog("favorite_removed", %{
+        monologue_id: monologue_id,
+        source: "monologue_page"
+      })
     else
       case Favorites.add(user_id, monologue_id) do
         {:ok, _favorite} ->
-          assign(socket, :favorited_ids, MapSet.put(current, monologue_id))
+          socket
+          |> assign(:favorited_ids, MapSet.put(current, monologue_id))
+          |> push_posthog("favorite_added", %{
+            monologue_id: monologue_id,
+            source: "monologue_page"
+          })
 
-        {:error, _changeset} ->
+        {:error, _} ->
           socket
       end
     end
+  end
+
+  @doc """
+  Push a PostHog event from any LiveView socket. JS listener in
+  `assets/js/app.js` (see `phx:posthog_capture`) forwards to
+  `posthog.capture/2`.
+  """
+  def push_posthog(socket, event, properties \\ %{}) do
+    push_event(socket, "posthog_capture", %{event: event, properties: properties})
   end
 end
