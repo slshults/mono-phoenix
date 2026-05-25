@@ -5,7 +5,20 @@
     only to logged-out visitors (patrons + lapsed users skip — they
     already know about paid accounts).
   --%>
-  <div id="paid-accounts-promo" class="paid-accounts-promo" style="display:none;" role="dialog" aria-labelledby="paid-accounts-promo-title">
+  <%!--
+    phx-update="ignore" keeps LV's morphdom from reverting the
+    `display:flex` style our inline JS sets — otherwise the modal
+    flashes visible for a frame and disappears the moment the
+    WebSocket connects.
+  --%>
+  <div
+    id="paid-accounts-promo"
+    class="paid-accounts-promo"
+    style="display:none;"
+    role="dialog"
+    aria-labelledby="paid-accounts-promo-title"
+    phx-update="ignore"
+  >
     <div class="paid-accounts-promo-card">
       <button
         type="button"
@@ -30,6 +43,12 @@
   </div>
   <script>
     (function() {
+      // The layout re-renders on every LV navigation; without this
+      // guard we'd attach duplicate listeners (and double-fire the
+      // PostHog events) every time the user navigates.
+      if (window.__paidAccountsPromoInit) return;
+      window.__paidAccountsPromoInit = true;
+
       var elem = document.getElementById('paid-accounts-promo');
       if (!elem) return;
       var key = 'paid_accounts_promo_dismissed_at';
