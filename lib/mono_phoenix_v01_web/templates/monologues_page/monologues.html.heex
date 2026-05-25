@@ -25,7 +25,24 @@ scroll up to read from the top of the scene."
 This link jumps you to the monologue, 
 scroll up to read from the top of the scene."
               ><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; &middot;
-              <span class="monologue-actscene"><%= row.style %></span>
+              <span class="monologue-actscene"><%= row.style %></span><button
+                type="button"
+                class="heart-icon-btn"
+                aria-label="Add to favorites"
+                title="Sign up or log in to favorite this monologue"
+                onclick="document.getElementById('favs-static-modal').style.display='flex'; if (typeof posthog !== 'undefined') posthog.capture('favorite_modal_shown', { source: 'static_monologue_page' });"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                ><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
+              </button>
               <br />
               <span
                 class="monologue-character"
@@ -50,3 +67,4 @@ scroll up to read from the top of the scene."
     </table>
   </span>
 </div>
+

@@ -7,8 +7,26 @@
 # General application configuration
 import Config
 
+config :mono_phoenix_v01, :scopes,
+  user: [
+    default: true,
+    module: MonoPhoenixV01.Accounts.Scope,
+    assign_key: :current_scope,
+    access_path: [:user, :id],
+    schema_key: :user_id,
+    schema_type: :id,
+    schema_table: :users,
+    test_data_fixture: MonoPhoenixV01.AccountsFixtures,
+    test_setup_helper: :register_and_log_in_user
+  ]
+
 config :mono_phoenix_v01,
-  ecto_repos: [MonoPhoenixV01.Repo]
+  ecto_repos: [MonoPhoenixV01.Repo, MonoPhoenixV01.Accounts.Repo]
+
+# Tell Ecto where to find Accounts.Repo migrations (avoids default
+# "priv/repo/migrations" which collides with MonoPhoenixV01.Repo).
+config :mono_phoenix_v01, MonoPhoenixV01.Accounts.Repo,
+  priv: "priv/accounts_repo"
 
 # Configures the endpoint
 config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
@@ -49,6 +67,17 @@ config :phoenix, :json_library, Jason
 
 # Suppress Tesla deprecated builder warning (soft-deprecated, no action needed yet)
 config :tesla, disable_deprecated_builder_warning: true
+
+# Stripe configuration (stripity_stripe). API key + price IDs come from
+# environment variables, sourced from `config/.env` in dev or Gigalixir
+# env vars in production (see `config/runtime.exs`).
+config :stripity_stripe,
+  api_key: System.get_env("STRIPE_SECRET_KEY")
+
+config :mono_phoenix_v01, :stripe,
+  price_id_monthly: System.get_env("STRIPE_PRICE_ID_MONTHLY"),
+  price_id_yearly: System.get_env("STRIPE_PRICE_ID_YEARLY"),
+  webhook_secret: System.get_env("STRIPE_WEBHOOK_SECRET")
 
 # Oban background jobs. Cron plugin is added only in production (see
 # `config/runtime.exs`) so local servers don't post to BlueSky/Facebook while

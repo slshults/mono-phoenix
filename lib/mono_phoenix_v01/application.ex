@@ -10,6 +10,7 @@ defmodule MonoPhoenixV01.Application do
     children = [
       # Start the Ecto repository
       MonoPhoenixV01.Repo,
+      MonoPhoenixV01.Accounts.Repo,
       # Start the Telemetry supervisor
       MonoPhoenixV01Web.Telemetry,
       # Start the PubSub system

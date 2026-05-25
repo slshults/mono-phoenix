@@ -1,0 +1,143 @@
+defmodule MonoPhoenixV01Web.UserSessionControllerTest do
+  use MonoPhoenixV01Web.ConnCase, async: true
+
+  import MonoPhoenixV01.AccountsFixtures
+  alias MonoPhoenixV01.Accounts
+
+  setup do
+    %{unconfirmed_user: unconfirmed_user_fixture(), user: user_fixture()}
+  end
+
+  describe "POST /users/log-in - email and password" do
+    test "logs the user in", %{conn: conn, user: user} do
+      user = set_password(user)
+
+      conn =
+        post(conn, ~p"/users/log-in", %{
+          "user" => %{"email" => user.email, "password" => valid_user_password()}
+        })
+
+      assert get_session(conn, :user_token)
+      assert redirected_to(conn) == ~p"/"
+
+      # Follow redirect to home page (this app redirects / → /home)
+      conn = get(conn, redirected_to(conn))
+      assert redirected_to(conn, 301) == ~p"/home"
+    end
+
+    test "logs the user in with remember me", %{conn: conn, user: user} do
+      user = set_password(user)
+
+      conn =
+        post(conn, ~p"/users/log-in", %{
+          "user" => %{
+            "email" => user.email,
+            "password" => valid_user_password(),
+            "remember_me" => "true"
+          }
+        })
+
+      assert conn.resp_cookies["_mono_phoenix_v01_web_user_remember_me"]
+      assert redirected_to(conn) == ~p"/"
+    end
+
+    test "logs the user in with return to", %{conn: conn, user: user} do
+      user = set_password(user)
+
+      conn =
+        conn
+        |> init_test_session(user_return_to: "/foo/bar")
+        |> post(~p"/users/log-in", %{
+          "user" => %{
+            "email" => user.email,
+            "password" => valid_user_password()
+          }
+        })
+
+      assert redirected_to(conn) == "/foo/bar"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Welcome back!"
+    end
+
+    test "redirects to login page with invalid credentials", %{conn: conn, user: user} do
+      conn =
+        post(conn, ~p"/users/log-in?mode=password", %{
+          "user" => %{"email" => user.email, "password" => "invalid_password"}
+        })
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't sign you in"
+      assert redirected_to(conn) == ~p"/users/log-in"
+    end
+  end
+
+  describe "POST /users/log-in - magic link" do
+    test "logs the user in", %{conn: conn, user: user} do
+      {token, _hashed_token} = generate_user_magic_link_token(user)
+
+      conn =
+        post(conn, ~p"/users/log-in", %{
+          "user" => %{"token" => token}
+        })
+
+      assert get_session(conn, :user_token)
+      assert redirected_to(conn) == ~p"/"
+
+      # Follow redirect to home page (this app redirects / → /home)
+      conn = get(conn, redirected_to(conn))
+      assert redirected_to(conn, 301) == ~p"/home"
+    end
+
+    test "confirms unconfirmed user but blocks session creation for pending_payment status",
+         %{conn: conn, unconfirmed_user: user} do
+      # Phase 2 behavior: confirming an unconfirmed user via magic link
+      # still flips confirmed_at, but UserAuth.maybe_log_in_user gates
+      # session creation by subscription_status. The default fixture
+      # leaves the user in "pending_payment" → no session, flash
+      # "still processing", redirect home.
+      {token, _hashed_token} = generate_user_magic_link_token(user)
+      refute user.confirmed_at
+
+      conn =
+        post(conn, ~p"/users/log-in", %{
+          "user" => %{"token" => token},
+          "_action" => "confirmed"
+        })
+
+      refute get_session(conn, :user_token)
+      assert redirected_to(conn) == ~p"/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~
+               "We're still processing your payment"
+
+      # confirmed_at still gets set even though no session was created
+      assert Accounts.get_user!(user.id).confirmed_at
+    end
+
+    test "redirects to login page when magic link is invalid", %{conn: conn} do
+      conn =
+        post(conn, ~p"/users/log-in", %{
+          "user" => %{"token" => "invalid"}
+        })
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "The link is invalid or it has expired."
+
+      assert redirected_to(conn) == ~p"/users/log-in"
+    end
+  end
+
+  describe "DELETE /users/log-out" do
+    test "logs the user out", %{conn: conn, user: user} do
+      conn = conn |> log_in_user(user) |> delete(~p"/users/log-out")
+      assert redirected_to(conn) == ~p"/"
+      refute get_session(conn, :user_token)
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Logged out successfully"
+    end
+
+    test "succeeds even if the user is not logged in", %{conn: conn} do
+      conn = delete(conn, ~p"/users/log-out")
+      assert redirected_to(conn) == ~p"/"
+      refute get_session(conn, :user_token)
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Logged out successfully"
+    end
+  end
+end

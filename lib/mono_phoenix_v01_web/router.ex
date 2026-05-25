@@ -1,6 +1,8 @@
 defmodule MonoPhoenixV01Web.Router do
   use MonoPhoenixV01Web, :router
 
+  import MonoPhoenixV01Web.UserAuth
+
   import Redirect
 
   pipeline :browser do
@@ -10,6 +12,7 @@ defmodule MonoPhoenixV01Web.Router do
     plug(:put_root_layout, {MonoPhoenixV01Web.LayoutView, :root})
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
+    plug(:fetch_current_scope_for_user)
   end
 
   pipeline :api do
@@ -42,17 +45,39 @@ defmodule MonoPhoenixV01Web.Router do
     pipe_through(:api)
 
     post("/posthog/identity", PostHogIdentityController, :sign)
+
+    # Stripe webhook. The :api pipeline omits :protect_from_forgery so
+    # external POSTs from Stripe aren't rejected by CSRF. Signature
+    # verification (via Billing.construct_webhook_event) provides
+    # authenticity.
+    post("/stripe/webhook", StripeWebhookController, :create)
   end
 
   scope "/", MonoPhoenixV01Web do
     pipe_through(:browser)
 
-    live("/plays", PlaysPageLive)
-    live("/play/:playid", PlayPageLive)
-    live("/mens", MenplaysPageLive, :mens)
-    live("/men/:playid", MenplayPageLive, :menplay)
-    live("/womens", WomenplaysPageLive, :womens)
-    live("/women/:playid", WomenplayPageLive, :womenplay)
+    # Public browsing LiveViews live in a single live_session so they
+    # share the favorites on_mount hook (assigns current_scope,
+    # auth_state, favorited_ids, show_favs_auth_modal; attaches the
+    # toggle_favorite / show_favs_auth_modal / close_favs_auth_modal
+    # event handlers).
+    live_session :public_browse,
+      on_mount: [
+        {MonoPhoenixV01Web.UserAuth, :mount_current_scope},
+        {MonoPhoenixV01Web.LiveFavoritesHelpers, :default}
+      ] do
+      live("/plays", PlaysPageLive)
+      live("/play/:playid", PlayPageLive)
+      live("/mens", MenplaysPageLive, :mens)
+      live("/men/:playid", MenplayPageLive, :menplay)
+      live("/womens", WomenplaysPageLive, :womens)
+      live("/women/:playid", WomenplayPageLive, :womenplay)
+      live("/search_bar", SearchBarLive, :search_bar)
+      live("/search_by_play", SearchByPlayLive, :search_by_play)
+      live("/searchmen_by_play", SearchmenByPlayLive, :searchmen_by_play)
+      live("/searchwomen_by_play", SearchwomenByPlayLive, :searchwomen_by_play)
+    end
+
     get("/monologues/:monoid", MonologuesPageController, :monologues)
     get("/aboutus", StaticPageController, :aboutus)
     get("/faq", StaticPageController, :faq)
@@ -63,10 +88,19 @@ defmodule MonoPhoenixV01Web.Router do
     # /contact retired — redirect handled below with other SEO redirects
     get("/hello", PageController, :hello)
     get("/sandbox", PageController, :sandbox)
-    live("/search_bar", SearchBarLive, :search_bar)
-    live("/search_by_play", SearchByPlayLive, :search_by_play)
-    live("/searchmen_by_play", SearchmenByPlayLive, :searchmen_by_play)
-    live("/searchwomen_by_play", SearchwomenByPlayLive, :searchwomen_by_play)
+  end
+
+  ## Patron-only routes (Phase 4 favorites)
+  scope "/", MonoPhoenixV01Web do
+    pipe_through [:browser, :require_authenticated_user, MonoPhoenixV01Web.Plugs.RequirePatron]
+
+    live_session :require_patron,
+      on_mount: [
+        {MonoPhoenixV01Web.UserAuth, :require_authenticated},
+        {MonoPhoenixV01Web.LiveFavoritesHelpers, :default}
+      ] do
+      live "/favorites", FavoritesLive, :index
+    end
   end
 
   ## redirects for deep links from other sites. Will not work inside a scope.
@@ -217,5 +251,48 @@ defmodule MonoPhoenixV01Web.Router do
 
       forward("/mailbox", Plug.Swoosh.MailboxPreview)
     end
+  end
+
+  ## Authentication routes
+
+  scope "/", MonoPhoenixV01Web do
+    pipe_through [:browser, :require_authenticated_user]
+
+    live_session :require_authenticated_user,
+      on_mount: [
+        {MonoPhoenixV01Web.UserAuth, :require_authenticated},
+        {MonoPhoenixV01Web.LiveFavoritesHelpers, :default}
+      ] do
+      live "/users/settings", UserLive.Settings, :edit
+      live "/users/settings/confirm-email/:token", UserLive.Settings, :confirm_email
+      live "/welcome", WelcomeLive, :show
+      live "/account", AccountLive, :show
+    end
+
+    post "/users/update-password", UserSessionController, :update_password
+  end
+
+  scope "/", MonoPhoenixV01Web do
+    pipe_through [:browser]
+
+    live_session :current_user,
+      on_mount: [
+        {MonoPhoenixV01Web.UserAuth, :mount_current_scope},
+        {MonoPhoenixV01Web.LiveFavoritesHelpers, :default}
+      ] do
+      live "/users/log-in", UserLive.Login, :new
+      live "/users/log-in/:token", UserLive.Confirmation, :new
+      live "/signup", PatronSignupLive, :new
+      live "/account/lapsed", LapsedLive, :show
+    end
+
+    post "/users/log-in", UserSessionController, :create
+    delete "/users/log-out", UserSessionController, :delete
+    get "/account/lapsed/dismiss", UserSessionController, :dismiss_lapsed
+
+    # Stripe Checkout callback targets. Plain controller actions
+    # (not LiveView) because they manipulate the session for auto-login.
+    get "/signup/success", SignupController, :success
+    get "/signup/cancel", SignupController, :cancel
   end
 end

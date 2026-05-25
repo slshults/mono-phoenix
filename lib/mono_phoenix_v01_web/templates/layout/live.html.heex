@@ -1,9 +1,166 @@
+<%= if assigns[:auth_state] in [:unauthenticated, nil] and !assigns[:hide_launch_promo] do %>
+  <%!--
+    Phase 4 launch promo: announces paid accounts to first-time
+    visitors. Shown once per 30 days per device via localStorage.
+    Skipped for:
+      - patrons + lapsed users (already know about paid accounts)
+      - LVs that set `@hide_launch_promo` (login + signup pages —
+        visitor is already in the conversion funnel, the modal would
+        be off-message)
+  --%>
+  <%!--
+    phx-update="ignore" keeps LV's morphdom from reverting the
+    `display:flex` style our inline JS sets — otherwise the modal
+    flashes visible for a frame and disappears the moment the
+    WebSocket connects.
+  --%>
+  <div
+    id="paid-accounts-promo"
+    class="paid-accounts-promo"
+    style="display:none;"
+    role="dialog"
+    aria-labelledby="paid-accounts-promo-title"
+    phx-update="ignore"
+  >
+    <div class="paid-accounts-promo-card">
+      <button
+        type="button"
+        id="paid-accounts-promo-close"
+        class="paid-accounts-promo-close"
+        aria-label="Close"
+      >&times;</button>
+      <h3 id="paid-accounts-promo-title" class="paid-accounts-promo-title">New:</h3>
+      <p class="paid-accounts-promo-body">
+        You can now support the site to <strong>remove ads</strong> and use a <strong>favorites list</strong> to keep track of your monologues!
+      </p>
+      <p class="paid-accounts-promo-price">$1.25/mo or $10/year.</p>
+      <div class="paid-accounts-promo-actions">
+        <button type="button" id="paid-accounts-promo-dismiss" class="btn btn-soft">
+          No, I love ads
+        </button>
+        <a id="paid-accounts-promo-accept" href="/signup" class="btn btn-primary">
+          Support the site
+        </a>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function() {
+      // Guard so the layout re-running (it re-renders on every LV
+      // navigation) doesn't double-show the modal or re-attach the
+      // document-level click listener below.
+      if (window.__paidAccountsPromoInit) return;
+      window.__paidAccountsPromoInit = true;
+
+      var key = 'paid_accounts_promo_dismissed_at';
+      var thirtyDays = 30 * 24 * 60 * 60 * 1000;
+
+      function reveal() {
+        var elem = document.getElementById('paid-accounts-promo');
+        if (!elem) return;
+        var dismissedAt = parseInt(localStorage.getItem(key) || '0', 10);
+        if (dismissedAt && (Date.now() - dismissedAt) < thirtyDays) return;
+        elem.style.display = 'flex';
+        if (typeof posthog !== 'undefined') {
+          posthog.capture('paid_accounts_promo_shown');
+        }
+      }
+
+      function dismiss(reason) {
+        localStorage.setItem(key, Date.now().toString());
+        var elem = document.getElementById('paid-accounts-promo');
+        if (elem) elem.style.display = 'none';
+        if (typeof posthog !== 'undefined') {
+          posthog.capture('paid_accounts_promo_dismissed', { reason: reason });
+        }
+      }
+
+      // Document-level event delegation — works regardless of how LV
+      // re-renders the surrounding DOM, and the listener only ever
+      // attaches once (guarded by __paidAccountsPromoInit above).
+      document.addEventListener('click', function(e) {
+        var t = e.target;
+        if (!t || !t.closest) return;
+
+        if (t.closest('#paid-accounts-promo-dismiss')) {
+          dismiss('love_ads');
+        } else if (t.closest('#paid-accounts-promo-close')) {
+          dismiss('closed_x');
+        } else if (t.closest('#paid-accounts-promo-accept')) {
+          // Stamp the localStorage entry before the link navigates
+          // so the user doesn't see this again on the post-Checkout
+          // back-navigation. Don't preventDefault — let the <a> go.
+          localStorage.setItem(key, Date.now().toString());
+          if (typeof posthog !== 'undefined') {
+            posthog.capture('paid_accounts_promo_accepted');
+          }
+        }
+      });
+
+      reveal();
+    })();
+  </script>
+<% end %>
+
+<%= if assigns[:show_ph_widget] do %>
+  <%!--
+    Enable the PostHog conversations widget on this LiveView page.
+    Mirrors the markup that static.html.heex emits — the body class
+    flips #ph-conversations-widget-container to visible (see
+    application.css), and the cookie-chat-icon shows a "please accept
+    cookies first" prompt for visitors who haven't consented yet.
+  --%>
+  <script>document.body.classList.add('show-ph-widget');</script>
+  <div id="cookie-chat-icon" title="Send us a message" style="display:none; position:fixed; bottom:20px; right:20px; z-index:9998; cursor:pointer;">
+    <div style="width:36px; height:36px; background:#5E2612; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.35);">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+      </svg>
+    </div>
+  </div>
+  <div id="cookie-chat-modal" style="display:none; position:fixed; bottom:65px; right:20px; z-index:9999; background:#fff; border-radius:6px; padding:14px 16px 14px 16px; box-shadow:0 4px 18px rgba(0,0,0,0.18); max-width:230px; font-family:Georgia, serif; border:1px solid #e0d5c8;">
+    <button id="cookie-chat-modal-close" style="position:absolute; top:6px; right:9px; background:none; border:none; cursor:pointer; font-size:17px; color:#888; line-height:1; padding:0;" aria-label="Close">&times;</button>
+    <p style="margin:0 0 10px 0; font-size:13px; color:#444; line-height:1.45; padding-right:12px;">To send us a message, please accept cookies first.</p>
+    <button id="cookie-chat-accept-from-modal" style="background:#5E2612; color:#fff; border:none; padding:6px 14px; cursor:pointer; font-size:13px; font-family:Georgia, serif; border-radius:3px;">Accept cookies</button>
+  </div>
+<% end %>
+
+<!-- Flash messages (rendered above the page header so they're hard to miss).
+     Visual styling lives in assets/css/app.css under .site-flash so dark
+     mode and light mode can theme it consistently. -->
+<%= if Phoenix.Flash.get(@flash, :info) do %>
+  <div id="site-flash-info" role="alert" class="site-flash site-flash-info">
+    <%= Phoenix.Flash.get(@flash, :info) %>
+    <button
+      type="button"
+      onclick="this.parentElement.style.display='none'"
+      aria-label="Dismiss"
+      class="site-flash-dismiss"
+    >&times;</button>
+  </div>
+<% end %>
+<%= if Phoenix.Flash.get(@flash, :error) do %>
+  <div id="site-flash-error" role="alert" class="site-flash site-flash-error">
+    <%= Phoenix.Flash.get(@flash, :error) %>
+    <button
+      type="button"
+      onclick="this.parentElement.style.display='none'"
+      aria-label="Dismiss"
+      class="site-flash-dismiss"
+    >&times;</button>
+  </div>
+<% end %>
+
 <!-- The site heading, or banner, or title or whatso'er shall please you -->
 <div class="col-md-12 text-center accent-font" style="padding-top: 0; padding-bottom: 0;">
-  <!-- Dark Mode Toggle -->
+  <!-- Dark Mode Toggle.
+       phx-update="ignore" keeps LiveView's morphdom from replacing the
+       icon during navigation — preserves the click listener attached
+       by assets/js/dark_mode.js on initial page load. -->
   <div
     id="dark-mode-icon"
     class="dark-mode-icon-class"
+    phx-update="ignore"
     style="text-align: left; padding-left: 0; padding-top: 10px;"
   >
     <img
@@ -42,16 +199,10 @@
     <a href="/mens">Men</a>&nbsp; · <a href="/womens">Women</a>&nbsp; · <a href="/plays">All</a>
     <br />
     <div align="center">
-      <a href="/home">Home</a>&nbsp; · <a href="/faq">Help</a>&nbsp; ·
-      <div style="display: inline; height:0px;width:0px;min-width:0px;padding:0px;accent-font;">
-        <a
-          class="a2a_dd"
-          href="https://www.addtoany.com/share"
-          style="display: inline; height:0px;width:0px;min-width:0px;padding:0px;accent-font;"
-        >
-          Share
-        </a>
-      </div>
+      <a href="/home">Home</a>&nbsp; · <a
+        href={MonoPhoenixV01Web.UserAuth.favs_target(assigns[:current_scope])}
+        phx-click={if assigns[:auth_state] != :patron, do: "show_favs_auth_modal"}
+      >Favs</a>&nbsp; · <a href="/faq">Help</a>
     </div>
     <div class="link-menu-left accent-font" style="font-size: 14px; position: relative;">
       <a href="https://ko-fi.com/shakespearesmonologues" target="_blank" id="kofi-left-direct-btn" style="display: inline-block; background-color: #F9F9DF; border: 1px solid #E0E0C0; border-radius: 3px; padding: 4px 6px; cursor: pointer; color: #111; font-size: 12px; text-decoration: none;">
@@ -91,7 +242,10 @@
       >Bluesky</a>&nbsp; ·
       <a href="https://www.facebook.com/ShakespearesMonologues" target="_blank">FB</a>
       <br />
-      <a href="/home">Home</a>&nbsp; · <a href="/faq">FAQ &nbsp;</a>&nbsp; · <a href="/aboutus">About</a>&nbsp; · <a href="/privacy">Privacy</a>&nbsp; · <a href="/faq?contact=true">Contact</a>&nbsp; ·
+      <a href="/home">Home</a>&nbsp; · <a
+        href={MonoPhoenixV01Web.UserAuth.favs_target(assigns[:current_scope])}
+        phx-click={if assigns[:auth_state] != :patron, do: "show_favs_auth_modal"}
+      >Favs</a>&nbsp; · <a href="/faq">FAQ &nbsp;</a>&nbsp; · <a href="/aboutus">About</a>&nbsp; · <a href="/privacy">Privacy</a>&nbsp; · <a href="/faq?contact=true">Contact</a>&nbsp; ·
       <div style="display: inline; height:0px;width:0px;min-width:0px;padding:0px;accent-font;">
         <a
           class="a2a_dd"
@@ -230,7 +384,11 @@
     <hr style="width:75px;  noshade;" />
   </div>
   <!-- begin rightcol google graphic ad -->
-                
+
                 <!-- end rightcol unmatched responsive -->
                     <!-- end right column -->
 </div>
+
+<MonoPhoenixV01Web.Components.FavsAuthModal.favs_auth_modal
+  open={assigns[:show_favs_auth_modal] || false}
+/>

@@ -61,9 +61,12 @@
       <!-- left column menu -->
       <a href="/mens">Men</a>&nbsp; · <a href="/womens">Women</a>&nbsp; · <a href="/plays">All</a>
       <br />
-      <a href="/home">Home</a>&nbsp; · <a href="/faq">Help</a>&nbsp; ·
-      <span class="link-menu-left accent-font" style="font-size: 14px">
-        <a href="https://ko-fi.com/shakesmonos" target="_blank" style="color: inherit; text-decoration: none; font-size: 12px;">
+      <a href="/home">Home</a>&nbsp; · <a
+        href={MonoPhoenixV01Web.UserAuth.favs_target(@conn.assigns[:current_scope])}
+        onclick={if MonoPhoenixV01Web.UserAuth.auth_state(@conn.assigns[:current_scope]) != :patron, do: "document.getElementById('favs-static-modal').style.display='flex'; if(typeof posthog!=='undefined')posthog.capture('favorite_modal_shown',{source:'favs_nav_link'}); return false;"}
+      >Favs</a>&nbsp; · <a href="/faq">Help</a>
+      <div class="link-menu-left accent-font" style="font-size: 14px; position: relative;">
+        <a href="https://ko-fi.com/shakespearesmonologues" target="_blank" id="kofi-left-direct-btn-static" style="display: inline-block; background-color: #F9F9DF; border: 1px solid #E0E0C0; border-radius: 3px; padding: 4px 6px; cursor: pointer; color: #111; font-size: 12px; text-decoration: none;">
           <img src="https://storage.ko-fi.com/cdn/cup-border.png" alt="Tip Jar" style="width: 14px; height: 12px; vertical-align: middle; margin-right: 3px; animation: kofi-wiggle 3s infinite;">Tip Jar
         </a>
         <style>
@@ -79,7 +82,7 @@
             100% { transform: rotate(0) scale(1) }
           }
         </style>
-      </span>
+      </div>
     <% end %>
   </div>
   <!-- left_column_ads -->
@@ -110,7 +113,10 @@
         >Bluesky</a>&nbsp; ·
         <a href="https://www.facebook.com/ShakespearesMonologues" target="_blank">FB</a>
         <br />
-        <a href="/home">Home</a>&nbsp; · <a href="/faq">FAQ &nbsp;</a>&nbsp; · <a href="/aboutus">About</a>&nbsp; · <a href="/privacy">Privacy</a>&nbsp; · <a href="/faq?contact=true">Contact</a>&nbsp; ·
+        <a href="/home">Home</a>&nbsp; · <a
+          href={MonoPhoenixV01Web.UserAuth.favs_target(@conn.assigns[:current_scope])}
+          onclick={if MonoPhoenixV01Web.UserAuth.auth_state(@conn.assigns[:current_scope]) != :patron, do: "document.getElementById('favs-static-modal').style.display='flex'; if(typeof posthog!=='undefined')posthog.capture('favorite_modal_shown',{source:'favs_nav_link'}); return false;"}
+        >Favs</a>&nbsp; · <a href="/faq">FAQ &nbsp;</a>&nbsp; · <a href="/aboutus">About</a>&nbsp; · <a href="/privacy">Privacy</a>&nbsp; · <a href="/faq?contact=true">Contact</a>&nbsp; ·
         <div style="display: inline; height:0px;width:0px;min-width:0px;padding:0px;accent-font;">
           <a
             class="a2a_dd"
@@ -198,3 +204,54 @@
   <!-- begin right column -->
   <br />
 </div>
+
+<!--
+  Static (non-LiveView) auth-prompt modal triggered by the heart
+  icon on /monologues/:monoid and by the Favs nav link on every page
+  that uses this layout. Plain inline JS toggles visibility — no
+  LiveView socket on these controller-rendered pages.
+-->
+<div
+  id="favs-static-modal"
+  class="favs-auth-modal-backdrop"
+  style="display:none;"
+  role="presentation"
+  onclick="if(event.target===this){this.style.display='none';}"
+>
+  <div
+    class="favs-auth-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="favs-static-modal-title"
+    tabindex="-1"
+  >
+    <button
+      type="button"
+      class="favs-auth-modal-close"
+      aria-label="Close"
+      onclick="document.getElementById('favs-static-modal').style.display='none'"
+    >&times;</button>
+
+    <h2 id="favs-static-modal-title" class="favs-auth-modal-title">
+      Sign up or log in to access favorites
+    </h2>
+
+    <div class="favs-auth-modal-actions">
+      <a href="/users/log-in" class="btn btn-primary">Log in</a>
+      <a href="/signup" class="btn btn-soft">Sign up</a>
+    </div>
+
+    <p style="text-align:center; margin-top:14px; font-size:90%;">
+      or <a href="/plays">browse all the plays</a>
+    </p>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      var m = document.getElementById('favs-static-modal');
+      if (m && m.style.display !== 'none') { m.style.display = 'none'; }
+    }
+  });
+</script>

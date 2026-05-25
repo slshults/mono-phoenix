@@ -151,6 +151,44 @@ Hooks.ModalClickHandler = {
   }
 }
 
+// Password Toggle Hook — adds a show/hide eye icon to password inputs.
+// Hook (not inline JS) so the toggle state survives LiveView re-renders
+// during form validation. The input's `type` attribute is mutated on each
+// click; updated() restores that mutation after morphdom resets it.
+Hooks.PasswordToggle = {
+  mounted() {
+    this.shown = false;
+    this.input = this.el.querySelector('input');
+    this.button = this.el.querySelector('.password-toggle-btn');
+    this.openIcon = this.el.querySelector('.eye-open');
+    this.shutIcon = this.el.querySelector('.eye-shut');
+
+    if (!this.input || !this.button) return;
+
+    this.button.addEventListener('click', () => {
+      this.shown = !this.shown;
+      this.applyState();
+    });
+  },
+  updated() {
+    // After a LV re-render, the input's type may have been reset to
+    // "password" by morphdom. Reapply whatever the user's current
+    // visibility choice is so toggling isn't lost on every keystroke.
+    if (this.input && this.shown !== undefined) {
+      this.applyState();
+    }
+  },
+  applyState() {
+    if (this.input) this.input.type = this.shown ? 'text' : 'password';
+    if (this.openIcon) this.openIcon.style.display = this.shown ? 'none' : 'inline-flex';
+    if (this.shutIcon) this.shutIcon.style.display = this.shown ? 'inline-flex' : 'none';
+    if (this.button) {
+      this.button.setAttribute('title', this.shown ? 'Hide password' : 'Show password');
+      this.button.setAttribute('aria-label', this.shown ? 'Hide password' : 'Show password');
+    }
+  }
+}
+
 // Feedback Form Hook
 Hooks.FeedbackForm = {
   mounted() {
@@ -820,11 +858,13 @@ document.addEventListener('DOMContentLoaded', function() {
       'analytics_storage': 'granted'
     });
     if (typeof posthog !== 'undefined' && !posthog.__loaded) {
+        var isLocalDev = ['localhost', '127.0.0.1'].indexOf(window.location.hostname) !== -1;
         posthog.init('phc_6aYLpkqQsmYJanYseJ8SJcOMicomCxj9v9Pl6hnZQS3', {
             api_host: 'https://autolycus.shakespeare-monologues.org',
             ui_host: 'https://us.posthog.com',
             defaults: '2026-01-30',
             person_profiles: 'identified_only',
+            disable_session_recording: isLocalDev,
         });
         pollAndVerifyPostHogIdentity();
     }

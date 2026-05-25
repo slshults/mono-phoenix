@@ -20,6 +20,19 @@ if System.get_env("PHX_SERVER") do
   config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint, server: true
 end
 
+# Stripe dev keys. Read at boot from environment (set via `source config/.env`
+# in the shell before `mix phx.server`). Done at runtime — NOT compile time —
+# so a missing env var during compile doesn't bake a nil value into the BEAM.
+if config_env() == :dev do
+  config :stripity_stripe,
+    api_key: System.get_env("STRIPE_SECRET_KEY")
+
+  config :mono_phoenix_v01, :stripe,
+    price_id_monthly: System.get_env("STRIPE_PRICE_ID_MONTHLY"),
+    price_id_yearly: System.get_env("STRIPE_PRICE_ID_YEARLY"),
+    webhook_secret: System.get_env("STRIPE_WEBHOOK_SECRET")
+end
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||
@@ -45,6 +58,26 @@ if config_env() == :prod do
     allowed_tls_versions: [:"tlsv1.2"],
     url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "2"),
+    socket_options: maybe_ipv6 ++ [keepalive: true],
+    idle_interval: 30_000
+
+  accounts_database_url =
+    System.get_env("ACCOUNTS_DATABASE_URL") ||
+      raise """
+      environment variable ACCOUNTS_DATABASE_URL is missing.
+      Format: ecto://USER:PASS@HOST/DATABASE
+      Set in Gigalixir: gigalixir config:set ACCOUNTS_DATABASE_URL=ecto://...
+      """
+
+  config :mono_phoenix_v01, MonoPhoenixV01.Accounts.Repo,
+    ssl: true,
+    ssl_opts: [
+      verify: :verify_none,
+      cacerts: :public_key.cacerts_get()
+    ],
+    allowed_tls_versions: [:"tlsv1.2"],
+    url: accounts_database_url,
+    pool_size: String.to_integer(System.get_env("ACCOUNTS_POOL_SIZE") || "2"),
     socket_options: maybe_ipv6 ++ [keepalive: true],
     idle_interval: 30_000
 
@@ -93,13 +126,17 @@ if config_env() == :prod do
   #
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
 
-  # Configure mailer for production - using Google Workspace SMTP with app password
+  # Configure mailer for production - using Google Workspace SMTP with app password.
+  # fetch_env! so the release fails at boot if either credential is
+  # missing — the gen.auth flow's magic-link and password-reset email
+  # paths silently fail without these, which is worse than crashing
+  # loudly.
   config :mono_phoenix_v01, MonoPhoenixV01.Mailer,
     adapter: Swoosh.Adapters.SMTP,
     relay: "smtp.gmail.com",
     port: 587,
-    username: System.get_env("SMTP_USERNAME"),
-    password: System.get_env("SMTP_PASSWORD"),
+    username: System.fetch_env!("SMTP_USERNAME"),
+    password: System.fetch_env!("SMTP_PASSWORD"),
     ssl: false,
     tls: :always,
     tls_options: [verify: :verify_none],
@@ -113,6 +150,17 @@ if config_env() == :prod do
   config :mono_phoenix_v01, :anthropic,
     api_key: System.get_env("ANTHROPIC_API_KEY"),
     model: "claude-sonnet-4-6"
+
+  # Stripe production keys. Use fetch_env! so the release fails fast at
+  # boot if any are missing — preferable to discovering a missing key
+  # during a real signup.
+  config :stripity_stripe,
+    api_key: System.fetch_env!("STRIPE_SECRET_KEY")
+
+  config :mono_phoenix_v01, :stripe,
+    price_id_monthly: System.fetch_env!("STRIPE_PRICE_ID_MONTHLY"),
+    price_id_yearly: System.fetch_env!("STRIPE_PRICE_ID_YEARLY"),
+    webhook_secret: System.fetch_env!("STRIPE_WEBHOOK_SECRET")
 
   # Validate required env vars at boot. If any are missing in :prod, raise so
   # the release fails to start and Gigalixir keeps the previous healthy pod

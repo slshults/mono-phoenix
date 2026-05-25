@@ -1,32 +1,86 @@
 defmodule MonoPhoenixV01Web.SearchwomenByPlayLive do
   use MonoPhoenixV01Web, :live_view
+  import MonoPhoenixV01Web.Components.HeartIcon
+
+  alias MonoPhoenixV01.Favorites
+  alias MonoPhoenixV01Web.LiveFavoritesHelpers
 
   @impl true
-  def mount(:not_mounted_at_router, %{"play_id" => play_id}, socket) do
+  def mount(:not_mounted_at_router, %{"play_id" => play_id} = session, socket) do
     search_results = MonoPhoenixV01Web.SearchwomenByPlay.get_all("", play_id)
-    {:ok, assign(socket, 
-      play_id: play_id, 
-      search_results: search_results,
-      search_query: "",
-      active_requests: MapSet.new(),
-      async_metadata: %{}
-    )}
+    {:ok, assign_favorites_state(socket, session)
+     |> assign(
+       play_id: play_id,
+       search_results: search_results,
+       search_query: "",
+       active_requests: MapSet.new(),
+       async_metadata: %{}
+     )}
   end
 
   @impl true
   def mount(%{"play_id" => play_id}, _session, socket) do
-    # Assign a default play_id of 9 if it's nil
     play_id = if is_nil(play_id), do: 9, else: play_id
     search_results = MonoPhoenixV01Web.SearchwomenByPlay.get_all("", play_id)
 
-    {:ok, assign(socket, 
-      play_id: play_id, 
-      search_results: search_results,
-      search_query: "",
-      active_requests: MapSet.new(),
-      async_metadata: %{}
-    )}
+    {:ok, assign_favorites_state(socket, %{})
+     |> assign(
+       play_id: play_id,
+       search_results: search_results,
+       search_query: "",
+       active_requests: MapSet.new(),
+       async_metadata: %{}
+     )}
   end
+
+  @impl true
+  def handle_event("toggle_favorite", %{"monologue-id" => mid_str}, socket) do
+    with true <- socket.assigns.is_patron,
+         {:ok, monologue_id} <- parse_monologue_id(mid_str) do
+      do_toggle(socket, monologue_id)
+    else
+      _ -> {:noreply, socket}
+    end
+  end
+
+  defp do_toggle(socket, monologue_id) do
+    user_id = socket.assigns.user_id
+    current = socket.assigns.favorited_ids
+
+    {new_ids, event} =
+      if MapSet.member?(current, monologue_id) do
+        :ok = Favorites.remove(user_id, monologue_id)
+        {MapSet.delete(current, monologue_id), "favorite_removed"}
+      else
+        case Favorites.add(user_id, monologue_id) do
+          {:ok, _} -> {MapSet.put(current, monologue_id), "favorite_added"}
+          _ -> {current, nil}
+        end
+      end
+
+    socket = assign(socket, :favorited_ids, new_ids)
+
+    socket =
+      if event do
+        LiveFavoritesHelpers.push_posthog(socket, event, %{
+          monologue_id: monologue_id,
+          source: "search_results"
+        })
+      else
+        socket
+      end
+
+    {:noreply, socket}
+  end
+
+  defp parse_monologue_id(str) when is_binary(str) do
+    case Integer.parse(str) do
+      {id, ""} when id > 0 -> {:ok, id}
+      _ -> :error
+    end
+  end
+
+  defp parse_monologue_id(_), do: :error
 
   ## socket
 
@@ -307,7 +361,11 @@ defmodule MonoPhoenixV01Web.SearchwomenByPlayLive do
                     title="Show scene summary">
                 <img src={Routes.static_path(@socket, "/images/scroll-summary-icon.svg")} alt="Scene summary" />
               </span>&nbsp; &middot;
-                <span class="monologue-actscene"><%= row.style %></span>
+                <span class="monologue-actscene"><%= row.style %></span><%= if @is_patron do %><.heart_icon
+                  monologue_id={row.monologues}
+                  filled={MapSet.member?(@favorited_ids, row.monologues)}
+                  auth_state={:patron}
+                /><% end %>
                 <br />
                 <span class="monologue-character" alt="This is the name of the character who speaks this monologue." title="This is the name of the character who speaks this monologue."><%= row.character %></span>
                 <br />
@@ -375,5 +433,19 @@ defmodule MonoPhoenixV01Web.SearchwomenByPlayLive do
     </style>
     <% end %>
     """
+  end
+
+  defp assign_favorites_state(socket, session) do
+    user_id = Map.get(session, "user_id")
+    is_patron = LiveFavoritesHelpers.patron_id?(user_id)
+
+    favorited_ids =
+      if is_patron, do: Favorites.favorited_ids_for(user_id), else: MapSet.new()
+
+    assign(socket,
+      user_id: user_id,
+      is_patron: is_patron,
+      favorited_ids: favorited_ids
+    )
   end
 end
