@@ -95,7 +95,7 @@ defmodule MonoPhoenixV01.BillingTest do
            metadata: %{"billing_period" => "yearly", "user_id" => "42"},
            subscription: %Stripe.Subscription{
              id: "sub_X",
-             current_period_end: now
+             items: %{data: [%{current_period_end: now}]}
            }
          }}
       end)

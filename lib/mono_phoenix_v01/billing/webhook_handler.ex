@@ -44,7 +44,7 @@ defmodule MonoPhoenixV01.Billing.WebhookHandler do
          {:ok, sub} <- Billing.retrieve_subscription(sub_id) do
       Accounts.mark_subscription_active(user, %{
         stripe_subscription_id: sub.id,
-        current_period_end: unix_to_datetime(sub.current_period_end),
+        current_period_end: unix_to_datetime(Billing.current_period_end_unix(sub)),
         billing_period: get_metadata_billing_period(session)
       })
     end
@@ -59,7 +59,7 @@ defmodule MonoPhoenixV01.Billing.WebhookHandler do
         %{
           subscription_status: normalize_status(get(subscription, "status"))
         }
-        |> maybe_put_period_end(get(subscription, "current_period_end"))
+        |> maybe_put_period_end(Billing.current_period_end_unix(subscription))
 
       update_status(user, attrs)
     end

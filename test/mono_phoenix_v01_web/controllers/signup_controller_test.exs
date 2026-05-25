@@ -26,7 +26,7 @@ defmodule MonoPhoenixV01Web.SignupControllerTest do
            metadata: %{"billing_period" => "yearly", "user_id" => to_string(user.id)},
            subscription: %Stripe.Subscription{
              id: "sub_TEST",
-             current_period_end: future
+             items: %{data: [%{current_period_end: future}]}
            }
          }}
       end)
@@ -55,7 +55,7 @@ defmodule MonoPhoenixV01Web.SignupControllerTest do
            metadata: %{"billing_period" => "yearly", "user_id" => to_string(user.id)},
            subscription: %Stripe.Subscription{
              id: "sub_TEST",
-             current_period_end: future
+             items: %{data: [%{current_period_end: future}]}
            }
          }}
       end)
@@ -86,7 +86,7 @@ defmodule MonoPhoenixV01Web.SignupControllerTest do
            },
            subscription: %Stripe.Subscription{
              id: "sub_TEST",
-             current_period_end: future
+             items: %{data: [%{current_period_end: future}]}
            }
          }}
       end)
@@ -137,7 +137,7 @@ defmodule MonoPhoenixV01Web.SignupControllerTest do
         metadata: %{"billing_period" => "yearly", "user_id" => to_string(user.id)},
         subscription: %Stripe.Subscription{
           id: "sub_TEST",
-          current_period_end: future
+          items: %{data: [%{current_period_end: future}]}
         }
       }
 

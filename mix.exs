@@ -55,14 +55,24 @@ defmodule MonoPhoenixV01.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:redirect, "~> 0.4.0"},
       {:tesla, "~> 1.8"},
-      {:hackney, "~> 1.18"},
+      # Mint is the HTTP engine behind Tesla.Adapter.Mint, used by
+      # AnthropicService. We switched away from Tesla.Adapter.Hackney
+      # to let stripity_stripe 3.3+ pull hackney 4.x transitively.
+      {:mint, "~> 1.0"},
+      {:castore, "~> 1.0"},
+      # Force hackney 4 even though Swoosh declares `hackney ~> 1.9`
+      # as an optional dep. Swoosh only uses hackney for HTTP-based
+      # mail adapters (Mailgun, SendGrid, etc.); we use SMTP via
+      # gen_smtp, so Swoosh never touches hackney at runtime — the
+      # override is safe.
+      {:hackney, "~> 4.0", override: true},
       {:html_assertion, "0.1.5", only: :test},
       {:floki, ">= 0.34.2", only: :test},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:earmark, "~> 1.4"},
       {:oban, "~> 2.22"},
       {:bcrypt_elixir, "~> 3.0"},
-      {:stripity_stripe, "~> 3.2"},
+      {:stripity_stripe, "~> 3.3.1"},
       {:mox, "~> 1.1", only: :test}
     ]
   end

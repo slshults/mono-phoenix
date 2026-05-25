@@ -149,7 +149,7 @@ defmodule MonoPhoenixV01.Billing do
 
       data = %{
         stripe_subscription_id: sub.id,
-        current_period_end: DateTime.from_unix!(sub.current_period_end),
+        current_period_end: DateTime.from_unix!(current_period_end_unix(sub)),
         billing_period: Map.get(metadata, "billing_period"),
         user_id:
           metadata
@@ -166,6 +166,35 @@ defmodule MonoPhoenixV01.Billing do
         err
     end
   end
+
+  @doc """
+  Extract `current_period_end` (as a unix timestamp integer) from a
+  Stripe Subscription.
+
+  As of API version 2025-03-31 (Basil release), Stripe moved
+  `current_period_end` and `current_period_start` off the top-level
+  Subscription object onto its individual `SubscriptionItem`s. For
+  single-item subscriptions like ours (one price per user) the value
+  lives on `subscription.items.data[0].current_period_end`.
+
+  This helper handles both the typed `Stripe.Subscription` struct
+  (from `retrieve_subscription` and similar API calls) and the raw
+  string-keyed map shape that arrives in webhook payloads.
+  """
+  def current_period_end_unix(sub) when is_map(sub) do
+    items = Map.get(sub, :items) || Map.get(sub, "items")
+    data = items && (Map.get(items, :data) || Map.get(items, "data"))
+
+    case data do
+      [first | _] when is_map(first) ->
+        Map.get(first, :current_period_end) || Map.get(first, "current_period_end")
+
+      _ ->
+        nil
+    end
+  end
+
+  def current_period_end_unix(_), do: nil
 
   defp to_integer(value) when is_integer(value), do: value
   defp to_integer(value) when is_binary(value), do: String.to_integer(value)

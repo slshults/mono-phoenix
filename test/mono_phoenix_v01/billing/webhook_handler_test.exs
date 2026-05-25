@@ -22,7 +22,13 @@ defmodule MonoPhoenixV01.Billing.WebhookHandlerTest do
 
       MonoPhoenixV01.BillingMock
       |> expect(:retrieve_subscription, fn "sub_X" ->
-        {:ok, %Stripe.Subscription{id: "sub_X", current_period_end: future}}
+        # Post-Basil (2025-03-31) shape — current_period_end lives on
+        # the subscription items, not the Subscription top-level.
+        {:ok,
+         %Stripe.Subscription{
+           id: "sub_X",
+           items: %{data: [%{current_period_end: future}]}
+         }}
       end)
 
       session = %{
@@ -60,8 +66,15 @@ defmodule MonoPhoenixV01.Billing.WebhookHandlerTest do
       sub = %{
         "customer" => user.stripe_customer_id,
         "status" => "past_due",
-        "current_period_end" =>
-          DateTime.utc_now() |> DateTime.add(7, :day) |> DateTime.to_unix()
+        # Post-Basil shape — period end is now on items, not top-level.
+        "items" => %{
+          "data" => [
+            %{
+              "current_period_end" =>
+                DateTime.utc_now() |> DateTime.add(7, :day) |> DateTime.to_unix()
+            }
+          ]
+        }
       }
 
       assert :ok = WebhookHandler.handle(event("customer.subscription.updated", sub))
@@ -97,7 +110,10 @@ defmodule MonoPhoenixV01.Billing.WebhookHandlerTest do
       sub = %{
         "customer" => user.stripe_customer_id,
         "status" => "active",
-        "current_period_end" => fresh_period_end
+        # Post-Basil shape — period end now on items.
+        "items" => %{
+          "data" => [%{"current_period_end" => fresh_period_end}]
+        }
       }
 
       assert :ok = WebhookHandler.handle(event("customer.subscription.updated", sub))

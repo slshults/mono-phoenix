@@ -12,9 +12,12 @@ defmodule MonoPhoenixV01.AnthropicService do
   use Tesla, only: [:post]
   plug Tesla.Middleware.BaseUrl, "https://api.anthropic.com/v1"
   plug Tesla.Middleware.JSON
-  
-  # Use Hackney adapter with explicit timeout
-  adapter Tesla.Adapter.Hackney, recv_timeout: 60_000, connect_timeout: 30_000
+
+  # Mint adapter (modern Erlang HTTP client; no separate hackney
+  # dependency). `timeout` is the receive timeout — Anthropic
+  # generations can take 30+ seconds, so bump to 60s. `transport_opts`
+  # controls the TLS connection setup.
+  adapter Tesla.Adapter.Mint, timeout: 60_000, transport_opts: [timeout: 30_000]
 
   @doc """
   Gets or generates a play summary for the given play title.
