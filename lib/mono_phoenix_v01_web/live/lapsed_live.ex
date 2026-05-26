@@ -15,11 +15,23 @@ defmodule MonoPhoenixV01Web.LapsedLive do
 
   alias MonoPhoenixV01.Accounts
   alias MonoPhoenixV01.Billing
+  alias MonoPhoenixV01Web.LiveFavoritesHelpers
 
   @impl true
   def mount(_params, %{"lapsed_user_id" => uid}, socket) do
     user = Accounts.get_user!(uid)
-    {:ok, assign(socket, user: user, page_title: "Subscription lapsed")}
+
+    {:ok,
+     socket
+     |> assign(user: user, page_title: "Subscription lapsed")
+     |> LiveFavoritesHelpers.push_posthog_identify(
+       user.email,
+       LiveFavoritesHelpers.identify_props(user, :lapsed)
+     )
+     |> LiveFavoritesHelpers.push_posthog("lapsed_page_viewed", %{
+       subscription_status: user.subscription_status,
+       billing_period: user.billing_period
+     })}
   end
 
   def mount(_params, _session, socket) do
@@ -36,7 +48,12 @@ defmodule MonoPhoenixV01Web.LapsedLive do
 
     with {:ok, user} <- Billing.ensure_stripe_customer(user),
          {:ok, %{url: url}} <- Billing.create_checkout_session(user, period) do
-      {:noreply, redirect(socket, external: url)}
+      {:noreply,
+       socket
+       |> LiveFavoritesHelpers.push_posthog("lapsed_renew_clicked", %{
+         billing_period: period
+       })
+       |> redirect(external: url)}
     else
       {:error, _reason} ->
         {:noreply,
@@ -53,7 +70,10 @@ defmodule MonoPhoenixV01Web.LapsedLive do
     # from the session — LiveView can't modify session cookies, so a
     # plain socket redirect would leave the stale id (and the previous
     # user's email) reachable by revisiting /account/lapsed.
-    {:noreply, redirect(socket, to: ~p"/account/lapsed/dismiss")}
+    {:noreply,
+     socket
+     |> LiveFavoritesHelpers.push_posthog("lapsed_continued_with_ads", %{})
+     |> redirect(to: ~p"/account/lapsed/dismiss")}
   end
 
   @impl true

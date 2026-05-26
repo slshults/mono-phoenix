@@ -6,6 +6,7 @@ defmodule MonoPhoenixV01Web.PatronSignupLive do
   alias MonoPhoenixV01.Accounts
   alias MonoPhoenixV01.Accounts.User
   alias MonoPhoenixV01.Billing
+  alias MonoPhoenixV01Web.LiveFavoritesHelpers
 
   @impl true
   def render(assigns) do
@@ -110,7 +111,10 @@ defmodule MonoPhoenixV01Web.PatronSignupLive do
      |> assign(:billing_period, "monthly")
      |> assign(:show_ph_widget, true)
      |> assign(:hide_launch_promo, true)
-     |> assign_form(changeset)}
+     |> assign_form(changeset)
+     |> LiveFavoritesHelpers.push_posthog("signup_page_viewed", %{
+       default_billing_period: "monthly"
+     })}
   end
 
   @impl true
@@ -131,6 +135,12 @@ defmodule MonoPhoenixV01Web.PatronSignupLive do
       {:ok, user} ->
         case start_checkout(user, user_params["billing_period"]) do
           {:ok, %{url: url}} ->
+            socket =
+              LiveFavoritesHelpers.push_posthog(socket, "signup_checkout_started", %{
+                user_id: user.id,
+                billing_period: user_params["billing_period"]
+              })
+
             {:noreply, redirect(socket, external: url)}
 
           {:error, reason} ->

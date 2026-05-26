@@ -34,6 +34,7 @@ defmodule MonoPhoenixV01Web.LiveFavoritesHelpers do
       |> assign(:favorited_ids, favorited_ids)
       |> assign(:show_favs_auth_modal, false)
       |> attach_hook(:favs_events, :handle_event, &handle_favs_event/3)
+      |> maybe_push_identify(scope, auth_state)
 
     {:cont, socket}
   end
@@ -162,4 +163,58 @@ defmodule MonoPhoenixV01Web.LiveFavoritesHelpers do
   def push_posthog(socket, event, properties \\ %{}) do
     push_event(socket, "posthog_capture", %{event: event, properties: properties})
   end
+
+  @doc """
+  Push a PostHog identify call from any LiveView socket. JS listener
+  in `assets/js/app.js` (see `phx:posthog_identify`) forwards to
+  `posthog.identify(distinct_id, props)` — this aliases the anonymous
+  browser distinct_id onto the new identified distinct_id so anonymous
+  frontend events stitch onto the same person as the server-side
+  events captured with the same distinct_id.
+
+  We use the user's email as distinct_id so PostHog renders patrons by
+  their email in person profile views — handy for support workflows
+  (password resets, cancellation requests, etc.).
+
+  `distinct_id` is coerced to a string before sending; person `props`
+  are set with `$set`-style semantics (overwrite on each call).
+  """
+  def push_posthog_identify(socket, distinct_id, props \\ %{}) do
+    push_event(socket, "posthog_identify", %{
+      distinct_id: to_string(distinct_id),
+      props: props
+    })
+  end
+
+  defp maybe_push_identify(socket, %{user: %{email: email} = user}, auth_state)
+       when is_binary(email) do
+    push_posthog_identify(socket, email, identify_props(user, auth_state))
+  end
+
+  defp maybe_push_identify(socket, _scope, _auth_state), do: socket
+
+  @doc """
+  Person properties for a User row, suitable for PostHog `$set` /
+  `$set_once`. Email is included as both the distinct_id (separately,
+  by the caller) and a person property — PostHog renders the `email`
+  property in person profile views.
+  """
+  def identify_props(user, auth_state) do
+    %{
+      email: user.email,
+      user_id: user.id,
+      subscription_status: user.subscription_status,
+      billing_period: user.billing_period,
+      current_period_end: format_iso8601(user.current_period_end),
+      has_password: not is_nil(user.hashed_password),
+      has_been_welcomed: not is_nil(user.welcomed_at),
+      auth_state: Atom.to_string(auth_state)
+    }
+    |> Enum.reject(fn {_k, v} -> is_nil(v) end)
+    |> Map.new()
+  end
+
+  defp format_iso8601(nil), do: nil
+  defp format_iso8601(%DateTime{} = dt), do: DateTime.to_iso8601(dt)
+  defp format_iso8601(_), do: nil
 end

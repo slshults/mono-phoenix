@@ -10,6 +10,7 @@ defmodule MonoPhoenixV01Web.AccountLive do
   use MonoPhoenixV01Web, :live_view
 
   alias MonoPhoenixV01.Billing
+  alias MonoPhoenixV01Web.LiveFavoritesHelpers
 
   @impl true
   def mount(_params, _session, socket) do
@@ -18,9 +19,17 @@ defmodule MonoPhoenixV01Web.AccountLive do
 
   @impl true
   def handle_event("open_portal", _, socket) do
-    case Billing.create_portal_session(socket.assigns.current_scope.user) do
+    user = socket.assigns.current_scope.user
+
+    case Billing.create_portal_session(user) do
       {:ok, %{url: url}} ->
-        {:noreply, redirect(socket, external: url)}
+        {:noreply,
+         socket
+         |> LiveFavoritesHelpers.push_posthog("portal_opened", %{
+           subscription_status: user.subscription_status,
+           billing_period: user.billing_period
+         })
+         |> redirect(external: url)}
 
       {:error, _reason} ->
         {:noreply,
