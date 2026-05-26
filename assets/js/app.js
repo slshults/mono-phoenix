@@ -639,15 +639,16 @@ window.addEventListener("phx:posthog_capture", (e) => {
 });
 
 // Handle PostHog identify calls pushed from Elixir LiveView.
-// Bridges the anonymous browser distinct_id to a stable user_id after
-// login/signup so server-side events captured with distinct_id = user.id
-// stitch onto the same person as the anonymous frontend events.
+// Bridges the anonymous browser distinct_id onto the user's email
+// (used as distinct_id site-wide so patrons are searchable by email
+// in the PostHog UI). Server-side events captured with the same email
+// then stitch onto the same person profile as the frontend events.
 window.addEventListener("phx:posthog_identify", (e) => {
   if (typeof posthog === 'undefined') return;
   if (typeof posthog.identify !== 'function') return;
-  var userId = e.detail && e.detail.user_id;
-  if (!userId) return;
-  posthog.identify(String(userId), e.detail.props || {});
+  var distinctId = e.detail && e.detail.distinct_id;
+  if (!distinctId) return;
+  posthog.identify(String(distinctId), e.detail.props || {});
 });
 
 // Verify the visitor's identity to the PostHog support widget by asking the

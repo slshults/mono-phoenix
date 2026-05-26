@@ -24,11 +24,10 @@ defmodule MonoPhoenixV01Web.LapsedLive do
     {:ok,
      socket
      |> assign(user: user, page_title: "Subscription lapsed")
-     |> LiveFavoritesHelpers.push_posthog_identify(user.id, %{
-       subscription_status: user.subscription_status,
-       billing_period: user.billing_period,
-       auth_state: "lapsed"
-     })
+     |> LiveFavoritesHelpers.push_posthog_identify(
+       user.email,
+       LiveFavoritesHelpers.identify_props(user, :lapsed)
+     )
      |> LiveFavoritesHelpers.push_posthog("lapsed_page_viewed", %{
        subscription_status: user.subscription_status,
        billing_period: user.billing_period

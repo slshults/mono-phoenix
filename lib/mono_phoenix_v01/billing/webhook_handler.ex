@@ -221,8 +221,10 @@ defmodule MonoPhoenixV01.Billing.WebhookHandler do
   end
 
   defp refresh_person_props(user) do
-    PostHog.identify(Integer.to_string(user.id),
+    PostHog.identify(user.email,
       set: %{
+        email: user.email,
+        user_id: user.id,
         subscription_status: user.subscription_status,
         billing_period: user.billing_period,
         current_period_end: iso8601(user.current_period_end)
@@ -243,10 +245,10 @@ defmodule MonoPhoenixV01.Billing.WebhookHandler do
   end
 
   defp identify_and_capture(user, event_name, properties) do
-    distinct_id = Integer.to_string(user.id)
-
-    PostHog.identify(distinct_id,
+    PostHog.identify(user.email,
       set: %{
+        email: user.email,
+        user_id: user.id,
         subscription_status: user.subscription_status,
         billing_period: user.billing_period,
         current_period_end: iso8601(user.current_period_end)
@@ -255,8 +257,10 @@ defmodule MonoPhoenixV01.Billing.WebhookHandler do
 
     PostHog.capture(
       event_name,
-      Map.put(properties, :billing_period, user.billing_period),
-      distinct_id: distinct_id
+      properties
+      |> Map.put(:billing_period, user.billing_period)
+      |> Map.put(:user_id, user.id),
+      distinct_id: user.email
     )
   end
 

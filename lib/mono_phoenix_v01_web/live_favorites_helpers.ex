@@ -167,30 +167,42 @@ defmodule MonoPhoenixV01Web.LiveFavoritesHelpers do
   @doc """
   Push a PostHog identify call from any LiveView socket. JS listener
   in `assets/js/app.js` (see `phx:posthog_identify`) forwards to
-  `posthog.identify(user_id, props)` — this aliases the anonymous
-  browser distinct_id onto the user_id so anonymous frontend events
-  stitch onto the same person as server-side events captured with
-  `distinct_id: user.id`.
+  `posthog.identify(distinct_id, props)` — this aliases the anonymous
+  browser distinct_id onto the new identified distinct_id so anonymous
+  frontend events stitch onto the same person as the server-side
+  events captured with the same distinct_id.
 
-  `user_id` is coerced to a string before sending; person `props` are
-  set with `$set`-style semantics (overwrite on each call).
+  We use the user's email as distinct_id so PostHog renders patrons by
+  their email in person profile views — handy for support workflows
+  (password resets, cancellation requests, etc.).
+
+  `distinct_id` is coerced to a string before sending; person `props`
+  are set with `$set`-style semantics (overwrite on each call).
   """
-  def push_posthog_identify(socket, user_id, props \\ %{}) do
+  def push_posthog_identify(socket, distinct_id, props \\ %{}) do
     push_event(socket, "posthog_identify", %{
-      user_id: to_string(user_id),
+      distinct_id: to_string(distinct_id),
       props: props
     })
   end
 
-  defp maybe_push_identify(socket, %{user: %{id: id} = user}, auth_state)
-       when is_integer(id) do
-    push_posthog_identify(socket, id, identify_props(user, auth_state))
+  defp maybe_push_identify(socket, %{user: %{email: email} = user}, auth_state)
+       when is_binary(email) do
+    push_posthog_identify(socket, email, identify_props(user, auth_state))
   end
 
   defp maybe_push_identify(socket, _scope, _auth_state), do: socket
 
-  defp identify_props(user, auth_state) do
+  @doc """
+  Person properties for a User row, suitable for PostHog `$set` /
+  `$set_once`. Email is included as both the distinct_id (separately,
+  by the caller) and a person property — PostHog renders the `email`
+  property in person profile views.
+  """
+  def identify_props(user, auth_state) do
     %{
+      email: user.email,
+      user_id: user.id,
       subscription_status: user.subscription_status,
       billing_period: user.billing_period,
       current_period_end: format_iso8601(user.current_period_end),

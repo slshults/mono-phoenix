@@ -105,11 +105,12 @@ defmodule MonoPhoenixV01Web.SignupController do
   end
 
   defp track_signup_completed(user) do
-    distinct_id = Integer.to_string(user.id)
     now_iso = DateTime.utc_now() |> DateTime.to_iso8601()
 
-    PostHog.identify(distinct_id,
+    PostHog.identify(user.email,
       set: %{
+        email: user.email,
+        user_id: user.id,
         subscription_status: user.subscription_status,
         billing_period: user.billing_period,
         current_period_end: iso8601(user.current_period_end),
@@ -123,7 +124,7 @@ defmodule MonoPhoenixV01Web.SignupController do
     PostHog.capture(
       "signup_completed",
       %{billing_period: user.billing_period, user_id: user.id},
-      distinct_id: distinct_id
+      distinct_id: user.email
     )
   end
 
@@ -131,7 +132,7 @@ defmodule MonoPhoenixV01Web.SignupController do
     PostHog.capture(
       "signup_canceled",
       %{has_user: true, user_id: user.id},
-      distinct_id: Integer.to_string(user.id)
+      distinct_id: user.email
     )
   end
 
