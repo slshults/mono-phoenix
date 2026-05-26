@@ -66,4 +66,34 @@ defmodule MonoPhoenixV01.PostHog do
       Logger.warning("Exception sending PostHog event #{event_name}: #{inspect(error)}")
       {:error, error}
   end
+
+  @doc """
+  Set person properties for a user. Sends an `$identify` event with `$set`
+  (overwrite) and optionally `$set_once` (write only if unset) maps.
+
+  Use this server-side after lifecycle transitions (signup completed,
+  subscription renewed, subscription canceled, payment failed) so the
+  person profile in PostHog mirrors the user's current state.
+
+  ## Examples
+
+      MonoPhoenixV01.PostHog.identify("42",
+        set: %{subscription_status: "active", billing_period: "monthly"},
+        set_once: %{signup_completed_at: "2026-05-25T18:00:00Z"})
+  """
+  @spec identify(String.t(), keyword()) :: :ok | {:error, term()}
+  def identify(distinct_id, opts) when is_binary(distinct_id) do
+    set = Keyword.get(opts, :set, %{})
+    set_once = Keyword.get(opts, :set_once, %{})
+
+    properties =
+      %{}
+      |> maybe_put("$set", set)
+      |> maybe_put("$set_once", set_once)
+
+    capture("$identify", properties, distinct_id: distinct_id)
+  end
+
+  defp maybe_put(map, _key, value) when value == %{}, do: map
+  defp maybe_put(map, key, value), do: Map.put(map, key, value)
 end

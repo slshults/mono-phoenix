@@ -19,6 +19,7 @@ defmodule MonoPhoenixV01.Billing.WebhookHandler do
 
   alias MonoPhoenixV01.Accounts
   alias MonoPhoenixV01.Billing
+  alias MonoPhoenixV01.PostHog
 
   @doc """
   Handle a verified Stripe event. Always returns `:ok`.
@@ -55,13 +56,20 @@ defmodule MonoPhoenixV01.Billing.WebhookHandler do
   defp dispatch("customer.subscription.updated", subscription) do
     with cus_id when is_binary(cus_id) <- get(subscription, "customer"),
          %_{} = user <- Accounts.get_user_by_stripe_customer_id(cus_id) do
+      previous_status = user.subscription_status
+      new_status = normalize_status(get(subscription, "status"))
+
       attrs =
-        %{
-          subscription_status: normalize_status(get(subscription, "status"))
-        }
+        %{subscription_status: new_status}
         |> maybe_put_period_end(Billing.current_period_end_unix(subscription))
 
-      update_status(user, attrs)
+      case update_status(user, attrs) do
+        {:ok, updated_user} ->
+          track_subscription_updated(updated_user, previous_status)
+
+        _ ->
+          :ok
+      end
     end
 
     :ok
@@ -70,7 +78,10 @@ defmodule MonoPhoenixV01.Billing.WebhookHandler do
   defp dispatch("customer.subscription.deleted", subscription) do
     with cus_id when is_binary(cus_id) <- get(subscription, "customer"),
          %_{} = user <- Accounts.get_user_by_stripe_customer_id(cus_id) do
-      update_status(user, %{subscription_status: "canceled", current_period_end: nil})
+      case update_status(user, %{subscription_status: "canceled", current_period_end: nil}) do
+        {:ok, updated_user} -> track_subscription_canceled(updated_user)
+        _ -> :ok
+      end
     end
 
     :ok
@@ -79,7 +90,10 @@ defmodule MonoPhoenixV01.Billing.WebhookHandler do
   defp dispatch("invoice.payment_failed", invoice) do
     with cus_id when is_binary(cus_id) <- get(invoice, "customer"),
          %_{} = user <- Accounts.get_user_by_stripe_customer_id(cus_id) do
-      update_status(user, %{subscription_status: "past_due"})
+      case update_status(user, %{subscription_status: "past_due"}) do
+        {:ok, updated_user} -> track_subscription_payment_failed(updated_user)
+        _ -> :ok
+      end
     end
 
     :ok
@@ -153,13 +167,13 @@ defmodule MonoPhoenixV01.Billing.WebhookHandler do
 
   # Update the user's subscription state, logging any changeset failure
   # so a future drift between Stripe's enum and our normalize_status/1
-  # mapping doesn't silently swallow state changes. We still return :ok
-  # to Stripe — a 5xx triggers a retry that would compound the drift,
-  # not fix it.
+  # mapping doesn't silently swallow state changes. The caller may use
+  # the updated row to fire PostHog lifecycle events; on failure we
+  # return `:error` so no event is sent against stale state.
   defp update_status(user, attrs) do
     case Accounts.update_subscription_status(user, attrs) do
-      {:ok, _} ->
-        :ok
+      {:ok, updated_user} ->
+        {:ok, updated_user}
 
       {:error, changeset} ->
         Logger.error(
@@ -167,7 +181,86 @@ defmodule MonoPhoenixV01.Billing.WebhookHandler do
             "attrs=#{inspect(attrs)} errors=#{inspect(changeset.errors)}"
         )
 
-        :ok
+        :error
     end
   end
+
+  # PostHog tracking for subscription lifecycle events. Server-side
+  # capture with distinct_id = user.id, plus a refresh of person
+  # properties via `$set` so the user's profile in PostHog mirrors the
+  # row we just persisted.
+  #
+  # `customer.subscription.updated` fires for many reasons (status
+  # changes, plan switches, billing-cycle rollovers, payment-method
+  # edits). To keep the event stream meaningful we only emit a
+  # lifecycle event when the status actually flipped — and only emit
+  # `subscription_renewed` for the recovery case (lapsed/past_due/
+  # canceled → active). The brand-new-patron transition
+  # (pending_payment → active) is covered by `signup_completed` from
+  # the /signup/success controller, so we ignore it here to avoid
+  # double-counting conversions. We still refresh person props on
+  # every status flip so the PostHog profile stays accurate.
+  @recoverable_from ~w(past_due lapsed canceled)
+
+  defp track_subscription_updated(user, previous_status) do
+    cond do
+      previous_status == user.subscription_status ->
+        :ok
+
+      previous_status in @recoverable_from and user.subscription_status == "active" ->
+        identify_and_capture(user, "subscription_renewed", %{
+          previous_status: previous_status,
+          subscription_status: user.subscription_status
+        })
+
+      true ->
+        # Status changed but it isn't a renewal — refresh person props
+        # without firing an event so we don't drown out the signal.
+        refresh_person_props(user)
+    end
+  end
+
+  defp refresh_person_props(user) do
+    PostHog.identify(Integer.to_string(user.id),
+      set: %{
+        subscription_status: user.subscription_status,
+        billing_period: user.billing_period,
+        current_period_end: iso8601(user.current_period_end)
+      }
+    )
+  end
+
+  defp track_subscription_canceled(user) do
+    identify_and_capture(user, "subscription_canceled", %{
+      subscription_status: user.subscription_status
+    })
+  end
+
+  defp track_subscription_payment_failed(user) do
+    identify_and_capture(user, "subscription_payment_failed", %{
+      subscription_status: user.subscription_status
+    })
+  end
+
+  defp identify_and_capture(user, event_name, properties) do
+    distinct_id = Integer.to_string(user.id)
+
+    PostHog.identify(distinct_id,
+      set: %{
+        subscription_status: user.subscription_status,
+        billing_period: user.billing_period,
+        current_period_end: iso8601(user.current_period_end)
+      }
+    )
+
+    PostHog.capture(
+      event_name,
+      Map.put(properties, :billing_period, user.billing_period),
+      distinct_id: distinct_id
+    )
+  end
+
+  defp iso8601(nil), do: nil
+  defp iso8601(%DateTime{} = dt), do: DateTime.to_iso8601(dt)
+  defp iso8601(_), do: nil
 end

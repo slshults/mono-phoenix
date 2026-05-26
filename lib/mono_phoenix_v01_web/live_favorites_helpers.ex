@@ -34,6 +34,7 @@ defmodule MonoPhoenixV01Web.LiveFavoritesHelpers do
       |> assign(:favorited_ids, favorited_ids)
       |> assign(:show_favs_auth_modal, false)
       |> attach_hook(:favs_events, :handle_event, &handle_favs_event/3)
+      |> maybe_push_identify(scope, auth_state)
 
     {:cont, socket}
   end
@@ -162,4 +163,46 @@ defmodule MonoPhoenixV01Web.LiveFavoritesHelpers do
   def push_posthog(socket, event, properties \\ %{}) do
     push_event(socket, "posthog_capture", %{event: event, properties: properties})
   end
+
+  @doc """
+  Push a PostHog identify call from any LiveView socket. JS listener
+  in `assets/js/app.js` (see `phx:posthog_identify`) forwards to
+  `posthog.identify(user_id, props)` — this aliases the anonymous
+  browser distinct_id onto the user_id so anonymous frontend events
+  stitch onto the same person as server-side events captured with
+  `distinct_id: user.id`.
+
+  `user_id` is coerced to a string before sending; person `props` are
+  set with `$set`-style semantics (overwrite on each call).
+  """
+  def push_posthog_identify(socket, user_id, props \\ %{}) do
+    push_event(socket, "posthog_identify", %{
+      user_id: to_string(user_id),
+      props: props
+    })
+  end
+
+  defp maybe_push_identify(socket, %{user: %{id: id} = user}, auth_state)
+       when is_integer(id) do
+    push_posthog_identify(socket, id, identify_props(user, auth_state))
+  end
+
+  defp maybe_push_identify(socket, _scope, _auth_state), do: socket
+
+  defp identify_props(user, auth_state) do
+    %{
+      subscription_status: user.subscription_status,
+      billing_period: user.billing_period,
+      current_period_end: format_iso8601(user.current_period_end),
+      has_password: not is_nil(user.hashed_password),
+      has_been_welcomed: not is_nil(user.welcomed_at),
+      auth_state: Atom.to_string(auth_state)
+    }
+    |> Enum.reject(fn {_k, v} -> is_nil(v) end)
+    |> Map.new()
+  end
+
+  defp format_iso8601(nil), do: nil
+  defp format_iso8601(%DateTime{} = dt), do: DateTime.to_iso8601(dt)
+  defp format_iso8601(_), do: nil
 end

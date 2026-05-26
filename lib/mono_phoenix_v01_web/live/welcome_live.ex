@@ -11,15 +11,20 @@ defmodule MonoPhoenixV01Web.WelcomeLive do
   use MonoPhoenixV01Web, :live_view
 
   alias MonoPhoenixV01.Accounts
+  alias MonoPhoenixV01Web.LiveFavoritesHelpers
 
   @impl true
   def mount(_params, _session, socket) do
     user = socket.assigns.current_scope.user
+    show_prompt = is_nil(user.welcomed_at)
 
     {:ok,
      socket
      |> assign(:page_title, "Welcome")
-     |> assign(:show_prompt, is_nil(user.welcomed_at))}
+     |> assign(:show_prompt, show_prompt)
+     |> LiveFavoritesHelpers.push_posthog("welcome_page_viewed", %{
+       show_password_prompt: show_prompt
+     })}
   end
 
   @impl true
@@ -39,6 +44,7 @@ defmodule MonoPhoenixV01Web.WelcomeLive do
 
     {:noreply,
      socket
+     |> LiveFavoritesHelpers.push_posthog("welcome_skip", %{})
      |> put_flash(
        :info,
        "Check your email for a login link. If you don't see it, check your spam folder."
@@ -48,7 +54,11 @@ defmodule MonoPhoenixV01Web.WelcomeLive do
 
   def handle_event("set_password", _, socket) do
     {:ok, _user} = Accounts.mark_welcomed(socket.assigns.current_scope.user)
-    {:noreply, push_navigate(socket, to: ~p"/users/settings")}
+
+    {:noreply,
+     socket
+     |> LiveFavoritesHelpers.push_posthog("welcome_set_password", %{})
+     |> push_navigate(to: ~p"/users/settings")}
   end
 
   @impl true
