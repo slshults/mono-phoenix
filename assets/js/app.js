@@ -643,18 +643,27 @@ window.addEventListener("phx:posthog_capture", (e) => {
 // (used as distinct_id site-wide so patrons are searchable by email
 // in the PostHog UI). Server-side events captured with the same email
 // then stitch onto the same person profile as the frontend events.
+//
+// Also kicks off the support-widget identity HMAC verification — only
+// patrons reach this handler, so anonymous visitors stay anonymous and
+// PostHog honors `person_profiles: 'identified_only'` for them.
 window.addEventListener("phx:posthog_identify", (e) => {
   if (typeof posthog === 'undefined') return;
   if (typeof posthog.identify !== 'function') return;
   var distinctId = e.detail && e.detail.distinct_id;
   if (!distinctId) return;
   posthog.identify(String(distinctId), e.detail.props || {});
+  pollAndVerifyPostHogIdentity();
 });
 
-// Verify the visitor's identity to the PostHog support widget by asking the
-// server to HMAC-sign their anonymous distinct_id. Gated on the real posthog
-// SDK being loaded — `setIdentity` is only defined after array.js finishes
-// loading, so checking for it is a reliable readiness signal.
+// Verify a patron's identity to the PostHog support widget by asking the
+// server to HMAC-sign their distinct_id. Only invoked from the
+// `phx:posthog_identify` handler after `posthog.identify()` has bound the
+// SDK to the patron's email — calling it for anonymous visitors would flip
+// the SDK out of `person_profiles: 'identified_only'` mode and create a
+// person profile for them. Gated on the real posthog SDK being loaded —
+// `setIdentity` is only defined after array.js finishes loading, so
+// checking for it is a reliable readiness signal.
 function verifyPostHogIdentity() {
   if (typeof posthog === 'undefined') return;
   if (typeof posthog.get_distinct_id !== 'function') return;
@@ -679,9 +688,9 @@ function verifyPostHogIdentity() {
 }
 
 // Poll for the real posthog SDK to finish loading, then verify identity once.
-// Used by both the page-load path (when consent was granted on a previous
-// visit) and the consent-accept path (when consent was just granted). Stops
-// polling after the verification runs or after ~20s of waiting.
+// Invoked from the `phx:posthog_identify` handler after a patron's LiveView
+// has pushed their identify event. Stops polling after the verification runs
+// or after ~20s of waiting.
 function pollAndVerifyPostHogIdentity() {
   var attempts = 0;
   function tick() {
@@ -879,7 +888,6 @@ document.addEventListener('DOMContentLoaded', function() {
             person_profiles: 'identified_only',
             disable_session_recording: isLocalDev,
         });
-        pollAndVerifyPostHogIdentity();
     }
     banner.style.display = 'none';
   });
@@ -889,12 +897,6 @@ document.addEventListener('DOMContentLoaded', function() {
     banner.style.display = 'none';
   });
 });
-
-// Sign the visitor's anonymous distinct_id for the PostHog support widget on
-// page load — handles the case where consent was granted on a previous visit
-// and the inline snippet in root.html.heex already ran posthog.init() before
-// this script. Polling avoids depending on the stub's queue-replay semantics.
-pollAndVerifyPostHogIdentity();
 
 // connect if there are any LiveViews on the page
 liveSocket.connect()
