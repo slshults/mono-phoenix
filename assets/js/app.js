@@ -205,7 +205,7 @@ Hooks.FeedbackForm = {
 
   setupFeedbackInteractions() {
     // Handle checkboxes that have associated details fields
-    const toggles = ['dont_like', 'wrong'];
+    const toggles = ['wrong'];
     toggles.forEach(value => {
       const checkbox = this.el.querySelector(`input[value="${value}"]`);
       const detailsDiv = this.el.querySelector(`.feedback-details-field[data-for="${value}"]`);
@@ -222,6 +222,20 @@ Hooks.FeedbackForm = {
         });
       }
     });
+
+    // "I don't like AI" — track and jump to FAQ#Q8 immediately, no Send required
+    const dontLikeCheckbox = this.el.querySelector('input[value="dont_like"]');
+    if (dontLikeCheckbox && !dontLikeCheckbox.dataset.navBound) {
+      dontLikeCheckbox.dataset.navBound = 'true';
+      dontLikeCheckbox.addEventListener('change', (e) => {
+        if (!e.target.checked) return;
+        if (typeof posthog !== 'undefined') {
+          this.trackPostHogFeedback('dont_like');
+        }
+        // Brief delay so PostHog's XHR has a chance to leave before nav cancels it
+        setTimeout(() => { window.location.href = '/faq#Q8'; }, 150);
+      });
+    }
   },
 
   setupAutoHideSuccess() {
@@ -244,7 +258,7 @@ Hooks.FeedbackForm = {
     }
   },
 
-  trackPostHogFeedback() {
+  trackPostHogFeedback(feedbackType) {
     if (typeof posthog === 'undefined') return;
 
     const modal = this.el.closest('.summary-modal-overlay');
@@ -286,6 +300,7 @@ Hooks.FeedbackForm = {
     if (character_name) properties.character_name = character_name;
     if (play_title) properties.play_title = play_title;
     if (location) properties.location = location;
+    if (feedbackType) properties.feedback_type = feedbackType;
 
     posthog.capture('ai_content_feedback', properties);
   },

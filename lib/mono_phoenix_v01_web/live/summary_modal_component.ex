@@ -14,9 +14,9 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
       data-loading={@loading}
     >
       <!-- Confirmation Dialog -->
-      <div 
+      <div
         id={"#{@id}-confirmation-dialog"}
-        class="confirmation-dialog-overlay" 
+        class="confirmation-dialog-overlay"
         style={if @show_confirmation, do: "display: flex;", else: "display: none;"}
       >
         <div class="confirmation-dialog">
@@ -27,7 +27,7 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
             <p id={"#{@id}-confirmation-dialog-message"}>Claude is still generating content. Are you sure you want to cancel and close this window?</p>
           </div>
           <div class="confirmation-dialog-buttons">
-            <button 
+            <button
               class="confirmation-btn confirm-cancel"
               phx-click="close_modal"
               phx-value-force="true"
@@ -35,7 +35,7 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
             >
               Yes, cancel
             </button>
-            <button 
+            <button
               class="confirmation-btn confirm-wait"
               phx-click="hide_confirmation"
               phx-target={@myself}
@@ -49,8 +49,8 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
       <div class="summary-modal-content">
         <div class="summary-modal-header">
           <h3 class="summary-modal-title"><%= @title %></h3>
-          <button 
-            class="summary-modal-close" 
+          <button
+            class="summary-modal-close"
             aria-label="Close modal"
           >
             &times;
@@ -66,8 +66,8 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
             <%= if @error do %>
               <div class="summary-error">
                 <p><strong>Error:</strong> <%= @error %></p>
-                <button 
-                  class="retry-button" 
+                <button
+                  class="retry-button"
                   phx-click="retry_generation"
                   phx-target={@myself}
                 >
@@ -91,8 +91,8 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
                         <%!-- Show thumbs only if feedback not yet completed --%>
                         <%= unless @feedback_completed do %>
                           <div class="feedback-buttons">
-                            <button 
-                              class="feedback-btn feedback-thumbs-btn" 
+                            <button
+                              class="feedback-btn feedback-thumbs-btn"
                               phx-click="toggle_feedback"
                               phx-target={@myself}
                               title="Give feedback on this content"
@@ -109,8 +109,8 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
                       <% end %>
                     </div>
                   </div>
-                  <button 
-                    class="copy-to-clipboard-btn" 
+                  <button
+                    class="copy-to-clipboard-btn"
                     phx-click="copy_to_clipboard"
                     phx-target={@myself}
                     title="Copy to clipboard"
@@ -121,49 +121,41 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
               </div>
 
               <!-- Feedback Overlay -->
-              <div 
+              <div
                 id={"#{@id}-feedback-overlay"}
-                class="feedback-overlay" 
+                class="feedback-overlay"
                 style={if @show_feedback, do: "display: block;", else: "display: none;"}
                 phx-hook="FeedbackForm"
               >
                 <div class="feedback-form">
                   <%= unless @feedback_success do %>
-                    <h4>What's wrong with this <%= String.downcase(@content_type) %>?</h4>
+                    <h4>Send feedback for this <%= String.downcase(@content_type) %>?</h4>
                     <form phx-submit="submit_feedback" phx-target={@myself}>
                       <div class="feedback-checkboxes">
-                        <label>
-                          <input type="checkbox" name="feedback[]" value="dont_understand" />
-                          I don't understand it
-                        </label>
-                        <label>
-                          <input type="checkbox" name="feedback[]" value="dont_like" />
-                          I don't like it
-                        </label>
-                        <label>
-                          <input type="checkbox" name="feedback[]" value="wrong" />
-                          It's wrong
-                        </label>
                         <label>
                           <input type="checkbox" name="feedback[]" value="like_it" />
                           I like it
                         </label>
                         <label>
-                          <input type="checkbox" name="feedback[]" value="button_pusher" />
-                          I just like to push buttons to see what they do
+                          <input type="checkbox" name="feedback[]" value="dont_understand" />
+                          I don't understand it
+                        </label>
+                        <label>
+                          <input type="checkbox" name="feedback[]" value="wrong" />
+                          It's wrong, contains errors.
+                        </label>
+                        <label>
+                          <input type="checkbox" name="feedback[]" value="dont_like" />
+                          Why are you using AI? I don't like AI!
                         </label>
                         <label>
                           <input type="checkbox" name="feedback[]" value="why_talking" />
-                          Why is it talking to me?
+                          Why is it talking to me? (AI babble instead of summary)
                         </label>
-                      </div>
-                      <div class="feedback-details-field" data-for="dont_like" style="display: none;">
-                        <textarea
-                          name="dont_like_details"
-                          placeholder="What would make you like it more?"
-                          rows="2"
-                          maxlength="250"
-                        ></textarea>
+                        <label>
+                          <input type="checkbox" name="feedback[]" value="button_pusher" />
+                          I just like to push buttons to see what they do
+                        </label>
                       </div>
                       <div class="feedback-details-field" data-for="wrong" style="display: none;">
                         <textarea
@@ -174,8 +166,8 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
                         ></textarea>
                       </div>
                       <div class="feedback-form-buttons">
-                        <button 
-                          type="submit" 
+                        <button
+                          type="submit"
                           class="feedback-send-btn"
                           disabled={@sending_feedback}
                         >
@@ -203,20 +195,20 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
           <% end %>
         </div>
       </div>
-      
+
       <!-- Component styles -->
       <style>
         .summary-modal-footer {
           margin-top: 15px;
         }
-        
+
         .footer-top-row {
           display: flex;
           justify-content: space-between;
           align-items: flex-start;
           width: 100%;
         }
-        
+
         .footer-left-section {
           display: flex;
           flex-direction: column;
@@ -224,20 +216,20 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
           gap: 4px;
           flex: 1;
         }
-        
+
         .copy-to-clipboard-btn {
           align-self: flex-end;
         }
-        
+
         .feedback-section {
           position: relative;
         }
-        
+
         .feedback-buttons {
           display: flex;
           gap: 8px;
         }
-        
+
         .feedback-btn {
           background: none;
           border: none;
@@ -249,29 +241,29 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
           opacity: 0.7;
           transition: opacity 0.2s;
         }
-        
+
         .feedback-btn:hover {
           opacity: 1;
           background-color: rgba(0,0,0,0.05);
         }
-        
+
         .feedback-thumbs-btn {
           display: flex;
           gap: 4px;
         }
-        
+
         .thumb-icon {
           width: 14px;
           height: 14px;
         }
-        
+
         .feedback-thanks {
           font-size: 12px;
           color: #2d5016;
           font-weight: normal;
           padding: 2px 0;
         }
-        
+
         .feedback-overlay {
           position: absolute;
           top: 50%;
@@ -285,25 +277,25 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
           border: 1px solid #ddd;
           box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
-        
+
         .feedback-form {
           padding: 16px;
         }
-        
+
         .feedback-form h4 {
           margin: 0 0 12px 0;
           color: #333;
           font-size: 14px;
           font-weight: 600;
         }
-        
+
         .feedback-checkboxes {
           display: flex;
           flex-direction: column;
           gap: 6px;
           margin-bottom: 12px;
         }
-        
+
         .feedback-checkboxes label {
           display: flex;
           align-items: center;
@@ -312,13 +304,13 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
           font-size: 13px;
           color: #555;
         }
-        
+
         .feedback-checkboxes input[type="checkbox"] {
           margin: 0;
           width: 14px;
           height: 14px;
         }
-        
+
         .feedback-details-field {
           margin-bottom: 12px;
         }
@@ -368,13 +360,13 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
           color: #4a6da7;
           text-decoration: underline;
         }
-        
+
         .feedback-form-buttons {
           display: flex;
           gap: 8px;
           justify-content: flex-end;
         }
-        
+
         .feedback-send-btn {
           padding: 8px 16px;
           border: none;
@@ -387,18 +379,18 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
           transition: all 0.2s ease;
           font-family: 'IM Fell DW Pica', serif;
         }
-        
+
         .feedback-send-btn:hover:not(:disabled) {
           background-color: #333;
           transform: translateY(-1px);
         }
-        
+
         .feedback-send-btn:disabled {
           opacity: 0.6;
           cursor: not-allowed;
           transform: none;
         }
-        
+
         .feedback-cancel-btn {
           padding: 8px 16px;
           border: none;
@@ -411,26 +403,26 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
           transition: all 0.2s ease;
           font-family: 'IM Fell DW Pica', serif;
         }
-        
+
         .feedback-cancel-btn:hover {
           background-color: #666;
           transform: translateY(-1px);
         }
-        
+
         /* Dark mode compatibility */
         body.dark-mode .feedback-overlay {
           background-color: rgba(40,40,40,0.98);
           border-color: #555;
         }
-        
+
         body.dark-mode .feedback-form h4 {
           color: #fff;
         }
-        
+
         body.dark-mode .feedback-checkboxes label {
           color: #ccc;
         }
-        
+
         body.dark-mode .feedback-details-field textarea {
           background-color: #333;
           color: #fff;
@@ -448,25 +440,25 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
         body.dark-mode .feedback-validation-modal a {
           color: #7ab3e8;
         }
-        
+
         body.dark-mode .feedback-thanks {
           color: #90EE90;
         }
-        
+
         body.dark-mode .feedback-btn:hover {
           background-color: rgba(255,255,255,0.05);
         }
-        
+
         body.dark-mode .feedback-send-btn {
           background-color: #F9F9DF;
           color: #333;
         }
-        
+
         body.dark-mode .feedback-send-btn:hover:not(:disabled) {
           background-color: #F0F0D0;
           color: #333;
         }
-        
+
         body.dark-mode .feedback-send-btn:disabled {
           opacity: 0.6;
           cursor: not-allowed;
@@ -478,11 +470,11 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
 
   @impl true
   def mount(socket) do
-    {:ok, assign(socket, 
-      show: false, 
-      loading: false, 
-      content: "", 
-      title: "", 
+    {:ok, assign(socket,
+      show: false,
+      loading: false,
+      content: "",
+      title: "",
       content_type: "",
       error: nil,
       generation_params: %{},
@@ -504,7 +496,7 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
       # Show confirmation dialog
       {:noreply, assign(socket, show_confirmation: true)}
     else
-      # Not loading - close normally  
+      # Not loading - close normally
       {:noreply, assign(socket, show: false)}
     end
   end
@@ -516,12 +508,12 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
         # Force close - user confirmed they want to cancel
         require Logger
         Logger.info("User confirmed cancellation - stopping generation")
-        
+
         # Notify parent LiveView that user canceled generation
         send(self(), {:cancel_generation, socket.assigns.id})
-        
+
         {:noreply, assign(socket, show: false, loading: false, error: nil, canceled: true, show_confirmation: false)}
-      
+
       _ ->
         # Fallback handler
         {:noreply, assign(socket, show: false)}
@@ -543,24 +535,24 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
   def handle_event("retry_generation", _, socket) do
     params = socket.assigns.generation_params
     content_type = socket.assigns.content_type
-    
+
     socket = assign(socket, loading: true, error: nil)
-    
+
     # Map content type to the message type expected by LiveView
     message_type = case content_type do
       "Play Summary" -> "play_summary"
-      "Scene Summary" -> "scene_summary" 
+      "Scene Summary" -> "scene_summary"
       "Paraphrasing" -> "paraphrasing"
       _ -> String.downcase(content_type)
     end
-    
+
     # Use PubSub to communicate with parent LiveView
     Phoenix.PubSub.broadcast(
       MonoPhoenixV01.PubSub,
       "play_page_events",
       {:generate_summary, message_type, params, socket.assigns.id}
     )
-    
+
     {:noreply, socket}
   end
 
@@ -579,14 +571,14 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
   def handle_event("reset_feedback_success", _params, socket) do
     require Logger
     Logger.info("Resetting feedback success - before: feedback_success=#{socket.assigns.feedback_success}, feedback_completed=#{socket.assigns.feedback_completed}")
-    
+
     # Only reset the "Thanks!" message, but explicitly keep feedback_completed true
     # so the thumbs buttons don't reappear
-    socket = assign(socket, 
+    socket = assign(socket,
       feedback_success: false,
       feedback_completed: socket.assigns.feedback_completed
     )
-    
+
     Logger.info("After reset: feedback_success=#{socket.assigns.feedback_success}, feedback_completed=#{socket.assigns.feedback_completed}")
     {:noreply, socket}
   end
@@ -595,13 +587,9 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
   def handle_event("submit_feedback", params, socket) do
     feedback_items = Map.get(params, "feedback", [])
     wrong_details = Map.get(params, "wrong_details", "")
-    dont_like_details = Map.get(params, "dont_like_details", "")
 
     # Validate required details fields (at least 3 words)
     validation_error = cond do
-      "dont_like" in feedback_items && word_count(dont_like_details) < 3 ->
-        "I can't make it better if you can't tell me what's wrong with it."
-
       "wrong" in feedback_items && word_count(wrong_details) < 3 ->
         ~s(Please tell me how it's wrong if you want it fixed. See also<br>FAQ: <a href="https://www.shakespeare-monologues.org/faq#Q1" target="_blank">Why is the text of a monologue on this site a little different from the copy I have?</a>)
 
@@ -614,12 +602,7 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
     else
       socket = assign(socket, sending_feedback: true)
 
-      # Combine both detail fields for the email
-      combined_details = [dont_like_details, wrong_details]
-        |> Enum.reject(&(&1 == ""))
-        |> Enum.join("\n")
-
-      case send_feedback_email(socket.assigns, feedback_items, combined_details) do
+      case send_feedback_email(socket.assigns, feedback_items, wrong_details) do
         {:ok, _result} ->
           {:noreply, assign(socket, feedback_success: true, feedback_completed: true, show_feedback: false, sending_feedback: false)}
 
@@ -640,7 +623,7 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
   def update(%{action: "show_play_summary", play_title: play_title}, socket) do
     socket = assign(socket,
       show: true,
-      loading: true, 
+      loading: true,
       title: "Play Summary: #{play_title}",
       content_type: "Play Summary",
       error: nil,
@@ -651,7 +634,7 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
       sending_feedback: false,
       show_feedback: false
     )
-    
+
     {:ok, socket}
   end
 
@@ -660,7 +643,7 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
     socket = assign(socket,
       show: true,
       loading: true,
-      title: "Scene Summary: #{play_title} - #{location}", 
+      title: "Scene Summary: #{play_title} - #{location}",
       content_type: "Scene Summary",
       error: nil,
       generation_params: %{play_title: play_title, location: location},
@@ -670,7 +653,7 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
       sending_feedback: false,
       show_feedback: false
     )
-    
+
     {:ok, socket}
   end
 
@@ -680,7 +663,7 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
       show: true,
       loading: true,
       title: "Modern Paraphrasing: #{character}",
-      content_type: "Paraphrasing", 
+      content_type: "Paraphrasing",
       error: nil,
       generation_params: %{monologue_id: monologue_id, monologue_text: monologue_text},
       canceled: false,
@@ -689,7 +672,7 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
       sending_feedback: false,
       show_feedback: false
     )
-    
+
     {:ok, socket}
   end
 
@@ -733,15 +716,15 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
   defp fetch_monologue_details(monologue_id) do
     import Ecto.Query
     require Logger
-    
+
     Logger.info("Fetching monologue details for ID: #{inspect(monologue_id)} (type: #{inspect(is_integer(monologue_id))})")
-    
+
     try do
       # First, let's see if we can find the record at all
       count_query = from(m in "monologues", where: m.id == ^monologue_id, select: count())
       count_result = MonoPhoenixV01.Repo.one(count_query)
       Logger.info("Found #{count_result} records matching ID #{monologue_id}")
-      
+
       result = MonoPhoenixV01.Repo.one(
         from(m in "monologues",
           where: m.id == ^monologue_id,
@@ -753,14 +736,14 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
           }
         )
       )
-      
+
       Logger.info("Raw query result: #{inspect(result)}")
-      
+
       # Let's also log what fields are nil vs empty string
       if result do
         Logger.info("Field values - location: #{inspect(result.location)}, character: #{inspect(result.character)}, firstline: #{inspect(result.firstline)}")
       end
-      
+
       result || %{}
     rescue
       error ->
@@ -870,20 +853,20 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
     ---
     This feedback was submitted via the shakespeare-monologues.org feedback form.
     """
-    
+
     email_struct = Swoosh.Email.new()
     |> Swoosh.Email.to("shakesmonos@shults.org")
     |> Swoosh.Email.from({"ShakesMonos AI Feedback", "shakesmonos@shults.org"})
     |> Swoosh.Email.subject("AI Content Feedback: #{assigns.content_type}")
     |> Swoosh.Email.text_body(email_body)
-    
+
     MonoPhoenixV01.Mailer.deliver(email_struct)
   end
 
 
   defp render_markdown(content) do
     case Earmark.as_html(content) do
-      {:ok, html, _messages} -> 
+      {:ok, html, _messages} ->
         # Post-process to fix paraphrasing formatting
         html
         |> String.replace(~r/Original:/i, "<strong>Original:</strong>")
