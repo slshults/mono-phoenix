@@ -26,13 +26,15 @@
       })();
 
       // Whether analytics/advertising cookies should be active right now.
-      // An explicit choice always wins; absent a choice, non-EU visitors
-      // default on and EU visitors default off.
+      // An explicit choice always wins; absent a choice, honor Global
+      // Privacy Control (CPRA treats GPC as a valid opt-out signal); then
+      // fall back to geo defaults — non-EU on, EU off.
       window.__consentGranted = function () {
         try {
           var c = localStorage.getItem('consent_choice');
           if (c === 'granted') return true;
           if (c === 'declined') return false;
+          if (navigator.globalPrivacyControl) return false;
           return !window.__consentEu;
         } catch (e) {
           return false;
@@ -394,6 +396,7 @@
     <%= if MonoPhoenixV01Web.UserAuth.auth_state(@conn.assigns[:current_scope]) == :unauthenticated and
            not String.starts_with?(@conn.request_path, "/users/log-in") and
            not String.starts_with?(@conn.request_path, "/signup") and
+           @conn.request_path != "/home" and
            @conn.request_path != "/privacy" and
            @conn.request_path != "/tos" and
            @conn.request_path != "/maintenance" do %>

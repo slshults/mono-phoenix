@@ -869,7 +869,11 @@ document.addEventListener('DOMContentLoaded', function() {
   const banner = document.getElementById('consent-banner');
   if (!banner) return;
 
-  if (!localStorage.getItem('consent_choice')) {
+  // Suppress the banner when Global Privacy Control is on — GPC is itself
+  // a valid opt-out signal under CPRA, and showing an "Accept" prompt
+  // immediately after risks looking like a nudge to override it.
+  // __consentGranted() already returns false for these visitors.
+  if (!localStorage.getItem('consent_choice') && !navigator.globalPrivacyControl) {
     banner.style.display = 'block';
   }
 
@@ -906,6 +910,48 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof posthog !== 'undefined' && typeof posthog.opt_out_capturing === 'function') {
       posthog.opt_out_capturing();
     }
+    // opt_out + consent:denied stop future tracking but leave existing
+    // cookies and storage in place. Sweep them so Decline visibly clears
+    // state. Covers PostHog (ph_phc_<token>), GA4 (_ga, _ga_<id>, _gid,
+    // _gat*), and AdSense's __gads / __gpi if any were set.
+    var host = location.hostname;
+    var domains = ['', host, '.' + host];
+    var parts = host.split('.');
+    if (parts.length >= 2) domains.push('.' + parts.slice(-2).join('.'));
+    document.cookie.split(';').forEach(function(c) {
+      var name = c.split('=')[0].trim();
+      if (!name) return;
+      var matches =
+        name === '_ga' || name === '_gid' || name === '_gat' ||
+        name === '__gads' || name === '__gpi' ||
+        name.indexOf('_ga_') === 0 ||
+        name.indexOf('_gat_') === 0 ||
+        name.indexOf('ph_phc_') === 0;
+      if (!matches) return;
+      domains.forEach(function(d) {
+        var attr = d ? '; domain=' + d : '';
+        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/' + attr;
+      });
+    });
+    // Nuke PostHog state in localStorage + sessionStorage, but keep the
+    // __ph_opt_in_out_ flag so PostHog respects the choice if it ever
+    // re-initializes. consent_choice + darkMode also stay.
+    try {
+      var sweep = function(store) {
+        var doomed = [];
+        for (var i = 0; i < store.length; i++) {
+          var k = store.key(i);
+          if (!k) continue;
+          if (k.indexOf('__ph_opt_in_out_') === 0) continue;
+          if (k.indexOf('ph_') === 0 || k.indexOf('posthog') === 0) {
+            doomed.push(k);
+          }
+        }
+        doomed.forEach(function(k) { store.removeItem(k); });
+      };
+      sweep(localStorage);
+      sweep(sessionStorage);
+    } catch (e) {}
     banner.style.display = 'none';
   });
 });
