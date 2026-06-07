@@ -53,10 +53,25 @@ defmodule MonoPhoenixV01Web.PatronSignupLive do
                   checked={@billing_period == "yearly"}
                 /> $10 per year (best value)
               </label>
+                          <.input
+              field={@form[:email]}
+              type="email"
+              label="Email"
+              autocomplete="username"
+              required
+              phx-mounted={JS.focus()}
+            />
               <p :for={error <- billing_period_errors(@form)} class="mt-1 text-sm text-red-600">
                 {error}
               </p>
             </fieldset>
+                        <.button
+              phx-disable-with="Redirecting to payment…"
+              class="btn btn-primary mt-3"
+            >
+              Support the site →
+            </.button>
+          </.form>
 
             <%!--
               TODO: add visible links to /privacy and /tos in this signup
@@ -77,15 +92,6 @@ defmodule MonoPhoenixV01Web.PatronSignupLive do
               </p>
             </div>
 
-            <.input
-              field={@form[:email]}
-              type="email"
-              label="Email"
-              autocomplete="username"
-              required
-              phx-mounted={JS.focus()}
-            />
-
             <div class="instructional text-sm text-gray-700 mt-4 mb-4">
               <p>
                 We're not going to make you verify your email address, but it is <strong>very important</strong> you enter a
@@ -94,13 +100,11 @@ defmodule MonoPhoenixV01Web.PatronSignupLive do
               </p>
             </div>
 
-            <.button
-              phx-disable-with="Redirecting to payment…"
-              class="btn btn-primary mt-3"
-            >
-              Support the site →
-            </.button>
-          </.form>
+            <div class="instructional text-sm text-gray-700 mt-4 mb-4">
+
+                Links to our privacy policy and terms of service are found in the footer menu below.
+            </div>
+
         <% end %>
       </div>
     </Layouts.app>
