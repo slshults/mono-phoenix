@@ -1,107 +1,3 @@
-<%= if assigns[:auth_state] in [:unauthenticated, nil] and !assigns[:hide_launch_promo] do %>
-  <%!--
-    Phase 4 launch promo: announces paid accounts to first-time
-    visitors. Shown once per 30 days per device via localStorage.
-    Skipped for:
-      - patrons + lapsed users (already know about paid accounts)
-      - LVs that set `@hide_launch_promo` (login + signup pages —
-        visitor is already in the conversion funnel, the modal would
-        be off-message)
-  --%>
-  <%!--
-    phx-update="ignore" keeps LV's morphdom from reverting the
-    `display:flex` style our inline JS sets — otherwise the modal
-    flashes visible for a frame and disappears the moment the
-    WebSocket connects.
-  --%>
-  <div
-    id="paid-accounts-promo"
-    class="paid-accounts-promo"
-    style="display:none;"
-    role="dialog"
-    aria-labelledby="paid-accounts-promo-title"
-    phx-update="ignore"
-  >
-    <div class="paid-accounts-promo-card">
-      <button
-        type="button"
-        id="paid-accounts-promo-close"
-        class="paid-accounts-promo-close"
-        aria-label="Close"
-      >&times;</button>
-      <h3 id="paid-accounts-promo-title" class="paid-accounts-promo-title">New:</h3>
-      <p class="paid-accounts-promo-body">
-        You can now support the site to <strong>remove ads</strong> and use a <strong>favorites list</strong> to keep track of your monologues!
-      </p>
-      <p class="paid-accounts-promo-price">$1.25/mo or $10/year.</p>
-      <div class="paid-accounts-promo-actions">
-        <button type="button" id="paid-accounts-promo-dismiss" class="btn btn-soft">
-          No, I love ads
-        </button>
-        <a id="paid-accounts-promo-accept" href="/signup" class="btn btn-primary">
-          Support the site
-        </a>
-      </div>
-    </div>
-  </div>
-  <script>
-    (function() {
-      // Guard so the layout re-running (it re-renders on every LV
-      // navigation) doesn't double-show the modal or re-attach the
-      // document-level click listener below.
-      if (window.__paidAccountsPromoInit) return;
-      window.__paidAccountsPromoInit = true;
-
-      var key = 'paid_accounts_promo_dismissed_at';
-      var thirtyDays = 30 * 24 * 60 * 60 * 1000;
-
-      function reveal() {
-        var elem = document.getElementById('paid-accounts-promo');
-        if (!elem) return;
-        var dismissedAt = parseInt(localStorage.getItem(key) || '0', 10);
-        if (dismissedAt && (Date.now() - dismissedAt) < thirtyDays) return;
-        elem.style.display = 'flex';
-        if (typeof posthog !== 'undefined') {
-          posthog.capture('paid_accounts_promo_shown');
-        }
-      }
-
-      function dismiss(reason) {
-        localStorage.setItem(key, Date.now().toString());
-        var elem = document.getElementById('paid-accounts-promo');
-        if (elem) elem.style.display = 'none';
-        if (typeof posthog !== 'undefined') {
-          posthog.capture('paid_accounts_promo_dismissed', { reason: reason });
-        }
-      }
-
-      // Document-level event delegation — works regardless of how LV
-      // re-renders the surrounding DOM, and the listener only ever
-      // attaches once (guarded by __paidAccountsPromoInit above).
-      document.addEventListener('click', function(e) {
-        var t = e.target;
-        if (!t || !t.closest) return;
-
-        if (t.closest('#paid-accounts-promo-dismiss')) {
-          dismiss('love_ads');
-        } else if (t.closest('#paid-accounts-promo-close')) {
-          dismiss('closed_x');
-        } else if (t.closest('#paid-accounts-promo-accept')) {
-          // Stamp the localStorage entry before the link navigates
-          // so the user doesn't see this again on the post-Checkout
-          // back-navigation. Don't preventDefault — let the <a> go.
-          localStorage.setItem(key, Date.now().toString());
-          if (typeof posthog !== 'undefined') {
-            posthog.capture('paid_accounts_promo_accepted');
-          }
-        }
-      });
-
-      reveal();
-    })();
-  </script>
-<% end %>
-
 <%= if assigns[:show_ph_widget] do %>
   <%!--
     Enable the PostHog conversations widget on this LiveView page.
@@ -245,7 +141,7 @@
       <a href="/home">Home</a>&nbsp; · <a
         href={MonoPhoenixV01Web.UserAuth.favs_target(assigns[:current_scope])}
         phx-click={if assigns[:auth_state] != :patron, do: "show_favs_auth_modal"}
-      >Favs</a>&nbsp; · <a href="/faq">FAQ &nbsp;</a>&nbsp; · <a href="/aboutus">About</a>&nbsp; · <a href="/privacy">Privacy</a>&nbsp; · <a href="/faq?contact=true">Contact</a>&nbsp; ·
+      >Favs</a>&nbsp; · <a href="/faq">FAQ &nbsp;</a>&nbsp; · <a href="/aboutus">About</a>&nbsp; · <a href="/privacy">Privacy</a>&nbsp; · <a href="/tos">ToS</a>&nbsp; · <a href="/faq?contact=true">Contact</a>&nbsp; ·
       <div style="display: inline; height:0px;width:0px;min-width:0px;padding:0px;accent-font;">
         <a
           class="a2a_dd"

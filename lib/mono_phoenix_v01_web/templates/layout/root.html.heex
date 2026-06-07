@@ -1,6 +1,45 @@
 <!DOCTYPE html>
 <html lang="en" class={fetch_dark_mode_class(@conn)}>
   <head>
+    <!-- Consent region detection (timezone-based). EU/EEA visitors keep
+         the opt-in flow (analytics stays off until they click Accept);
+         everyone else defaults to opt-out (analytics on until they click
+         Decline). Browser timezone is a lightweight, dependency-free proxy
+         for location, and we bias toward "EU" when unsure — the safer
+         default. Defined before the gtag/PostHog snippets below so both
+         route their gating through __consentGranted(). -->
+    <script>
+      window.__consentEu = (function () {
+        try {
+          var tz = (Intl.DateTimeFormat().resolvedOptions().timeZone || '');
+          if (tz.indexOf('Europe/') === 0) return true;
+          // EU/EEA zones that don't sit under Europe/* — Cyprus, Iceland,
+          // and the Atlantic islands of Spain and Portugal.
+          return [
+            'Asia/Nicosia', 'Asia/Famagusta', 'Atlantic/Reykjavik',
+            'Atlantic/Canary', 'Atlantic/Madeira', 'Atlantic/Azores',
+            'Africa/Ceuta'
+          ].indexOf(tz) !== -1;
+        } catch (e) {
+          return true; // can't tell → treat as EU (opt-in), the safe default
+        }
+      })();
+
+      // Whether analytics/advertising cookies should be active right now.
+      // An explicit choice always wins; absent a choice, non-EU visitors
+      // default on and EU visitors default off.
+      window.__consentGranted = function () {
+        try {
+          var c = localStorage.getItem('consent_choice');
+          if (c === 'granted') return true;
+          if (c === 'declined') return false;
+          return !window.__consentEu;
+        } catch (e) {
+          return false;
+        }
+      };
+    </script>
+
     <!-- begin Google tag (gtag.js) with Consent Mode v2 -->
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -11,7 +50,7 @@
         'ad_personalization': 'denied',
         'analytics_storage': 'denied'
       });
-      if (localStorage.getItem('consent_choice') === 'granted') {
+      if (window.__consentGranted()) {
         gtag('consent', 'update', {
           'ad_storage': 'granted',
           'ad_user_data': 'granted',
@@ -301,7 +340,11 @@
 
 <script>
     !function(t,e){var o,n,p,r;e.__SV||(window.posthog && window.posthog.__loaded)||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js?v=<%= Date.utc_today() %>",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init ns hs wi ls ds rs os capture calculateEventProperties fs register register_once register_for_session unregister unregister_for_session bs getFeatureFlag getFeatureFlagPayload getFeatureFlagResult isFeatureEnabled reloadFeatureFlags updateFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey displaySurvey cancelPendingSurvey canRenderSurvey canRenderSurveyAsync identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException startExceptionAutocapture stopExceptionAutocapture loadToolbar get_property getSessionProperty gs cs createPersonProfile setInternalOrTestUser ts ys opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing get_explicit_consent_status is_capturing clear_opt_in_out_capturing vs debug M ps getPageViewId captureTraceFeedback captureTraceMetric Xr".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
-    if (localStorage.getItem('consent_choice') === 'granted') {
+
+    // Single source of truth for the PostHog init call. Used both here
+    // (initial init for non-EU visitors / anyone with prior consent)
+    // and from assets/js/app.js (when the Accept button is clicked).
+    window.__initPostHog = function() {
         var isLocalDev = ['localhost', '127.0.0.1'].indexOf(window.location.hostname) !== -1;
         posthog.init('phc_6aYLpkqQsmYJanYseJ8SJcOMicomCxj9v9Pl6hnZQS3', {
             api_host: 'https://autolycus.shakespeare-monologues.org',
@@ -310,6 +353,10 @@
             person_profiles: 'identified_only',
             disable_session_recording: isLocalDev,
         });
+    };
+
+    if (window.__consentGranted()) {
+        window.__initPostHog();
     }
 </script>
   </head>
@@ -327,6 +374,108 @@
         </div>
       </div>
     </div>
+    <%!--
+      Phase 4 launch promo: announces paid accounts to visitors. Shown
+      once per 30 days per device via localStorage. Lives in the root
+      layout (rendered for every request) so it appears on BOTH
+      static-controller pages (/home, /faq, …) and LiveView pages.
+      Skipped for:
+        - patrons + lapsed users (already know about paid accounts) —
+          via auth_state/1 on the request's current_scope
+        - the login + signup flows (visitor is already in the conversion
+          funnel, so the modal would be off-message)
+    --%>
+    <%= if MonoPhoenixV01Web.UserAuth.auth_state(@conn.assigns[:current_scope]) == :unauthenticated and
+           not String.starts_with?(@conn.request_path, "/users/log-in") and
+           not String.starts_with?(@conn.request_path, "/signup") and
+           @conn.request_path != "/privacy" and
+           @conn.request_path != "/tos" and
+           @conn.request_path != "/maintenance" do %>
+      <div
+        id="paid-accounts-promo"
+        class="paid-accounts-promo"
+        style="display:none;"
+        role="dialog"
+        aria-labelledby="paid-accounts-promo-title"
+      >
+        <div class="paid-accounts-promo-card">
+          <button
+            type="button"
+            id="paid-accounts-promo-close"
+            class="paid-accounts-promo-close"
+            aria-label="Close"
+          >&times;</button>
+          <h3 id="paid-accounts-promo-title" class="paid-accounts-promo-title">New:</h3>
+          <p class="paid-accounts-promo-body">
+            You can now support the site to <strong>remove ads</strong> and use a <strong>favorites list</strong> to keep track of your monologues!
+          </p>
+          <p class="paid-accounts-promo-price">$1.25/mo or $10/year.</p>
+          <div class="paid-accounts-promo-actions">
+            <button type="button" id="paid-accounts-promo-dismiss" class="btn btn-soft">
+              No, I love ads
+            </button>
+            <a id="paid-accounts-promo-accept" href="/signup" class="btn btn-primary">
+              Support the site
+            </a>
+          </div>
+        </div>
+      </div>
+      <script>
+        (function() {
+          // Guard so this initialises only once per page load — the
+          // document-level click listener below must attach exactly once.
+          if (window.__paidAccountsPromoInit) return;
+          window.__paidAccountsPromoInit = true;
+
+          var key = 'paid_accounts_promo_dismissed_at';
+          var thirtyDays = 30 * 24 * 60 * 60 * 1000;
+
+          function reveal() {
+            var elem = document.getElementById('paid-accounts-promo');
+            if (!elem) return;
+            var dismissedAt = parseInt(localStorage.getItem(key) || '0', 10);
+            if (dismissedAt && (Date.now() - dismissedAt) < thirtyDays) return;
+            elem.style.display = 'flex';
+            if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
+              posthog.capture('paid_accounts_promo_shown');
+            }
+          }
+
+          function dismiss(reason) {
+            localStorage.setItem(key, Date.now().toString());
+            var elem = document.getElementById('paid-accounts-promo');
+            if (elem) elem.style.display = 'none';
+            if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
+              posthog.capture('paid_accounts_promo_dismissed', { reason: reason });
+            }
+          }
+
+          // Document-level event delegation — works regardless of how LV
+          // re-renders the surrounding DOM, and the listener only ever
+          // attaches once (guarded by __paidAccountsPromoInit above).
+          document.addEventListener('click', function(e) {
+            var t = e.target;
+            if (!t || !t.closest) return;
+
+            if (t.closest('#paid-accounts-promo-dismiss')) {
+              dismiss('love_ads');
+            } else if (t.closest('#paid-accounts-promo-close')) {
+              dismiss('closed_x');
+            } else if (t.closest('#paid-accounts-promo-accept')) {
+              // Stamp the localStorage entry before the link navigates
+              // so the user doesn't see this again on the post-Checkout
+              // back-navigation. Don't preventDefault — let the <a> go.
+              localStorage.setItem(key, Date.now().toString());
+              if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
+                posthog.capture('paid_accounts_promo_accepted');
+              }
+            }
+          });
+
+          reveal();
+        })();
+      </script>
+    <% end %>
     <div
       id="dark-mode-overlay"
       style="display: none; background-color: #222222; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 99999;"

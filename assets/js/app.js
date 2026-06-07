@@ -4,7 +4,9 @@ import "../css/app.css"
 // Import the dark mode toggle script
 import "./dark_mode"
 
-// PostHog analytics is handled via the web snippet in root.html.heex
+// PostHog: the loader stub, the window.__initPostHog helper, and the
+// initial gated init live in root.html.heex. This file handles the
+// consent-Accept re-init, the identify bridge, and event capture.
 
 // If you want to use Phoenix channels, run `mix help phx.gen.channel`
 // to get started and then uncomment the line below.
@@ -721,7 +723,7 @@ window.openSupportWidget = function() {
   if (clickOpenChat()) return false; // panel opened, prevent link navigation
   // PostHog not available — show cookie-chat-modal if user hasn't consented
   var chatModal = document.getElementById('cookie-chat-modal');
-  if (chatModal && localStorage.getItem('consent_choice') !== 'granted') {
+  if (chatModal && !window.__consentGranted()) {
     chatModal.style.display = 'block';
     return false;
   }
@@ -842,7 +844,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const chatModal = document.getElementById('cookie-chat-modal');
   if (!chatIcon || !chatModal) return;
 
-  if (localStorage.getItem('consent_choice') !== 'granted') {
+  if (!window.__consentGranted()) {
     chatIcon.style.display = 'block';
   }
 
@@ -879,21 +881,31 @@ document.addEventListener('DOMContentLoaded', function() {
       'ad_personalization': 'granted',
       'analytics_storage': 'granted'
     });
-    if (typeof posthog !== 'undefined' && !posthog.__loaded) {
-        var isLocalDev = ['localhost', '127.0.0.1'].indexOf(window.location.hostname) !== -1;
-        posthog.init('phc_6aYLpkqQsmYJanYseJ8SJcOMicomCxj9v9Pl6hnZQS3', {
-            api_host: 'https://autolycus.shakespeare-monologues.org',
-            ui_host: 'https://us.posthog.com',
-            defaults: '2026-01-30',
-            person_profiles: 'identified_only',
-            disable_session_recording: isLocalDev,
-        });
+    if (typeof posthog !== 'undefined' && !posthog.__loaded &&
+        typeof window.__initPostHog === 'function') {
+      window.__initPostHog();
+    }
+    // Symmetric with Decline's opt-out: re-enable capture in case this
+    // visitor had previously opted out (e.g. declined earlier this session).
+    if (typeof posthog !== 'undefined' && typeof posthog.opt_in_capturing === 'function') {
+      posthog.opt_in_capturing();
     }
     banner.style.display = 'none';
   });
 
   document.getElementById('consent-decline').addEventListener('click', function() {
     localStorage.setItem('consent_choice', 'declined');
+    // Non-EU visitors may already have analytics running (opt-out model),
+    // so actively withdraw consent rather than only hiding the banner.
+    gtag('consent', 'update', {
+      'ad_storage': 'denied',
+      'ad_user_data': 'denied',
+      'ad_personalization': 'denied',
+      'analytics_storage': 'denied'
+    });
+    if (typeof posthog !== 'undefined' && typeof posthog.opt_out_capturing === 'function') {
+      posthog.opt_out_capturing();
+    }
     banner.style.display = 'none';
   });
 });

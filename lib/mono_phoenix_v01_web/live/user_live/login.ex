@@ -104,8 +104,7 @@ defmodule MonoPhoenixV01Web.UserLive.Login do
      assign(socket,
        form: form,
        trigger_submit: false,
-       show_ph_widget: true,
-       hide_launch_promo: true
+       show_ph_widget: true
      )}
   end
 

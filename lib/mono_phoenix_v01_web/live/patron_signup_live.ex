@@ -58,6 +58,13 @@ defmodule MonoPhoenixV01Web.PatronSignupLive do
               </p>
             </fieldset>
 
+            <%!--
+              TODO: add visible links to /privacy and /tos in this signup
+              flow, e.g. "By signing up you also agree to our Privacy
+              Policy and Terms of Service." Required so the consent
+              moment matches what the ToS now says about Patron
+              subscriptions.
+            --%>
             <div class="privacy-block text-sm text-gray-700 mt-4 mb-4">
               <p>
                 We'll use your email only for login and billing-related stuff.
@@ -110,7 +117,6 @@ defmodule MonoPhoenixV01Web.PatronSignupLive do
      |> assign(:already_active_email, nil)
      |> assign(:billing_period, "monthly")
      |> assign(:show_ph_widget, true)
-     |> assign(:hide_launch_promo, true)
      |> assign_form(changeset)
      |> LiveFavoritesHelpers.push_posthog("signup_page_viewed", %{
        default_billing_period: "monthly"

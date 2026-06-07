@@ -46,6 +46,15 @@ defmodule MonoPhoenixV01Web.StaticPageController do
     )
   end
 
+  def tos(conn, _params) do
+    page_title = "Terms of Service"
+
+    render(conn, "tos.html",
+      page_title: page_title,
+      layout: {MonoPhoenixV01Web.LayoutView, "static.html"}
+    )
+  end
+
   def maintenance(conn, _params) do
     page_title = "Our Apologies. We'll be back."
 

@@ -35,6 +35,9 @@ npm-debug.log
 # Visual Studio Code Elixir LS build artifacts
 .elixir_ls/
 
+# Playwright MCP browser-testing artifacts (console logs + page snapshots)
+/.playwright-mcp/
+
 # Secrets, creds, n such
 /config/prod.secret.txt
 /config/dev.exs
