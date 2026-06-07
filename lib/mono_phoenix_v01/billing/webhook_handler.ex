@@ -60,7 +60,10 @@ defmodule MonoPhoenixV01.Billing.WebhookHandler do
       new_status = normalize_status(get(subscription, "status"))
 
       attrs =
-        %{subscription_status: new_status}
+        %{
+          subscription_status: new_status,
+          cancel_at_period_end: extract_cancel_at_period_end(subscription)
+        }
         |> maybe_put_period_end(Billing.current_period_end_unix(subscription))
 
       case update_status(user, attrs) do
@@ -78,7 +81,11 @@ defmodule MonoPhoenixV01.Billing.WebhookHandler do
   defp dispatch("customer.subscription.deleted", subscription) do
     with cus_id when is_binary(cus_id) <- get(subscription, "customer"),
          %_{} = user <- Accounts.get_user_by_stripe_customer_id(cus_id) do
-      case update_status(user, %{subscription_status: "canceled", current_period_end: nil}) do
+      case update_status(user, %{
+             subscription_status: "canceled",
+             current_period_end: nil,
+             cancel_at_period_end: false
+           }) do
         {:ok, updated_user} -> track_subscription_canceled(updated_user)
         _ -> :ok
       end
@@ -143,6 +150,18 @@ defmodule MonoPhoenixV01.Billing.WebhookHandler do
   end
 
   defp maybe_put_period_end(attrs, _), do: attrs
+
+  # Pulls `cancel_at_period_end` from a Stripe subscription payload. Falls
+  # back to false so we explicitly overwrite the user row on every event —
+  # this is what handles the "Don't cancel subscription" path (Stripe fires
+  # subscription.updated with cancel_at_period_end: false; we need to clear
+  # any stale true value the row was carrying).
+  defp extract_cancel_at_period_end(subscription) do
+    case get(subscription, "cancel_at_period_end") do
+      true -> true
+      _ -> false
+    end
+  end
 
   defp unix_to_datetime(unix) when is_integer(unix),
     do: DateTime.from_unix!(unix)

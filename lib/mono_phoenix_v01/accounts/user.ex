@@ -14,6 +14,7 @@ defmodule MonoPhoenixV01.Accounts.User do
     field :stripe_subscription_id, :string
     field :subscription_status, :string, default: "pending_payment"
     field :current_period_end, :utc_datetime
+    field :cancel_at_period_end, :boolean, default: false
     field :billing_period, :string
     field :welcomed_at, :utc_datetime
 
@@ -176,6 +177,7 @@ defmodule MonoPhoenixV01.Accounts.User do
       :stripe_subscription_id,
       :subscription_status,
       :current_period_end,
+      :cancel_at_period_end,
       :billing_period,
       :confirmed_at
     ])

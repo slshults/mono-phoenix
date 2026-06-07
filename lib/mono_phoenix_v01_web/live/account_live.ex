@@ -53,8 +53,11 @@ defmodule MonoPhoenixV01Web.AccountLive do
 
         <div class="account-fields space-y-2">
           <p><strong>Email:</strong> {@user.email}</p>
-          <p><strong>Subscription status:</strong> {status_label(@user.subscription_status)}</p>
-          <p :if={@user.current_period_end}>
+          <p>
+            <strong>Subscription status:</strong>
+            {status_label(@user.subscription_status, @user.cancel_at_period_end, @user.current_period_end)}
+          </p>
+          <p :if={@user.current_period_end && !pending_cancel?(@user)}>
             <strong>Next renewal:</strong>
             {Calendar.strftime(@user.current_period_end, "%B %-d, %Y")}
           </p>
@@ -74,6 +77,12 @@ defmodule MonoPhoenixV01Web.AccountLive do
     """
   end
 
+  defp status_label("active", true, %DateTime{} = ends_on) do
+    "Active — cancels #{Calendar.strftime(ends_on, "%B %-d, %Y")}"
+  end
+
+  defp status_label(status, _cancel_at_period_end, _ends_on), do: status_label(status)
+
   defp status_label("active"), do: "Active 🙏"
   defp status_label("past_due"), do: "Payment past due"
   defp status_label("canceled"), do: "Canceled"
@@ -81,4 +90,7 @@ defmodule MonoPhoenixV01Web.AccountLive do
   defp status_label("pending_payment"), do: "Awaiting payment"
   defp status_label(nil), do: "—"
   defp status_label(other), do: other
+
+  defp pending_cancel?(%{subscription_status: "active", cancel_at_period_end: true}), do: true
+  defp pending_cancel?(_), do: false
 end
