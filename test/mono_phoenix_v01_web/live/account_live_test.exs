@@ -7,6 +7,15 @@ defmodule MonoPhoenixV01Web.AccountLiveTest do
 
   setup :verify_on_exit!
 
+  # /account mount calls Stripe to check `cancel_at_period_end` for any
+  # active user. Tests that don't care about that state stub it to false.
+  defp stub_not_canceling do
+    MonoPhoenixV01.BillingMock
+    |> stub(:retrieve_subscription, fn _ ->
+      {:ok, %Stripe.Subscription{cancel_at_period_end: false}}
+    end)
+  end
+
   describe "GET /account" do
     test "redirects unauthenticated visitors to log-in", %{conn: conn} do
       assert {:error, {:redirect, %{to: path}}} = live(conn, ~p"/account")
@@ -16,6 +25,7 @@ defmodule MonoPhoenixV01Web.AccountLiveTest do
     test "renders subscription details for the logged-in user", %{conn: conn} do
       user = user_fixture()
       conn = log_in_user(conn, user)
+      stub_not_canceling()
 
       {:ok, _lv, html} = live(conn, ~p"/account")
 
@@ -25,12 +35,42 @@ defmodule MonoPhoenixV01Web.AccountLiveTest do
       assert html =~ "yearly"
       assert html =~ "Manage subscription"
     end
+
+    test "shows pending cancellation when Stripe reports cancel_at_period_end", %{conn: conn} do
+      user = user_fixture()
+      conn = log_in_user(conn, user)
+
+      MonoPhoenixV01.BillingMock
+      |> expect(:retrieve_subscription, fn _ ->
+        {:ok, %Stripe.Subscription{cancel_at_period_end: true}}
+      end)
+
+      {:ok, _lv, html} = live(conn, ~p"/account")
+
+      assert html =~ "Cancelled at the end of the current period"
+      assert html =~ "Cancelled"
+      refute html =~ "Active 🙏"
+    end
+
+    test "falls through to Active when Stripe lookup fails", %{conn: conn} do
+      user = user_fixture()
+      conn = log_in_user(conn, user)
+
+      MonoPhoenixV01.BillingMock
+      |> expect(:retrieve_subscription, fn _ -> {:error, :stripe_unavailable} end)
+
+      {:ok, _lv, html} = live(conn, ~p"/account")
+
+      assert html =~ "Active"
+      refute html =~ "Cancelled at the end of the current period"
+    end
   end
 
   describe "open_portal click" do
     test "redirects to Stripe Customer Portal URL", %{conn: conn} do
       user = user_fixture()
       conn = log_in_user(conn, user)
+      stub_not_canceling()
 
       MonoPhoenixV01.BillingMock
       |> expect(:create_portal_session, fn params ->
@@ -47,6 +87,7 @@ defmodule MonoPhoenixV01Web.AccountLiveTest do
     test "flashes an error when portal creation fails", %{conn: conn} do
       user = user_fixture()
       conn = log_in_user(conn, user)
+      stub_not_canceling()
 
       MonoPhoenixV01.BillingMock
       |> expect(:create_portal_session, fn _ -> {:error, :stripe_unavailable} end)
