@@ -84,6 +84,7 @@ defmodule MonoPhoenixV01Web.Router do
     get("/home", StaticPageController, :home)
     get("/links", StaticPageController, :links)
     get("/privacy", StaticPageController, :privacy)
+    get("/tos", StaticPageController, :tos)
     get("/maintenance", StaticPageController, :maintenance)
     # /contact retired — redirect handled below with other SEO redirects
     get("/hello", PageController, :hello)

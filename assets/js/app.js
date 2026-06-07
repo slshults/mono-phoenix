@@ -4,7 +4,9 @@ import "../css/app.css"
 // Import the dark mode toggle script
 import "./dark_mode"
 
-// PostHog analytics is handled via the web snippet in root.html.heex
+// PostHog: the loader stub, the window.__initPostHog helper, and the
+// initial gated init live in root.html.heex. This file handles the
+// consent-Accept re-init, the identify bridge, and event capture.
 
 // If you want to use Phoenix channels, run `mix help phx.gen.channel`
 // to get started and then uncomment the line below.
@@ -721,7 +723,7 @@ window.openSupportWidget = function() {
   if (clickOpenChat()) return false; // panel opened, prevent link navigation
   // PostHog not available — show cookie-chat-modal if user hasn't consented
   var chatModal = document.getElementById('cookie-chat-modal');
-  if (chatModal && localStorage.getItem('consent_choice') !== 'granted') {
+  if (chatModal && !window.__consentGranted()) {
     chatModal.style.display = 'block';
     return false;
   }
@@ -842,7 +844,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const chatModal = document.getElementById('cookie-chat-modal');
   if (!chatIcon || !chatModal) return;
 
-  if (localStorage.getItem('consent_choice') !== 'granted') {
+  if (!window.__consentGranted()) {
     chatIcon.style.display = 'block';
   }
 
@@ -867,7 +869,11 @@ document.addEventListener('DOMContentLoaded', function() {
   const banner = document.getElementById('consent-banner');
   if (!banner) return;
 
-  if (!localStorage.getItem('consent_choice')) {
+  // Suppress the banner when Global Privacy Control is on — GPC is itself
+  // a valid opt-out signal under CPRA, and showing an "Accept" prompt
+  // immediately after risks looking like a nudge to override it.
+  // __consentGranted() already returns false for these visitors.
+  if (!localStorage.getItem('consent_choice') && !navigator.globalPrivacyControl) {
     banner.style.display = 'block';
   }
 
@@ -879,21 +885,73 @@ document.addEventListener('DOMContentLoaded', function() {
       'ad_personalization': 'granted',
       'analytics_storage': 'granted'
     });
-    if (typeof posthog !== 'undefined' && !posthog.__loaded) {
-        var isLocalDev = ['localhost', '127.0.0.1'].indexOf(window.location.hostname) !== -1;
-        posthog.init('phc_6aYLpkqQsmYJanYseJ8SJcOMicomCxj9v9Pl6hnZQS3', {
-            api_host: 'https://autolycus.shakespeare-monologues.org',
-            ui_host: 'https://us.posthog.com',
-            defaults: '2026-01-30',
-            person_profiles: 'identified_only',
-            disable_session_recording: isLocalDev,
-        });
+    if (typeof posthog !== 'undefined' && !posthog.__loaded &&
+        typeof window.__initPostHog === 'function') {
+      window.__initPostHog();
+    }
+    // Symmetric with Decline's opt-out: re-enable capture in case this
+    // visitor had previously opted out (e.g. declined earlier this session).
+    if (typeof posthog !== 'undefined' && typeof posthog.opt_in_capturing === 'function') {
+      posthog.opt_in_capturing();
     }
     banner.style.display = 'none';
   });
 
   document.getElementById('consent-decline').addEventListener('click', function() {
     localStorage.setItem('consent_choice', 'declined');
+    // Non-EU visitors may already have analytics running (opt-out model),
+    // so actively withdraw consent rather than only hiding the banner.
+    gtag('consent', 'update', {
+      'ad_storage': 'denied',
+      'ad_user_data': 'denied',
+      'ad_personalization': 'denied',
+      'analytics_storage': 'denied'
+    });
+    if (typeof posthog !== 'undefined' && typeof posthog.opt_out_capturing === 'function') {
+      posthog.opt_out_capturing();
+    }
+    // opt_out + consent:denied stop future tracking but leave existing
+    // cookies and storage in place. Sweep them so Decline visibly clears
+    // state. Covers PostHog (ph_phc_<token>), GA4 (_ga, _ga_<id>, _gid,
+    // _gat*), and AdSense's __gads / __gpi if any were set.
+    var host = location.hostname;
+    var domains = ['', host, '.' + host];
+    var parts = host.split('.');
+    if (parts.length >= 2) domains.push('.' + parts.slice(-2).join('.'));
+    document.cookie.split(';').forEach(function(c) {
+      var name = c.split('=')[0].trim();
+      if (!name) return;
+      var matches =
+        name === '_ga' || name === '_gid' || name === '_gat' ||
+        name === '__gads' || name === '__gpi' ||
+        name.indexOf('_ga_') === 0 ||
+        name.indexOf('_gat_') === 0 ||
+        name.indexOf('ph_phc_') === 0;
+      if (!matches) return;
+      domains.forEach(function(d) {
+        var attr = d ? '; domain=' + d : '';
+        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/' + attr;
+      });
+    });
+    // Nuke PostHog state in localStorage + sessionStorage, but keep the
+    // __ph_opt_in_out_ flag so PostHog respects the choice if it ever
+    // re-initializes. consent_choice + darkMode also stay.
+    try {
+      var sweep = function(store) {
+        var doomed = [];
+        for (var i = 0; i < store.length; i++) {
+          var k = store.key(i);
+          if (!k) continue;
+          if (k.indexOf('__ph_opt_in_out_') === 0) continue;
+          if (k.indexOf('ph_') === 0 || k.indexOf('posthog') === 0) {
+            doomed.push(k);
+          }
+        }
+        doomed.forEach(function(k) { store.removeItem(k); });
+      };
+      sweep(localStorage);
+      sweep(sessionStorage);
+    } catch (e) {}
     banner.style.display = 'none';
   });
 });
