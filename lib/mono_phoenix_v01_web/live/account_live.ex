@@ -9,6 +9,8 @@ defmodule MonoPhoenixV01Web.AccountLive do
 
   use MonoPhoenixV01Web, :live_view
 
+  require Logger
+
   alias MonoPhoenixV01.Billing
   alias MonoPhoenixV01Web.LiveFavoritesHelpers
 
@@ -32,8 +34,18 @@ defmodule MonoPhoenixV01Web.AccountLive do
        })
        when is_binary(sub_id) and sub_id != "" do
     case Billing.retrieve_subscription(sub_id) do
-      {:ok, %{cancel_at_period_end: true}} -> true
-      _ -> false
+      {:ok, %{cancel_at_period_end: true}} ->
+        true
+
+      {:ok, _sub} ->
+        false
+
+      {:error, reason} ->
+        Logger.warning(
+          "/account: Stripe retrieve_subscription failed for sub_id=#{sub_id}: #{inspect(reason)}"
+        )
+
+        false
     end
   end
 
@@ -112,4 +124,5 @@ defmodule MonoPhoenixV01Web.AccountLive do
 
   defp renewal_label(_date, true), do: "Cancelled"
   defp renewal_label(%DateTime{} = date, _), do: Calendar.strftime(date, "%B %-d, %Y")
+  defp renewal_label(_, _), do: "—"
 end

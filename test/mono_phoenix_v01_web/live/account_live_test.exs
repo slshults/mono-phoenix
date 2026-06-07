@@ -51,6 +51,19 @@ defmodule MonoPhoenixV01Web.AccountLiveTest do
       assert html =~ "Cancelled"
       refute html =~ "Active 🙏"
     end
+
+    test "falls through to Active when Stripe lookup fails", %{conn: conn} do
+      user = user_fixture()
+      conn = log_in_user(conn, user)
+
+      MonoPhoenixV01.BillingMock
+      |> expect(:retrieve_subscription, fn _ -> {:error, :stripe_unavailable} end)
+
+      {:ok, _lv, html} = live(conn, ~p"/account")
+
+      assert html =~ "Active"
+      refute html =~ "Cancelled at the end of the current period"
+    end
   end
 
   describe "open_portal click" do
