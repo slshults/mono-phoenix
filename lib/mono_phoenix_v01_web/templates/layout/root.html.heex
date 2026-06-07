@@ -293,9 +293,15 @@
       title="Search Shakespare's Monologues"
       href={Routes.static_path(@conn, "/opensearch.xml")}
     />
+    <%!--
+      Google FundingChoices: the AdSense Consent Management Platform
+      plus the ad-block-recovery overlay. Loaded only on the production
+      host so the obfuscated anti-debug portion doesn't grab DevTools
+      focus during local dev. On prod, this is what shows the EU
+      "Consent / Manage options" banner to AdSense visitors.
+    --%>
+    <%= if String.ends_with?(@conn.host || "", "shakespeare-monologues.org") do %>
     <!-- begin google adsense ad blocking recovery -->
-    <!-- COMMENTED OUT: AdSense anti-debugging script causing DevTools console to auto-switch tabs -->
-    <!--
     <script
       async
       src="https://fundingchoicesmessages.google.com/i/pub-5236095389905910?ers=1"
@@ -326,7 +332,7 @@
 
       window.__h82AlnkH6D91__("WyJwdWItNTIzNjA5NTM4OTkwNTkxMCIsW251bGwsbnVsbCxudWxsLCJodHRwczovL2Z1bmRpbmdjaG9pY2VzbWVzc2FnZXMuZ29vZ2xlLmNvbS9iL3B1Yi01MjM2MDk1Mzg5OTA1OTEwIl0sbnVsbCxudWxsLCJodHRwczovL2Z1bmRpbmdjaG9pY2VzbWVzc2FnZXMuZ29vZ2xlLmNvbS9lbC9BR1NLV3hXMkIzOXR1RTY5UWhDMEhyYnR1cnYtb21abkd4YTNMSGJqMVlhU2dkcmhWaHRqelpWa01JWFVkQkh4VUhhLTVsTEZRamFDWm16ekVCdm9PNTVvTjlYaGFnXHUwMDNkXHUwMDNkP3RlXHUwMDNkVE9LRU5fRVhQT1NFRCIsImh0dHBzOi8vZnVuZGluZ2Nob2ljZXNtZXNzYWdlcy5nb29nbGUuY29tL2VsL0FHU0tXeFhIYkdiblRWd3lqZnBxd1ZwMVI1LXNqUTU1MVFrUkNYN3JGUWg2cFpyQTh6ekZvSW85bVVSRFRVMWJOUlo2ZzZWTHA0SjNwMkNKcTV6YlRRSXNKZnA2WmdcdTAwM2RcdTAwM2Q/YWJcdTAwM2QxXHUwMDI2c2JmXHUwMDNkMSIsImh0dHBzOi8vZnVuZGluZ2Nob2ljZXNtZXNzYWdlcy5nb29nbGUuY29tL2VsL0FHU0tXeFU0aC1ad0FPS0V1RHd5bkpveXdFbENubHEzWG1odTBCV1Q0V0RhWXFTelU0SnhDTmdId3VDRHZBZnFIRWhxRFFwSTRxc3RIblFFNzl0TlFRWXk4dXl0ZmdcdTAwM2RcdTAwM2Q/YWJcdTAwM2QyXHUwMDI2c2JmXHUwMDNkMSIsImh0dHBzOi8vZnVuZGluZ2Nob2ljZXNtZXNzYWdlcy5nb29nbGUuY29tL2VsL0FHU0tXeFdXZC1JSGhGcnBOYUN6X1dKZkhmajItVW9adnVvNlRVRm9nQW44dW1nNFFVQXplbXo2eURFdHFRaE1sbHBYLVN5dklQZEpQSHFrRjdNMFpxcWEybXByREFcdTAwM2RcdTAwM2Q/c2JmXHUwMDNkMiIsImRpdi1ncHQtYWQiLDIwLDEwMCwiY0hWaUxUVXlNell3T1RVek9EazVNRFU5TVRBXHUwMDNkIixbbnVsbCxudWxsLG51bGwsImh0dHBzOi8vd3d3LmdzdGF0aWMuY29tLzBlbW4vZi9wL3B1Yi01MjM2MDk1Mzg5OTA1OTEwLmpzP3VzcXBcdTAwM2RDQWsiXSwiaHR0cHM6Ly9mdW5kaW5nY2hvaWNlc21lc3NhZ2VzLmdvb2dsZS5jb20vZWwvQUdTS1d4VldyblVKRmJuLU9GaHhzQVdvLUM0MjRPUEdGbFhjbXJWNmtiVC0zVy1HTUJSYzhxS2NCV0FpVmlpYm5vb3VJNmxoWVVLTlRaU2VBZU53dkt0Q2NZSm1kd1x1MDAzZFx1MDAzZCJd");
     </script>
-    -->
+    <% end %>
     <%= if MonoPhoenixV01Web.UserAuth.show_ads?(@conn.assigns[:current_scope]) do %>
     <!-- begin google adsense ad code -->
     <script
