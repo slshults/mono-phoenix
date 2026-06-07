@@ -21,24 +21,33 @@ defmodule MonoPhoenixV01Web.AccountLive do
     {:ok,
      socket
      |> assign(:page_title, "Your account")
-     |> assign(:cancel_at_period_end, fetch_cancel_at_period_end(user))}
+     |> assign(:cancel_scheduled, fetch_cancel_scheduled(user))}
   end
 
   # Stripe is the source of truth for "cancel scheduled" state — we don't
   # persist it locally. Only fetched while the subscription is still
-  # active (the flag is meaningless after the period has ended). A failed
-  # Stripe call falls through to false so the page still renders.
-  defp fetch_cancel_at_period_end(%{
+  # active (after the period has ended, status flips to "canceled" and
+  # we no longer need to ask). A failed Stripe call falls through to
+  # false so the page still renders.
+  #
+  # Two signals from the Subscription object cover all the ways a
+  # patron-initiated cancellation can land on a subscription:
+  #
+  #   * `cancel_at` — non-nil unix timestamp set whenever a cancel is
+  #     scheduled (this is what the customer portal sets today). The
+  #     legacy `cancel_at_period_end` boolean is NOT flipped by modern
+  #     Stripe API versions for portal cancellations.
+  #
+  #   * `cancel_at_period_end: true` — kept as a belt-and-suspenders
+  #     fallback for older API versions / future Stripe shape changes.
+  defp fetch_cancel_scheduled(%{
          subscription_status: "active",
          stripe_subscription_id: sub_id
        })
        when is_binary(sub_id) and sub_id != "" do
     case Billing.retrieve_subscription(sub_id) do
-      {:ok, %{cancel_at_period_end: true}} ->
-        true
-
-      {:ok, _sub} ->
-        false
+      {:ok, sub} ->
+        not is_nil(sub.cancel_at) or sub.cancel_at_period_end == true
 
       {:error, reason} ->
         Logger.warning(
@@ -49,7 +58,7 @@ defmodule MonoPhoenixV01Web.AccountLive do
     end
   end
 
-  defp fetch_cancel_at_period_end(_), do: false
+  defp fetch_cancel_scheduled(_), do: false
 
   @impl true
   def handle_event("open_portal", _, socket) do
@@ -89,11 +98,11 @@ defmodule MonoPhoenixV01Web.AccountLive do
           <p><strong>Email:</strong> {@user.email}</p>
           <p>
             <strong>Subscription status:</strong>
-            {status_label(@user.subscription_status, @cancel_at_period_end)}
+            {status_label(@user.subscription_status, @cancel_scheduled)}
           </p>
           <p :if={@user.current_period_end}>
             <strong>Next renewal:</strong>
-            {renewal_label(@user.current_period_end, @cancel_at_period_end)}
+            {renewal_label(@user.current_period_end, @cancel_scheduled)}
           </p>
           <p><strong>Plan:</strong> {@user.billing_period || "—"}</p>
         </div>
@@ -112,7 +121,7 @@ defmodule MonoPhoenixV01Web.AccountLive do
   end
 
   defp status_label("active", true), do: "Cancelled at the end of the current period"
-  defp status_label(status, _cancel_at_period_end), do: status_label(status)
+  defp status_label(status, _cancel_scheduled), do: status_label(status)
 
   defp status_label("active"), do: "Active 🙏"
   defp status_label("past_due"), do: "Payment past due"
