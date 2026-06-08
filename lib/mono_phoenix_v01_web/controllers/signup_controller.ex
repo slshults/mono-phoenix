@@ -124,11 +124,16 @@ defmodule MonoPhoenixV01Web.SignupController do
     PostHog.capture(
       "signup_completed",
       %{billing_period: user.billing_period, user_id: user.id},
-      distinct_id: user.email
+      distinct_id: user.email,
+      person_profile: true
     )
   end
 
   defp track_signup_canceled(user) do
+    # This user abandoned checkout and never created an account (we delete the
+    # pending row right after this), so the event stays anonymous — no
+    # `person_profile: true`. We still tag it with their email as distinct_id
+    # so it can merge in later if they return and complete signup.
     PostHog.capture(
       "signup_canceled",
       %{has_user: true, user_id: user.id},
