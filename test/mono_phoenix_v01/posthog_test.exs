@@ -22,6 +22,12 @@ defmodule MonoPhoenixV01.PostHogTest do
       assert payload["distinct_id"] == "patron@example.com"
     end
 
+    test "a non-true person_profile value stays anonymous rather than crashing" do
+      payload = PostHog.build_payload("used_search", %{}, "anon-123", nil)
+
+      assert payload["properties"]["$process_person_profile"] == false
+    end
+
     test "the anonymous flag never clobbers existing event properties" do
       props = %{"a" => 1, "b" => 2}
       payload = PostHog.build_payload("motd_posted", props, "shakespeare_monologues_server", false)

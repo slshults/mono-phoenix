@@ -128,6 +128,8 @@ defmodule MonoPhoenixV01.PostHog do
     }
   end
 
+  # Only an explicit `true` opts into person processing; anything else
+  # (the `false` default, or an unexpected value) stays anonymous.
   defp anonymize(properties, true), do: properties
-  defp anonymize(properties, false), do: Map.put(properties, "$process_person_profile", false)
+  defp anonymize(properties, _), do: Map.put(properties, "$process_person_profile", false)
 end
