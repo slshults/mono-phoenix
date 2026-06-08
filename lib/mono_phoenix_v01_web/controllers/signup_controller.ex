@@ -124,11 +124,20 @@ defmodule MonoPhoenixV01Web.SignupController do
     PostHog.capture(
       "signup_completed",
       %{billing_period: user.billing_period, user_id: user.id},
-      distinct_id: user.email
+      distinct_id: user.email,
+      person_profile: true
     )
   end
 
   defp track_signup_canceled(user) do
+    # This user abandoned checkout (the pending row is deleted right after
+    # this), so the event stays anonymous — no `person_profile: true`, no
+    # person profile is minted. We still tag it with their email as the
+    # distinct_id: if they later complete signup, `track_signup_completed/1`
+    # identifies under that same email, and this event shares the distinct_id
+    # string. That's a literal match, not a PostHog anonymous→identified
+    # merge (we never send `$anon_distinct_id`), so the association isn't
+    # guaranteed — it's best-effort continuity only.
     PostHog.capture(
       "signup_canceled",
       %{has_user: true, user_id: user.id},

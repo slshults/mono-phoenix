@@ -260,7 +260,8 @@ defmodule MonoPhoenixV01.Billing.WebhookHandler do
       properties
       |> Map.put(:billing_period, user.billing_period)
       |> Map.put(:user_id, user.id),
-      distinct_id: user.email
+      distinct_id: user.email,
+      person_profile: true
     )
   end
 
