@@ -349,6 +349,32 @@
 <script>
     !function(t,e){var o,n,p,r;e.__SV||(window.posthog && window.posthog.__loaded)||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js?v=<%= Date.utc_today() %>",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init ns hs wi ls ds rs os capture calculateEventProperties fs register register_once register_for_session unregister unregister_for_session bs getFeatureFlag getFeatureFlagPayload getFeatureFlagResult isFeatureEnabled reloadFeatureFlags updateFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey displaySurvey cancelPendingSurvey canRenderSurvey canRenderSurveyAsync identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException startExceptionAutocapture stopExceptionAutocapture loadToolbar get_property getSessionProperty gs cs createPersonProfile setInternalOrTestUser ts ys opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing get_explicit_consent_status is_capturing clear_opt_in_out_capturing vs debug M ps getPageViewId captureTraceFeedback captureTraceMetric Xr".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
 
+    // Drops exceptions thrown by third-party browser extensions (password
+    // managers, ad blockers, coupon tools, etc.) that exception autocapture
+    // picks up via window.onerror but which never originate in our code. These
+    // only pollute the error-tracking inbox. Match on well-known extension-API
+    // messages.
+    var __extensionNoisePatterns = [
+        'runtime.sendMessage',
+        'Tab not found',
+        'Extension context invalidated',
+    ];
+    window.__dropExtensionNoise = function(event) {
+        if (!event || event.event !== '$exception') {
+            return event;
+        }
+        var exceptions = (event.properties && event.properties.$exception_list) || [];
+        for (var i = 0; i < exceptions.length; i++) {
+            var message = (exceptions[i] && exceptions[i].value) || '';
+            for (var j = 0; j < __extensionNoisePatterns.length; j++) {
+                if (message.indexOf(__extensionNoisePatterns[j]) !== -1) {
+                    return null;
+                }
+            }
+        }
+        return event;
+    };
+
     // Single source of truth for the PostHog init call. Used both here
     // (initial init for non-EU visitors / anyone with prior consent)
     // and from assets/js/app.js (when the Accept button is clicked).
@@ -360,6 +386,7 @@
             defaults: '2026-01-30',
             person_profiles: 'identified_only',
             disable_session_recording: isLocalDev,
+            before_send: window.__dropExtensionNoise,
         });
     };
 
