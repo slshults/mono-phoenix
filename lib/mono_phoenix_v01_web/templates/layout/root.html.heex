@@ -1,48 +1,15 @@
 <!DOCTYPE html>
 <html lang="en" class={fetch_dark_mode_class(@conn)}>
   <head>
-    <!-- Consent region detection (timezone-based). EU/EEA visitors keep
-         the opt-in flow (analytics stays off until they click Accept);
-         everyone else defaults to opt-out (analytics on until they click
-         Decline). Browser timezone is a lightweight, dependency-free proxy
-         for location, and we bias toward "EU" when unsure — the safer
-         default. Defined before the gtag/PostHog snippets below so both
-         route their gating through __consentGranted(). -->
-    <script>
-      window.__consentEu = (function () {
-        try {
-          var tz = (Intl.DateTimeFormat().resolvedOptions().timeZone || '');
-          if (tz.indexOf('Europe/') === 0) return true;
-          // EU/EEA zones that don't sit under Europe/* — Cyprus, Iceland,
-          // and the Atlantic islands of Spain and Portugal.
-          return [
-            'Asia/Nicosia', 'Asia/Famagusta', 'Atlantic/Reykjavik',
-            'Atlantic/Canary', 'Atlantic/Madeira', 'Atlantic/Azores',
-            'Africa/Ceuta'
-          ].indexOf(tz) !== -1;
-        } catch (e) {
-          return true; // can't tell → treat as EU (opt-in), the safe default
-        }
-      })();
-
-      // Whether analytics/advertising cookies should be active right now.
-      // An explicit choice always wins; absent a choice, honor Global
-      // Privacy Control (CPRA treats GPC as a valid opt-out signal); then
-      // fall back to geo defaults — non-EU on, EU off.
-      window.__consentGranted = function () {
-        try {
-          var c = localStorage.getItem('consent_choice');
-          if (c === 'granted') return true;
-          if (c === 'declined') return false;
-          if (navigator.globalPrivacyControl) return false;
-          return !window.__consentEu;
-        } catch (e) {
-          return false;
-        }
-      };
-    </script>
-
     <!-- begin Google tag (gtag.js) with Consent Mode v2 -->
+    <!-- Region-scoped consent defaults. EEA/EU/UK/Switzerland visitors
+         default to denied; the Funding Choices CMP (loaded below, prod
+         only) is the single consent UI that collects their choice and
+         updates these signals. Every other region defaults to granted, so
+         the ~82% of traffic outside the EEA/UK keeps personalized ads with
+         no prompt. Must run before gtag.js and the AdSense tag so the first
+         ad request carries the right signals. wait_for_update gives the CMP
+         a brief window to resolve consent before tags fire. -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -50,16 +17,18 @@
         'ad_storage': 'denied',
         'ad_user_data': 'denied',
         'ad_personalization': 'denied',
-        'analytics_storage': 'denied'
+        'analytics_storage': 'denied',
+        'wait_for_update': 500,
+        'region': ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE',
+                   'GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT',
+                   'RO','SK','SI','ES','SE','IS','LI','NO','GB','CH']
       });
-      if (window.__consentGranted()) {
-        gtag('consent', 'update', {
-          'ad_storage': 'granted',
-          'ad_user_data': 'granted',
-          'ad_personalization': 'granted',
-          'analytics_storage': 'granted'
-        });
-      }
+      gtag('consent', 'default', {
+        'ad_storage': 'granted',
+        'ad_user_data': 'granted',
+        'ad_personalization': 'granted',
+        'analytics_storage': 'granted'
+      });
     </script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQSJ2NECLQ">
     </script>
@@ -349,10 +318,13 @@
 <script>
     !function(t,e){var o,n,p,r;e.__SV||(window.posthog && window.posthog.__loaded)||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js?v=<%= Date.utc_today() %>",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init ns hs wi ls ds rs os capture calculateEventProperties fs register register_once register_for_session unregister unregister_for_session bs getFeatureFlag getFeatureFlagPayload getFeatureFlagResult isFeatureEnabled reloadFeatureFlags updateFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey displaySurvey cancelPendingSurvey canRenderSurvey canRenderSurveyAsync identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException startExceptionAutocapture stopExceptionAutocapture loadToolbar get_property getSessionProperty gs cs createPersonProfile setInternalOrTestUser ts ys opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing get_explicit_consent_status is_capturing clear_opt_in_out_capturing vs debug M ps getPageViewId captureTraceFeedback captureTraceMetric Xr".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
 
-    // Single source of truth for the PostHog init call. Used both here
-    // (initial init for non-EU visitors / anyone with prior consent)
-    // and from assets/js/app.js (when the Accept button is clicked).
+    // Single source of truth for the PostHog init call. Idempotent — the
+    // CMP consent listener below may fire more than once (e.g. after a
+    // visitor reopens the consent message and grants), and re-initialising
+    // PostHog must be a no-op.
     window.__initPostHog = function() {
+        if (window.__phInited) return;
+        window.__phInited = true;
         var isLocalDev = ['localhost', '127.0.0.1'].indexOf(window.location.hostname) !== -1;
         posthog.init('phc_6aYLpkqQsmYJanYseJ8SJcOMicomCxj9v9Pl6hnZQS3', {
             api_host: 'https://autolycus.shakespeare-monologues.org',
@@ -363,25 +335,45 @@
         });
     };
 
-    if (window.__consentGranted()) {
-        window.__initPostHog();
-    }
+    // Gate PostHog on the CMP's consent signal. On production the Funding
+    // Choices CMP exposes the IAB TCF API: visitors where GDPR applies
+    // (EEA/UK/CH) must grant Purpose 1 (store/access info on a device)
+    // before PostHog initialises; everywhere else gdprApplies is false and
+    // PostHog starts immediately. The listener stays registered so a later
+    // grant (via the reopened consent message) still initialises PostHog.
+    // Off production the CMP isn't loaded, so initialise directly.
+    <%= if String.ends_with?(@conn.host || "", "shakespeare-monologues.org") do %>
+    (function () {
+      function maybeInit(tcData) {
+        if (!tcData) return;
+        if (tcData.gdprApplies === false) { window.__initPostHog(); return; }
+        if (tcData.eventStatus !== 'tcloaded' &&
+            tcData.eventStatus !== 'useractioncomplete') return;
+        var consents = tcData.purpose && tcData.purpose.consents;
+        if (consents && consents[1]) window.__initPostHog();
+      }
+      function register() {
+        if (!window.__tcfapi) return false;
+        window.__tcfapi('addEventListener', 2, function (tcData, success) {
+          if (success) maybeInit(tcData);
+        });
+        return true;
+      }
+      // __tcfapi is installed asynchronously by the CMP — poll briefly.
+      if (!register()) {
+        var tries = 0;
+        var t = setInterval(function () {
+          if (register() || ++tries > 40) clearInterval(t);
+        }, 100);
+      }
+    })();
+    <% else %>
+    window.__initPostHog();
+    <% end %>
 </script>
   </head>
 
   <body id="body-element" class={fetch_dark_mode_class(@conn)}>
-    <div id="consent-banner" style="display:none; position:fixed; bottom:0; left:0; right:0; background:#f5f0e8; border-top:2px solid #5E2612; padding:14px 24px; z-index:10000; box-shadow:0 -2px 8px rgba(0,0,0,0.2);">
-      <div style="max-width:960px; margin:0 auto; display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
-        <p style="margin:0; flex:1; min-width:180px; font-size:14px; color:#444; font-family:Georgia, serif;">
-          This site uses cookies for analytics and advertising.
-          <a href="/privacy" style="color:#5E2612;">Privacy Policy</a>
-        </p>
-        <div style="display:flex; gap:8px; flex-shrink:0;">
-          <button id="consent-accept" style="background:#5E2612; color:#fff; border:none; padding:7px 20px; cursor:pointer; font-size:14px; font-family:Georgia, serif;">Accept</button>
-          <button id="consent-decline" style="background:transparent; color:#666; border:1px solid #aaa; padding:7px 20px; cursor:pointer; font-size:14px; font-family:Georgia, serif;">Decline</button>
-        </div>
-      </div>
-    </div>
     <%!--
       Phase 4 launch promo: announces paid accounts to visitors. Shown
       once per 30 days per device via localStorage. Lives in the root
