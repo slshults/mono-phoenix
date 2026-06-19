@@ -308,7 +308,10 @@ Hooks.FeedbackForm = {
   // No longer needed - PostHog tracking happens in trackPostHogFeedback()
 }
 
-let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
+let csrfToken = document.querySelector("meta[name='csrf-token']")?.getAttribute("content") || ""
+if (!csrfToken) {
+  console.warn("LiveSocket init: csrf-token meta tag missing or empty; connecting without a CSRF token")
+}
 let liveSocket = new LiveSocket("/live", Socket, {
   params: {_csrf_token: csrfToken},
   hooks: Hooks
