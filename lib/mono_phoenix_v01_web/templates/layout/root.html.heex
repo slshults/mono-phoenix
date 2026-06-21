@@ -340,12 +340,34 @@
             before_send: function (event) {
               if (event && event.event === '$exception') {
                 var props = event.properties || {};
-                var values = (props.$exception_list || []).map(function (e) {
+                var exceptions = props.$exception_list || [];
+                var values = exceptions.map(function (e) {
                   return (e && e.value) || '';
                 });
                 values.push(props.$exception_message || '');
                 var haystack = values.join(' ');
                 if (/runtime\.sendMessage|Tab not found|Extension context invalidated/i.test(haystack)) {
+                  return null;
+                }
+
+                // Drop frameless cross-origin third-party script errors. The
+                // Google bundles loaded in the <head> (Funding Choices, AdSense,
+                // gtag) run cross-origin, so when one throws the browser hands
+                // window.onerror only the opaque "Script error." with no stack.
+                // PostHog autocapture wraps that as a synthetic exception with no
+                // stack frames — we can't tie it to our own code and it's pure
+                // noise. Our own uncaught errors carry in-app frames, so they're
+                // kept. Require a non-empty list so genuinely empty payloads fall
+                // through to PostHog unchanged.
+                if (exceptions.length > 0 && exceptions.every(function (e) {
+                  if (!e) return false;
+                  var synthetic = e.mechanism && e.mechanism.synthetic === true;
+                  var frames = (e.stacktrace && e.stacktrace.frames) || [];
+                  var hasInAppFrame = frames.some(function (f) {
+                    return f && f.in_app;
+                  });
+                  return synthetic && !hasInAppFrame;
+                })) {
                   return null;
                 }
               }
