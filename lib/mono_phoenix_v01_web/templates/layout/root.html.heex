@@ -332,6 +332,25 @@
             defaults: '2026-01-30',
             person_profiles: 'identified_only',
             disable_session_recording: isLocalDev,
+            // Drop exceptions thrown by visitors' browser extensions (password
+            // managers, ad blockers, etc.) before they reach the error-tracking
+            // inbox. Exception autocapture hooks window.onerror, so uncaught
+            // errors from injected content scripts get captured even though they
+            // never originate in our code. Match on known extension-API noise.
+            before_send: function (event) {
+              if (event && event.event === '$exception') {
+                var props = event.properties || {};
+                var values = (props.$exception_list || []).map(function (e) {
+                  return (e && e.value) || '';
+                });
+                values.push(props.$exception_message || '');
+                var haystack = values.join(' ');
+                if (/runtime\.sendMessage|Tab not found|Extension context invalidated/i.test(haystack)) {
+                  return null;
+                }
+              }
+              return event;
+            },
         });
     };
 
