@@ -176,7 +176,7 @@ defmodule MonoPhoenixV01Web.FavoritesLive do
           <table class="monologue-list">
             <tbody>
               <%= for row <- @rows do %>
-                <tr class="monologue_list">
+                <tr class="monologue_list" data-location={row.location} data-firstline={row.firstline}>
                   <td>
                     <span
                       class="monologue-playname"

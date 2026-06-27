@@ -429,7 +429,7 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
         <% end %>
         <%= for {row, index} <- Enum.with_index(@search_results) do %>
 
-            <tr class="monologue_list">
+            <tr class="monologue_list" data-location={row.location} data-firstline={row.firstline}>
               <td class={if rem(index, 2) == 0, do: "even", else: "odd"}>
                 <span class="monologue-playname" alt="👆 Click to view all the monologues from this play"
                 title="👆 Click to view all the monologues from this play"><%= link to: "/play/#{row.play_id}", method: :get do %><%= row.play %><% end %></span><span class="summary-icon" 
