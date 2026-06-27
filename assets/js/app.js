@@ -805,6 +805,24 @@ window.addEventListener("phx:page-loading-stop", () => {
 document.addEventListener('DOMContentLoaded', function() {
   const overlay = document.getElementById('adblock-overlay');
   if (!overlay) return;
+
+  // An ad blocker (the only reason this modal ever shows) frequently blocks the
+  // PostHog script, which can leave `window.posthog` defined but only partially
+  // initialised — `posthog.capture` is then NOT a function. A bare
+  // `typeof posthog !== 'undefined'` guard passes in that state and the call
+  // throws "posthog.capture is not a function", which would abort whatever
+  // handler made it. Since every dismissal path runs through dismissAdblockModal,
+  // a throw there before `display = 'none'` would trap the visitor. Route all
+  // analytics through this guarded, swallow-on-error helper so a crippled
+  // PostHog can never block the modal from closing.
+  function safeCapture(event, props) {
+    try {
+      if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
+        posthog.capture(event, props);
+      }
+    } catch (_e) { /* analytics must never break dismissal */ }
+  }
+
   const dismissedAt = localStorage.getItem('adblock_dismissed');
   if (dismissedAt && (Date.now() - parseInt(dismissedAt)) < 3 * 24 * 60 * 60 * 1000) return;
 
@@ -825,16 +843,18 @@ document.addEventListener('DOMContentLoaded', function() {
   function showAdblockModal() {
     if (promoVisible()) return;
     overlay.style.display = 'flex';
-    if (typeof posthog !== 'undefined') posthog.capture('adblock_modal_shown');
+    safeCapture('adblock_modal_shown');
   }
 
   // Single dismissal path shared by every affordance (the "Got it" button, the
   // X, Escape, and click-outside) so the modal can never trap a visitor.
   function dismissAdblockModal() {
     if (!isOpen()) return;
-    if (typeof posthog !== 'undefined') posthog.capture('adblock_modal_dismissed');
-    localStorage.setItem('adblock_dismissed', Date.now().toString());
+    // Close first so the modal is guaranteed to clear even if the lines below
+    // ever throw; persistence and analytics are best-effort afterwards.
     overlay.style.display = 'none';
+    try { localStorage.setItem('adblock_dismissed', Date.now().toString()); } catch (_e) {}
+    safeCapture('adblock_modal_dismissed');
   }
 
   setTimeout(function() {
@@ -874,7 +894,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const adblockKofiLink = document.querySelector('#adblock-modal a[href*="ko-fi.com"]');
   if (adblockKofiLink) {
     adblockKofiLink.addEventListener('click', function() {
-      if (typeof posthog !== 'undefined') posthog.capture('clicked_tipjar', { source: 'adblock_modal' });
+      safeCapture('clicked_tipjar', { source: 'adblock_modal' });
     });
   }
 
