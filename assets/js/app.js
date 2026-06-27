@@ -822,19 +822,38 @@ document.addEventListener('DOMContentLoaded', function() {
     return overlay.style.display === 'flex';
   }
 
+  // Analytics must never block the UI. The visitors who see this modal are by
+  // definition running an ad blocker, and ad blockers frequently neutralise
+  // window.posthog — replacing it with a partial stub whose `capture` is not a
+  // function (or removing the loader entirely). A bare `typeof posthog !==
+  // 'undefined'` guard is therefore not enough: `posthog` is still defined, but
+  // `posthog.capture(...)` throws, and a throw inside a dismissal handler would
+  // abort it before the overlay is hidden — trapping the visitor. Guard on the
+  // method itself and swallow any error so a dead analytics call can never keep
+  // the modal on screen.
+  function safeCapture(event, props) {
+    try {
+      if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
+        posthog.capture(event, props);
+      }
+    } catch (e) { /* analytics is best-effort; never let it block the modal */ }
+  }
+
   function showAdblockModal() {
     if (promoVisible()) return;
     overlay.style.display = 'flex';
-    if (typeof posthog !== 'undefined') posthog.capture('adblock_modal_shown');
+    safeCapture('adblock_modal_shown');
   }
 
   // Single dismissal path shared by every affordance (the "Got it" button, the
-  // X, Escape, and click-outside) so the modal can never trap a visitor.
+  // X, Escape, and click-outside) so the modal can never trap a visitor. Hide
+  // the overlay and persist the dismissal *first*, then fire analytics — so the
+  // modal closes even if the capture call were to throw.
   function dismissAdblockModal() {
     if (!isOpen()) return;
-    if (typeof posthog !== 'undefined') posthog.capture('adblock_modal_dismissed');
-    localStorage.setItem('adblock_dismissed', Date.now().toString());
     overlay.style.display = 'none';
+    localStorage.setItem('adblock_dismissed', Date.now().toString());
+    safeCapture('adblock_modal_dismissed');
   }
 
   setTimeout(function() {
@@ -874,7 +893,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const adblockKofiLink = document.querySelector('#adblock-modal a[href*="ko-fi.com"]');
   if (adblockKofiLink) {
     adblockKofiLink.addEventListener('click', function() {
-      if (typeof posthog !== 'undefined') posthog.capture('clicked_tipjar', { source: 'adblock_modal' });
+      safeCapture('clicked_tipjar', { source: 'adblock_modal' });
     });
   }
 
