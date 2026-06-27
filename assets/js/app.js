@@ -259,7 +259,7 @@ Hooks.FeedbackForm = {
   },
 
   trackPostHogFeedback(feedbackType) {
-    if (typeof posthog === 'undefined') return;
+    if (typeof posthog === 'undefined' || typeof posthog.capture !== 'function') return;
 
     const modal = this.el.closest('.summary-modal-overlay');
     if (!modal) return;
@@ -330,7 +330,9 @@ document.addEventListener('input', function (event) {
     
     // Set a new timeout to capture the event after 5 seconds of inactivity
     searchTimeout = setTimeout(function() {
-      posthog.capture('used_search', { searched_for: searchQuery });
+      if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
+        posthog.capture('used_search', { searched_for: searchQuery });
+      }
     }, 5000);
   }
 }, false);
@@ -372,14 +374,16 @@ document.addEventListener('click', function (event) {
       const location = monologueRow ? monologueRow.dataset.location : null;
       const first_line = monologueRow ? monologueRow.dataset.firstline : null;
 
-      posthog.capture('pdf_clicked', {
-        pdf_url: pdf_url,
-        monologue_id: monologue_id,
-        character_name: character_name,
-        play_title: play_title,
-        location: location,
-        first_line: first_line
-      });
+      if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
+        posthog.capture('pdf_clicked', {
+          pdf_url: pdf_url,
+          monologue_id: monologue_id,
+          character_name: character_name,
+          play_title: play_title,
+          location: location,
+          first_line: first_line
+        });
+      }
     }
   }
 }, false);
@@ -421,13 +425,15 @@ document.addEventListener('click', function (event) {
       const location = monologueRow ? monologueRow.dataset.location : null;
       const first_line = monologueRow ? monologueRow.dataset.firstline : null;
 
-      posthog.capture('monologue_expanded', {
-        monologue_id: monologue_id,
-        character_name: character_name,
-        play_title: play_title,
-        location: location,
-        first_line: first_line
-      });
+      if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
+        posthog.capture('monologue_expanded', {
+          monologue_id: monologue_id,
+          character_name: character_name,
+          play_title: play_title,
+          location: location,
+          first_line: first_line
+        });
+      }
     }
   }
 }, false);
@@ -482,8 +488,10 @@ document.addEventListener('click', function (event) {
         }
       }
     }
-    
-    posthog.capture(event_name, properties);
+
+    if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
+      posthog.capture(event_name, properties);
+    }
   }
 }, false);
 
@@ -523,12 +531,14 @@ document.addEventListener('click', function (event) {
         source_context = 'plays_listing';
       }
       
-      posthog.capture('play_selected', {
-        play_id: play_id,
-        play_title: play_title,
-        section: section,
-        source_context: source_context
-      });
+      if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
+        posthog.capture('play_selected', {
+          play_id: play_id,
+          play_title: play_title,
+          section: section,
+          source_context: source_context
+        });
+      }
     }
   }
 }, false);
@@ -573,7 +583,7 @@ document.addEventListener('click', function (event) {
       }
       
       // Only track if they're actually switching sections
-      if (section_selected !== current_section) {
+      if (section_selected !== current_section && typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
         posthog.capture('section_filtered', {
           section_selected: section_selected,
           previous_section: current_section,
@@ -634,7 +644,9 @@ document.addEventListener('DOMContentLoaded', function() {
         event.target.closest('#kofi-left-direct-btn') ||
         event.target.closest('#kofi-footer-direct-btn') ||
         event.target.closest('#kofi-direct-btn')) {
-      posthog.capture('clicked_tipjar');
+      if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
+        posthog.capture('clicked_tipjar');
+      }
     }
   }, false);
 });
@@ -653,7 +665,7 @@ window.addEventListener("phx:page-loading-stop", () => {
 
 // Handle PostHog events pushed from Elixir LiveView
 window.addEventListener("phx:posthog_capture", (e) => {
-  if (typeof posthog !== 'undefined') {
+  if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
     posthog.capture(e.detail.event, e.detail.properties);
   }
 });
@@ -825,16 +837,20 @@ document.addEventListener('DOMContentLoaded', function() {
   function showAdblockModal() {
     if (promoVisible()) return;
     overlay.style.display = 'flex';
-    if (typeof posthog !== 'undefined') posthog.capture('adblock_modal_shown');
+    if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') posthog.capture('adblock_modal_shown');
   }
 
   // Single dismissal path shared by every affordance (the "Got it" button, the
   // X, Escape, and click-outside) so the modal can never trap a visitor.
   function dismissAdblockModal() {
     if (!isOpen()) return;
-    if (typeof posthog !== 'undefined') posthog.capture('adblock_modal_dismissed');
+    // Hide and persist first; the analytics call is best-effort and must never
+    // be able to block dismissal. Under an ad blocker `posthog` can be present
+    // but with `.capture` stripped — calling it then threw and left the modal
+    // stuck open, so guard that the method is actually callable.
     localStorage.setItem('adblock_dismissed', Date.now().toString());
     overlay.style.display = 'none';
+    if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') posthog.capture('adblock_modal_dismissed');
   }
 
   setTimeout(function() {
@@ -862,8 +878,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }, 5000);
 
-  document.getElementById('adblock-dismiss').addEventListener('click', dismissAdblockModal);
-  document.getElementById('adblock-close').addEventListener('click', dismissAdblockModal);
+  // Null-guard each affordance independently so a missing element can never
+  // abort wiring of the others (which would leave the modal with no way out).
+  const adblockDismissBtn = document.getElementById('adblock-dismiss');
+  if (adblockDismissBtn) adblockDismissBtn.addEventListener('click', dismissAdblockModal);
+  const adblockCloseBtn = document.getElementById('adblock-close');
+  if (adblockCloseBtn) adblockCloseBtn.addEventListener('click', dismissAdblockModal);
 
   // Click-outside: a click landing on the overlay backdrop (not the modal
   // card) closes it.
@@ -874,7 +894,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const adblockKofiLink = document.querySelector('#adblock-modal a[href*="ko-fi.com"]');
   if (adblockKofiLink) {
     adblockKofiLink.addEventListener('click', function() {
-      if (typeof posthog !== 'undefined') posthog.capture('clicked_tipjar', { source: 'adblock_modal' });
+      if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') posthog.capture('clicked_tipjar', { source: 'adblock_modal' });
     });
   }
 
