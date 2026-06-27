@@ -93,7 +93,11 @@ defmodule MonoPhoenixV01.MixProject do
         "ecto.migrate --quiet --repo MonoPhoenixV01.Accounts.Repo",
         "test"
       ],
-      "assets.deploy": ["esbuild default --minify", "phx.digest"]
+      "assets.deploy": [
+        "esbuild default --minify --sourcemap=external",
+        "cmd bash scripts/upload_sourcemaps.sh",
+        "phx.digest"
+      ]
     ]
   end
 end
