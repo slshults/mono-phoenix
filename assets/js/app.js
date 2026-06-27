@@ -808,9 +808,33 @@ document.addEventListener('DOMContentLoaded', function() {
   const dismissedAt = localStorage.getItem('adblock_dismissed');
   if (dismissedAt && (Date.now() - parseInt(dismissedAt)) < 3 * 24 * 60 * 60 * 1000) return;
 
+  // Deconflict overlapping ad/promo overlays: an adblock visitor can already
+  // be looking at the paid-accounts promo (which itself offers an ad-free
+  // option). Stacking the adblock modal on top of it produces a wall of
+  // competing dialogs, so only ever show one of ours at a time — defer the
+  // adblock modal while the promo is on screen.
+  function promoVisible() {
+    const promo = document.getElementById('paid-accounts-promo');
+    return !!promo && promo.style.display !== 'none' && promo.offsetParent !== null;
+  }
+
+  function isOpen() {
+    return overlay.style.display === 'flex';
+  }
+
   function showAdblockModal() {
+    if (promoVisible()) return;
     overlay.style.display = 'flex';
     if (typeof posthog !== 'undefined') posthog.capture('adblock_modal_shown');
+  }
+
+  // Single dismissal path shared by every affordance (the "Got it" button, the
+  // X, Escape, and click-outside) so the modal can never trap a visitor.
+  function dismissAdblockModal() {
+    if (!isOpen()) return;
+    if (typeof posthog !== 'undefined') posthog.capture('adblock_modal_dismissed');
+    localStorage.setItem('adblock_dismissed', Date.now().toString());
+    overlay.style.display = 'none';
   }
 
   setTimeout(function() {
@@ -838,10 +862,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }, 5000);
 
-  document.getElementById('adblock-dismiss').addEventListener('click', function() {
-    if (typeof posthog !== 'undefined') posthog.capture('adblock_modal_dismissed');
-    localStorage.setItem('adblock_dismissed', Date.now().toString());
-    overlay.style.display = 'none';
+  document.getElementById('adblock-dismiss').addEventListener('click', dismissAdblockModal);
+  document.getElementById('adblock-close').addEventListener('click', dismissAdblockModal);
+
+  // Click-outside: a click landing on the overlay backdrop (not the modal
+  // card) closes it.
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) dismissAdblockModal();
   });
 
   const adblockKofiLink = document.querySelector('#adblock-modal a[href*="ko-fi.com"]');
@@ -852,8 +879,10 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && overlay.style.display === 'flex') {
-      document.getElementById('adblock-dismiss').click();
+    if (!isOpen()) return;
+    // Enter confirms ("Got it"); Escape dismisses. Both clear the modal.
+    if (e.key === 'Enter' || e.key === 'Escape') {
+      dismissAdblockModal();
     }
   });
 });
