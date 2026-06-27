@@ -345,7 +345,7 @@ defmodule MonoPhoenixV01Web.SearchmenByPlayLive do
           <%= for {row, index} <- Enum.with_index(@search_results) do %>
 
           <!-- Render each search result here -->
-            <tr class="monologue_list">
+            <tr class="monologue_list" data-location={row.location} data-firstline={row.firstline}>
               <td class={if rem(index, 2) == 0, do: "even", else: "odd"}>
                 <span class="monologue-playname" alt="This is the title of the play the monologue is found in." title="This is the title of the play the monologue is found in."><%= row.play %></span><span class="summary-icon" 
                     phx-click="show_play_summary" 
