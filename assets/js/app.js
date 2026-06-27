@@ -302,7 +302,9 @@ Hooks.FeedbackForm = {
     if (location) properties.location = location;
     if (feedbackType) properties.feedback_type = feedbackType;
 
-    posthog.capture('ai_content_feedback', properties);
+    if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
+      posthog.capture('ai_content_feedback', properties);
+    }
   },
 
   // No longer needed - PostHog tracking happens in trackPostHogFeedback()
@@ -330,7 +332,9 @@ document.addEventListener('input', function (event) {
     
     // Set a new timeout to capture the event after 5 seconds of inactivity
     searchTimeout = setTimeout(function() {
-      posthog.capture('used_search', { searched_for: searchQuery });
+      if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
+        posthog.capture('used_search', { searched_for: searchQuery });
+      }
     }, 5000);
   }
 }, false);
@@ -372,14 +376,16 @@ document.addEventListener('click', function (event) {
       const location = monologueRow ? monologueRow.dataset.location : null;
       const first_line = monologueRow ? monologueRow.dataset.firstline : null;
 
-      posthog.capture('pdf_clicked', {
-        pdf_url: pdf_url,
-        monologue_id: monologue_id,
-        character_name: character_name,
-        play_title: play_title,
-        location: location,
-        first_line: first_line
-      });
+      if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
+        posthog.capture('pdf_clicked', {
+          pdf_url: pdf_url,
+          monologue_id: monologue_id,
+          character_name: character_name,
+          play_title: play_title,
+          location: location,
+          first_line: first_line
+        });
+      }
     }
   }
 }, false);
@@ -421,13 +427,15 @@ document.addEventListener('click', function (event) {
       const location = monologueRow ? monologueRow.dataset.location : null;
       const first_line = monologueRow ? monologueRow.dataset.firstline : null;
 
-      posthog.capture('monologue_expanded', {
-        monologue_id: monologue_id,
-        character_name: character_name,
-        play_title: play_title,
-        location: location,
-        first_line: first_line
-      });
+      if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
+        posthog.capture('monologue_expanded', {
+          monologue_id: monologue_id,
+          character_name: character_name,
+          play_title: play_title,
+          location: location,
+          first_line: first_line
+        });
+      }
     }
   }
 }, false);
@@ -483,7 +491,9 @@ document.addEventListener('click', function (event) {
       }
     }
     
-    posthog.capture(event_name, properties);
+    if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
+      posthog.capture(event_name, properties);
+    }
   }
 }, false);
 
@@ -523,12 +533,14 @@ document.addEventListener('click', function (event) {
         source_context = 'plays_listing';
       }
       
-      posthog.capture('play_selected', {
-        play_id: play_id,
-        play_title: play_title,
-        section: section,
-        source_context: source_context
-      });
+      if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
+        posthog.capture('play_selected', {
+          play_id: play_id,
+          play_title: play_title,
+          section: section,
+          source_context: source_context
+        });
+      }
     }
   }
 }, false);
@@ -574,11 +586,13 @@ document.addEventListener('click', function (event) {
       
       // Only track if they're actually switching sections
       if (section_selected !== current_section) {
-        posthog.capture('section_filtered', {
-          section_selected: section_selected,
-          previous_section: current_section,
-          source_page: currentPath
-        });
+        if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
+          posthog.capture('section_filtered', {
+            section_selected: section_selected,
+            previous_section: current_section,
+            source_page: currentPath
+          });
+        }
       }
     }
   }
@@ -634,7 +648,9 @@ document.addEventListener('DOMContentLoaded', function() {
         event.target.closest('#kofi-left-direct-btn') ||
         event.target.closest('#kofi-footer-direct-btn') ||
         event.target.closest('#kofi-direct-btn')) {
-      posthog.capture('clicked_tipjar');
+      if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
+        posthog.capture('clicked_tipjar');
+      }
     }
   }, false);
 });
