@@ -191,6 +191,34 @@ Hooks.PasswordToggle = {
   }
 }
 
+// Maps each feedback checkbox value to an overall sentiment. Used to derive a
+// non-null `feedback_type` on every ai_content_feedback capture so AI-quality
+// metrics (e.g. negative share) are computable.
+const FEEDBACK_SENTIMENT = {
+  like_it: 'positive',
+  dont_understand: 'negative',
+  wrong: 'negative',
+  dont_like: 'negative',
+  why_talking: 'negative',
+  button_pusher: 'neutral'
+};
+
+// Collapse the set of selected options into a single feedback_type.
+// Negative + positive together -> 'mixed'; otherwise the lone sentiment.
+function deriveFeedbackType(options) {
+  let hasPositive = false;
+  let hasNegative = false;
+  options.forEach(opt => {
+    const sentiment = FEEDBACK_SENTIMENT[opt];
+    if (sentiment === 'positive') hasPositive = true;
+    else if (sentiment === 'negative') hasNegative = true;
+  });
+  if (hasPositive && hasNegative) return 'mixed';
+  if (hasPositive) return 'positive';
+  if (hasNegative) return 'negative';
+  return 'neutral';
+}
+
 // Feedback Form Hook
 Hooks.FeedbackForm = {
   mounted() {
@@ -204,6 +232,31 @@ Hooks.FeedbackForm = {
   },
 
   setupFeedbackInteractions() {
+    // Fire on the initial thumbs click so we capture intent even when the user
+    // never completes the form. The thumbs button lives in the modal footer,
+    // a sibling of this hook's overlay element.
+    const modal = this.el.closest('.summary-modal-overlay');
+    const thumbsBtn = modal?.querySelector('.feedback-thumbs-btn');
+    if (thumbsBtn && !thumbsBtn.dataset.phTracked) {
+      thumbsBtn.dataset.phTracked = 'true';
+      thumbsBtn.addEventListener('click', () => {
+        this.trackPostHogFeedback([], 'opened');
+      });
+    }
+
+    // Remember which options were checked at submit time. The form is removed
+    // from the DOM once feedback_success flips, so we can't read it later when
+    // the "Thanks!" message tracks the completed submission.
+    const form = this.el.querySelector('form');
+    if (form && !form.dataset.feedbackBound) {
+      form.dataset.feedbackBound = 'true';
+      form.addEventListener('submit', () => {
+        this.pendingFeedback = Array.from(
+          this.el.querySelectorAll('input[name="feedback[]"]:checked')
+        ).map(input => input.value);
+      });
+    }
+
     // Handle checkboxes that have associated details fields
     const toggles = ['wrong'];
     toggles.forEach(value => {
@@ -230,7 +283,7 @@ Hooks.FeedbackForm = {
       dontLikeCheckbox.addEventListener('change', (e) => {
         if (!e.target.checked) return;
         if (typeof posthog !== 'undefined') {
-          this.trackPostHogFeedback('dont_like');
+          this.trackPostHogFeedback(['dont_like'], 'submitted');
         }
         // Brief delay so PostHog's XHR has a chance to leave before nav cancels it
         setTimeout(() => { window.location.href = '/faq#Q8'; }, 150);
@@ -241,9 +294,11 @@ Hooks.FeedbackForm = {
   setupAutoHideSuccess() {
     const thanksDiv = document.querySelector('.feedback-thanks');
     if (thanksDiv && thanksDiv.textContent.trim() === 'Thanks!' && !thanksDiv.dataset.tracked) {
-      // Track PostHog event when success is shown
-      this.trackPostHogFeedback();
-      
+      // Track PostHog event when success is shown, using the options captured
+      // at submit time so feedback_type reflects the user's actual choice.
+      this.trackPostHogFeedback(this.pendingFeedback || [], 'submitted');
+      this.pendingFeedback = null;
+
       // Mark as tracked to prevent double-tracking
       thanksDiv.dataset.tracked = 'true';
       
@@ -258,8 +313,12 @@ Hooks.FeedbackForm = {
     }
   },
 
-  trackPostHogFeedback(feedbackType) {
+  trackPostHogFeedback(feedbackOptions, stage) {
     if (typeof posthog === 'undefined' || typeof posthog.capture !== 'function') return;
+
+    const options = Array.isArray(feedbackOptions)
+      ? feedbackOptions
+      : (feedbackOptions ? [feedbackOptions] : []);
 
     const modal = this.el.closest('.summary-modal-overlay');
     if (!modal) return;
@@ -300,7 +359,17 @@ Hooks.FeedbackForm = {
     if (character_name) properties.character_name = character_name;
     if (play_title) properties.play_title = play_title;
     if (location) properties.location = location;
-    if (feedbackType) properties.feedback_type = feedbackType;
+
+    // Distinguish thumbs-click intent ('opened') from a completed submission,
+    // and always record a non-null feedback_type so positive/negative share is
+    // computable. 'opened' captures carry no selected options yet.
+    properties.feedback_stage = stage || 'submitted';
+    if (stage === 'opened') {
+      properties.feedback_type = 'opened';
+    } else {
+      properties.feedback_type = deriveFeedbackType(options);
+      if (options.length) properties.feedback_options = options;
+    }
 
     posthog.capture('ai_content_feedback', properties);
   },
