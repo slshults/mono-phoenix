@@ -1,10 +1,12 @@
 ExUnit.start()
-# Only the Accounts repo is used in Phase 1 tests. The main MonoPhoenixV01.Repo
-# is not put in sandbox mode here because the `test` mix alias deliberately
-# doesn't create/migrate its test DB (no Phase 1 tests touch monologues data).
-# Add `Sandbox.mode(MonoPhoenixV01.Repo, :manual)` back here when the first
-# test that touches the main repo lands (likely Phase 2+ with favorites).
+
+# Both repos run in manual sandbox mode. The Accounts repo (users/auth/Stripe)
+# is set up by the `test` mix alias via migrations; the main MonoPhoenixV01.Repo
+# (monologues/plays) is loaded from priv/repo/structure.sql by the same alias,
+# since its schema predates Ecto migrations. Tests that touch monologues data
+# use MonoPhoenixV01.MonologuesDataCase.
 Ecto.Adapters.SQL.Sandbox.mode(MonoPhoenixV01.Accounts.Repo, :manual)
+Ecto.Adapters.SQL.Sandbox.mode(MonoPhoenixV01.Repo, :manual)
 
 # Mox mock for the Stripe client. config/test.exs sets
 # :stripe_client → MonoPhoenixV01.BillingMock; Billing reads that and
