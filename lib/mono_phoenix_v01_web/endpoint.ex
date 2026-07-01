@@ -14,6 +14,14 @@ defmodule MonoPhoenixV01Web.Endpoint do
     websocket: [connect_info: [session: @session_options], timeout: 45_000]
   )
 
+  # Resolve the real client IP from X-Forwarded-For (Gigalixir runs
+  # behind a proxy, so conn.remote_ip is otherwise the load balancer)
+  # and drop known scraper/data-center ranges with a 403. Placed at the
+  # very edge — before Plug.Static — so blocked IPs can't even pull
+  # static assets, robots.txt, or sitemap.xml.
+  plug(RemoteIp)
+  plug(MonoPhoenixV01Web.Plugs.BlockBotIp)
+
   # Serve at "/" the static files from "priv/static" directory.
   #
   # You should set gzip to true if you are running phx.digest

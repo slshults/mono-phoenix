@@ -53,6 +53,9 @@ defmodule MonoPhoenixV01.MixProject do
       {:gettext, "~> 0.22.1"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
+      # Parses X-Forwarded-For so conn.remote_ip is the real client IP
+      # behind Gigalixir's proxy (required by the BlockBotIp plug).
+      {:remote_ip, "~> 1.2"},
       {:redirect, "~> 0.4.0"},
       {:tesla, "~> 1.8"},
       # Mint is the HTTP engine behind Tesla.Adapter.Mint, used by
