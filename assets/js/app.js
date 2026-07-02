@@ -1022,3 +1022,22 @@ liveSocket.enableDebug()
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
 
+// Search (and every other interaction on this site) runs entirely over the
+// LiveView websocket. Mobile browsers aggressively tear that socket down when
+// the tab is backgrounded, the screen locks, or the network hands off between
+// wifi and cellular. When that happens phx-change events are silently dropped
+// and the search box looks broken. Force a prompt reconnect whenever the page
+// comes back to the foreground or connectivity returns, instead of waiting for
+// LiveView's reconnect backoff.
+function ensureLiveConnected() {
+  if (window.liveSocket && !window.liveSocket.isConnected()) {
+    window.liveSocket.connect()
+  }
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") ensureLiveConnected()
+})
+window.addEventListener("online", ensureLiveConnected)
+window.addEventListener("pageshow", ensureLiveConnected)
+
