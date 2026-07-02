@@ -34,6 +34,22 @@ import topbar from "../vendor/topbar"
 
 let Hooks = {}
 
+// Push a hook event to a LiveComponent, tolerating a dead socket.
+//
+// `pushEventTo` throws "unable to push hook event. LiveView not connected"
+// when the socket is down at the moment we push — a transient race on network
+// drops, socket timeouts, or while the page is unloading. These pushes are all
+// best-effort UI bookkeeping (closing a modal, resetting a success banner);
+// if the socket is gone there's nothing to deliver to and nothing is broken,
+// so swallow the error instead of surfacing console / error-tracking noise.
+function safePushEventTo(hook, target, event, payload = {}) {
+  try {
+    hook.pushEventTo(target, event, payload)
+  } catch (err) {
+    console.debug("safePushEventTo: dropped '" + event + "' (socket not connected):", err)
+  }
+}
+
 
 // Modal Click Handler Hook
 Hooks.ModalClickHandler = {
@@ -121,8 +137,10 @@ Hooks.ModalClickHandler = {
     console.debug("=== handleModalClose() called ===")
     console.debug("Pushing modal_close_request event to #" + this.el.id)
 
-    // Push event directly to the LiveComponent using its ID
-    this.pushEventTo("#" + this.el.id, "modal_close_request", {})
+    // Push event directly to the LiveComponent using its ID.
+    // Guarded: the user may click close after the socket has already
+    // disconnected, and an unguarded push throws "LiveView not connected".
+    safePushEventTo(this, "#" + this.el.id, "modal_close_request", {})
   },
 
   updated() {
@@ -307,7 +325,9 @@ Hooks.FeedbackForm = {
         // Reset the feedback success state
         const parentModal = this.el.closest('.summary-modal-overlay');
         if (parentModal) {
-          this.pushEventTo("#" + parentModal.id, "reset_feedback_success", {});
+          // Fires 3s after success on a setTimeout, by which point the socket
+          // may have dropped — guard so a dead socket fails silently.
+          safePushEventTo(this, "#" + parentModal.id, "reset_feedback_success", {});
         }
       }, 3000);
     }
