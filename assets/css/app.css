@@ -581,6 +581,13 @@ th.th-pad-right {
 
 /* Search box has too much bootstrap bling */
 
+/* Bootstrap sets .form-control to 14px; iOS Safari auto-zooms any input under
+   16px on focus, which reads as the search box "jumping"/breaking on mobile.
+   Pin the search input to 16px to suppress the zoom. */
+input.search-box-default {
+  font-size: 16px;
+}
+
 .form-control:focus {
   border-color: unset;
   -webkit-box-shadow: none;
