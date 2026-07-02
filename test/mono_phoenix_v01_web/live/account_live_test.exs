@@ -42,7 +42,7 @@ defmodule MonoPhoenixV01Web.AccountLiveTest do
       conn = log_in_user(conn, user)
 
       MonoPhoenixV01.BillingMock
-      |> expect(:retrieve_subscription, fn _ ->
+      |> stub(:retrieve_subscription, fn _ ->
         {:ok, %Stripe.Subscription{cancel_at: 1_782_520_397, cancel_at_period_end: false}}
       end)
 
@@ -59,7 +59,7 @@ defmodule MonoPhoenixV01Web.AccountLiveTest do
       conn = log_in_user(conn, user)
 
       MonoPhoenixV01.BillingMock
-      |> expect(:retrieve_subscription, fn _ ->
+      |> stub(:retrieve_subscription, fn _ ->
         {:ok, %Stripe.Subscription{cancel_at: nil, cancel_at_period_end: true}}
       end)
 
@@ -74,7 +74,7 @@ defmodule MonoPhoenixV01Web.AccountLiveTest do
       conn = log_in_user(conn, user)
 
       MonoPhoenixV01.BillingMock
-      |> expect(:retrieve_subscription, fn _ -> {:error, :stripe_unavailable} end)
+      |> stub(:retrieve_subscription, fn _ -> {:error, :stripe_unavailable} end)
 
       {:ok, _lv, html} = live(conn, ~p"/account")
 

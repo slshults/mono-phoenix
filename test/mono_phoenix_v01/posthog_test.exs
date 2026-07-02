@@ -10,7 +10,7 @@ defmodule MonoPhoenixV01.PostHogTest do
       assert payload["event"] == "used_search"
       assert payload["distinct_id"] == "anon-123"
       assert payload["properties"]["$process_person_profile"] == false
-      assert payload["properties"]["term"] == "hamlet"
+      assert payload["properties"][:term] == "hamlet"
     end
 
     test "account-holder events do not suppress the person profile" do
@@ -18,7 +18,7 @@ defmodule MonoPhoenixV01.PostHogTest do
         PostHog.build_payload("signup_completed", %{user_id: 7}, "patron@example.com", true)
 
       refute Map.has_key?(payload["properties"], "$process_person_profile")
-      assert payload["properties"]["user_id"] == 7
+      assert payload["properties"][:user_id] == 7
       assert payload["distinct_id"] == "patron@example.com"
     end
 

@@ -92,8 +92,23 @@ defmodule MonoPhoenixV01.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: [
-        "ecto.create --quiet --repo MonoPhoenixV01.Accounts.Repo",
-        "ecto.migrate --quiet --repo MonoPhoenixV01.Accounts.Repo",
+        # A given mix task name runs only ONCE per invocation, so we can't call
+        # ecto.create once per repo. Instead: drop the main (monologues) repo for
+        # a clean slate, then create BOTH repos in one shot (both are listed in
+        # :ecto_repos), migrate only the Accounts repo, and load the main repo
+        # from structure.sql.
+        "ecto.drop --quiet -r MonoPhoenixV01.Repo",
+        "ecto.create --quiet",
+        "ecto.migrate --quiet -r MonoPhoenixV01.Accounts.Repo",
+        # The main (monologues) DB has no creating migration — its schema is
+        # inherited from the prod-copy dev DB and captured in
+        # priv/repo/structure.sql. Regenerate it with the PG14 pg_dump so the
+        # output stays compatible with the local PG14 server:
+        #   PATH=/usr/lib/postgresql/14/bin:$PATH pg_dump --schema-only \
+        #     --no-owner --no-privileges -f priv/repo/structure.sql copyOfProdDBforTest
+        # Drop + load gives each run a clean, deterministic schema with no
+        # schema_migrations upkeep.
+        "ecto.load --quiet --force -r MonoPhoenixV01.Repo",
         "test"
       ],
       "assets.deploy": [
