@@ -906,7 +906,12 @@ window.addEventListener("phx:page-loading-stop", () => {
 document.addEventListener('DOMContentLoaded', function() {
   const overlay = document.getElementById('adblock-overlay');
   if (!overlay) return;
-  const dismissedAt = localStorage.getItem('adblock_dismissed');
+  // localStorage throws SecurityError in Firefox when storage is blocked;
+  // treat that as "not dismissed" instead of breaking the handler.
+  let dismissedAt = null;
+  try {
+    dismissedAt = localStorage.getItem('adblock_dismissed');
+  } catch (e) {}
   if (dismissedAt && (Date.now() - parseInt(dismissedAt)) < 3 * 24 * 60 * 60 * 1000) return;
 
   // Deconflict overlapping ad/promo overlays: an adblock visitor can already
@@ -937,7 +942,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // be able to block dismissal. Under an ad blocker `posthog` can be present
     // but with `.capture` stripped — calling it then threw and left the modal
     // stuck open, so guard that the method is actually callable.
-    localStorage.setItem('adblock_dismissed', Date.now().toString());
+    // Guarded so a storage-blocked browser can still dismiss the modal —
+    // an unguarded throw here would fire before the overlay is hidden.
+    try {
+      localStorage.setItem('adblock_dismissed', Date.now().toString());
+    } catch (e) {}
     overlay.style.display = 'none';
     if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') posthog.capture('adblock_modal_dismissed');
   }

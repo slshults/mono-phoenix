@@ -6,9 +6,30 @@ function getCookie(name) {
   return null;
 }
 
+// Firefox throws "SecurityError: The operation is insecure." on any
+// localStorage access when storage is blocked (e.g. cookies disabled, some
+// private-browsing setups). This file runs at the top of the app.js bundle,
+// so an unguarded throw here would halt the rest of the bundle. Fall back to
+// the darkModePreference cookie we already set in setDarkModePreference.
+function readDarkModePreference() {
+  try {
+    return localStorage.getItem('darkMode');
+  } catch (e) {
+    return getCookie('darkModePreference');
+  }
+}
+
+function saveDarkModePreference(value) {
+  try {
+    localStorage.setItem('darkMode', value);
+  } catch (e) {
+    // Storage blocked; the darkModePreference cookie is the fallback store.
+  }
+}
+
 // Function to set dark mode based on the user's preference
 function setDarkModePreference(isDarkMode) {
-  localStorage.setItem('darkMode', isDarkMode ? 'true' : 'false');
+  saveDarkModePreference(isDarkMode ? 'true' : 'false');
   // Set a cookie for the dark mode preference
   document.cookie = 'darkModePreference=' + (isDarkMode ? 'true' : 'false') + ';path=/';
   var bodyElement = document.body; // Use 'document.body' instead of 'getElementById'
@@ -30,7 +51,7 @@ function setDarkModePreference(isDarkMode) {
 // Function to toggle dark mode
 function toggleDarkMode() {
   // Check if dark mode is currently enabled
-  var isDarkMode = localStorage.getItem('darkMode') === 'true';
+  var isDarkMode = readDarkModePreference() === 'true';
   // Toggle the dark mode preference and update the UI
   setDarkModePreference(!isDarkMode);
 }
@@ -47,7 +68,7 @@ document.addEventListener('click', function(e) {
 });
 
 // Set the initial dark mode preference based on localStorage
-var initialDarkMode = localStorage.getItem('darkMode') === 'true';
+var initialDarkMode = readDarkModePreference() === 'true';
 setDarkModePreference(initialDarkMode);
 
 window.getCookie = function(name) {
