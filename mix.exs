@@ -76,7 +76,15 @@ defmodule MonoPhoenixV01.MixProject do
       {:oban, "~> 2.22"},
       {:bcrypt_elixir, "~> 3.0"},
       {:stripity_stripe, "~> 3.3.1"},
-      {:mox, "~> 1.1", only: :test}
+      {:mox, "~> 1.1", only: :test},
+      # OpenTelemetry: distributed tracing exported to PostHog (prod only,
+      # see config/runtime.exs and lib/mono_phoenix_v01/application.ex).
+      {:opentelemetry, "~> 1.5"},
+      {:opentelemetry_api, "~> 1.4"},
+      {:opentelemetry_exporter, "~> 1.8"},
+      {:opentelemetry_phoenix, "~> 2.0"},
+      {:opentelemetry_cowboy, "~> 1.0"},
+      {:opentelemetry_ecto, "~> 1.2"}
     ]
   end
 

@@ -195,6 +195,30 @@ if config_env() == :prod do
          {"0 13 * * *", MonoPhoenixV01.DailyMonologue.Scheduler}
        ]}
     ]
+
+  # PostHog logs + distributed tracing. Kill switch: set
+  # POSTHOG_OTEL_ENABLED=false via `gigalixir config:set` to disable both
+  # pipelines without a redeploy. Same public project token already
+  # hardcoded in lib/mono_phoenix_v01/posthog.ex (not a secret).
+  otel_enabled = System.get_env("POSTHOG_OTEL_ENABLED", "true") == "true"
+  config :mono_phoenix_v01, :otel_enabled, otel_enabled
+
+  if otel_enabled do
+    posthog_project_token = "phc_6aYLpkqQsmYJanYseJ8SJcOMicomCxj9v9Pl6hnZQS3"
+
+    config :opentelemetry,
+      traces_exporter: :otlp,
+      span_processor: :batch
+
+    config :opentelemetry_exporter,
+      otlp_protocol: :http_protobuf,
+      otlp_traces_endpoint: "https://us.i.posthog.com/i/v1/traces",
+      otlp_traces_headers: [{"authorization", "Bearer #{posthog_project_token}"}]
+
+    config :mono_phoenix_v01, :otel_logs,
+      endpoint: "https://us.i.posthog.com/i/v1/logs",
+      headers: [{"authorization", "Bearer #{posthog_project_token}"}]
+  end
 end
 
 # Social posting credentials for the daily "Monologue of the Day" job.
