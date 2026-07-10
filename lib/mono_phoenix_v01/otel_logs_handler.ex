@@ -135,7 +135,12 @@ defmodule MonoPhoenixV01.OtelLogsHandler do
     meta
     |> Map.take([:request_id, :mfa, :file, :line])
     |> Enum.map(fn {key, value} ->
-      %{"key" => to_string(key), "value" => %{"stringValue" => inspect(value)}}
+      %{"key" => to_string(key), "value" => %{"stringValue" => attribute_value(value)}}
     end)
   end
+
+  # Strings (e.g. request_id) render as-is; anything else (mfa tuples,
+  # charlists) falls back to inspect/1 for a readable representation.
+  defp attribute_value(value) when is_binary(value), do: value
+  defp attribute_value(value), do: inspect(value)
 end

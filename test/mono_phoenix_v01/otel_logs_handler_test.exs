@@ -33,11 +33,11 @@ defmodule MonoPhoenixV01.OtelLogsHandlerTest do
       }
 
       record = OtelLogsHandler.to_log_record(log_event)
-      attribute_keys = Enum.map(record["attributes"], & &1["key"])
+      attributes = Map.new(record["attributes"], &{&1["key"], &1["value"]["stringValue"]})
 
-      assert "request_id" in attribute_keys
-      assert "line" in attribute_keys
-      refute "pid" in attribute_keys
+      assert attributes["request_id"] == "req-abc"
+      assert attributes["line"] == "42"
+      refute Map.has_key?(attributes, "pid")
     end
 
     test "falls back to severityNumber 0 for an unrecognized level" do
