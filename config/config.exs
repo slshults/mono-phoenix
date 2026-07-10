@@ -62,6 +62,14 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+# PostHog logs + distributed tracing (see docs/superpowers/specs/
+# 2026-07-10-posthog-logs-and-tracing-design.md). Off by default; only
+# config/runtime.exs's :prod block turns this on, gated by
+# POSTHOG_OTEL_ENABLED. `traces_exporter: :none` keeps the OTel SDK from
+# attempting any network connection in dev/test.
+config :mono_phoenix_v01, :otel_enabled, false
+config :opentelemetry, traces_exporter: :none
+
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
