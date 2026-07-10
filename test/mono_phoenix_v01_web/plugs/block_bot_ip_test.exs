@@ -44,7 +44,7 @@ defmodule MonoPhoenixV01Web.Plugs.BlockBotIpTest do
       conn(:get, "/plays")
       |> Map.put(:remote_ip, {10, 0, 0, 1})
       |> put_req_header("x-forwarded-for", "8.8.8.8")
-      |> prepend_req_header("x-forwarded-for", "47.79.0.1")
+      |> prepend_req_headers([{"x-forwarded-for", "47.79.0.1"}])
       |> run()
 
     assert conn.status == 403
