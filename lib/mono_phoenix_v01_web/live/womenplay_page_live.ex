@@ -6,7 +6,12 @@ defmodule MonoPhoenixV01Web.WomenplayPageLive do
 
   @impl true
   def mount(%{"playid" => playid_str}, _session, socket) do
-    playid = String.to_integer(playid_str)
+    playid =
+      case Integer.parse(playid_str) do
+        {playid, ""} when playid > 0 -> playid
+        _ -> raise MonoPhoenixV01Web.NotFoundError
+      end
+
     rows = fetch_monologues(playid, "")
     
     # Subscribe to PubSub events for retry functionality and PostHog LLM analytics
