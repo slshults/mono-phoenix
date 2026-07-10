@@ -84,7 +84,13 @@ defmodule MonoPhoenixV01.MixProject do
       {:opentelemetry_exporter, "~> 1.8"},
       {:opentelemetry_phoenix, "~> 2.0"},
       {:opentelemetry_cowboy, "~> 1.0"},
-      {:opentelemetry_ecto, "~> 1.2"}
+      {:opentelemetry_ecto, "~> 1.2"},
+      # Replace grpcbox (opentelemetry_exporter's gRPC transport — unused,
+      # we export OTLP over http_protobuf) with a module-free stub. The real
+      # grpcbox pulls in chatterbox, whose h2_* modules collide with hackney
+      # 4.x's h2 package and abort `mix release` (and therefore Gigalixir
+      # deploys) with "Duplicated modules". See vendor/grpcbox_stub/mix.exs.
+      {:grpcbox, path: "vendor/grpcbox_stub", override: true}
     ]
   end
 
