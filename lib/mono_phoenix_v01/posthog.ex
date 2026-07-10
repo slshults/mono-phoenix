@@ -132,4 +132,7 @@ defmodule MonoPhoenixV01.PostHog do
   # (the `false` default, or an unexpected value) stays anonymous.
   defp anonymize(properties, true), do: properties
   defp anonymize(properties, _), do: Map.put(properties, "$process_person_profile", false)
+
+  @doc false
+  def project_api_key, do: @project_api_key
 end

@@ -8,6 +8,8 @@ defmodule MonoPhoenixV01Web.Telemetry do
 
   @impl true
   def init(_arg) do
+    MonoPhoenixV01Web.NotFoundTracker.attach()
+
     children = [
       # Telemetry poller will execute the given period measurements
       # every 10_000ms. Learn more here: https://hexdocs.pm/telemetry_metrics
