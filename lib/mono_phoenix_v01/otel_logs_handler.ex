@@ -73,7 +73,12 @@ defmodule MonoPhoenixV01.OtelLogsHandler do
   end
 
   defp send_batch(records) do
-    %{endpoint: endpoint, headers: headers} = Application.fetch_env!(:mono_phoenix_v01, :otel_logs)
+    # `config :mono_phoenix_v01, :otel_logs, endpoint: ..., headers: ...`
+    # (config/runtime.exs) stores a keyword list, not a map — matching a map
+    # here raised MatchError on every flush and silently dropped the batch.
+    otel_logs_config = Application.fetch_env!(:mono_phoenix_v01, :otel_logs)
+    endpoint = Keyword.fetch!(otel_logs_config, :endpoint)
+    headers = Keyword.fetch!(otel_logs_config, :headers)
     body = Jason.encode!(to_otlp_payload(records))
     request_headers = [{"content-type", "application/json"} | headers]
 
