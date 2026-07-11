@@ -22,6 +22,11 @@ defmodule MonoPhoenixV01Web.Endpoint do
   plug(RemoteIp)
   plug(MonoPhoenixV01Web.Plugs.BlockBotIp)
 
+  # Drop fleets that rotate across too many IPs to blocklist by CIDR
+  # but share one distinctive spoofed user agent (e.g. the St. Louis
+  # Android 13 / Chrome 109 cluster). Same 403, same edge placement.
+  plug(MonoPhoenixV01Web.Plugs.BlockBotUserAgent)
+
   # Serve at "/" the static files from "priv/static" directory.
   #
   # You should set gzip to true if you are running phx.digest
