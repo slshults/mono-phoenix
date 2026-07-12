@@ -20,7 +20,11 @@ defmodule MonoPhoenixV01Web.Plugs.BlockBotUserAgent do
     user_agent = conn |> get_req_header("user-agent") |> List.first()
 
     if BlockedUserAgents.blocked?(user_agent) do
-      Logger.info("Blocked bot UA #{inspect(user_agent)} on #{conn.request_path}")
+      # Logged at :warning (not :info) so the block reaches PostHog via the
+      # OTel pipeline, which only forwards warning/error. This is what lets
+      # us alert on abnormal block volume — the only window onto possible
+      # false positives, since a blocked request never loads posthog-js.
+      Logger.warning("Blocked bot UA #{inspect(user_agent)} on #{conn.request_path}")
 
       conn
       |> send_resp(403, "Forbidden")
