@@ -1,3 +1,21 @@
+<%!--
+  Crawler / LLM-agent metadata for this permalink page: a descriptive <h1>
+  and a breadcrumb trail. Kept in the DOM (search crawlers and LLM fetch tools
+  read raw HTML) but visually hidden — the visible page already shows the
+  play / scene / character in the row below, so repeating it on-screen was
+  redundant clutter.
+--%>
+<%= if @rows != [] do %>
+  <% r = hd(@rows) %>
+  <div class="visually-hidden">
+    <h1>
+      <%= r.character %> — “<%= r.firstline %>” — <%= r.play %>, <%= MonoPhoenixV01.MonologueMeta.format_location(r.location) %>
+    </h1>
+    <nav aria-label="Breadcrumb">
+      <a href="/home">Home</a> › <a href={"/play/#{r.id}"}><%= r.play %></a> › <span><%= r.character %></span>
+    </nav>
+  </div>
+<% end %>
 <div class="center-this" style="position:relative;">
   <span style="vertical-align:top; position:relative;
   top: 0px;">
@@ -15,16 +33,16 @@
                 <%= link to: "/play/#{row.id}", method: :get do %>
                   <%= row.play %>
                 <% end %>
-              </span>
+              </span><span class="summary-icon" onclick="openStaticSummaryModal('play')" title="Show play summary" style="cursor:pointer;"><img src={Routes.static_path(@conn, "/images/scroll-summary-icon.svg")} alt="Play summary" /></span>
               &nbsp; &middot;<span
                 class="monologue-actscene"
-                alt="👆 Click here to read the whole scene. 
-This link jumps you to the monologue, 
+                alt="👆 Click here to read the whole scene.
+This link jumps you to the monologue,
 scroll up to read from the top of the scene."
-                title="👆 Click here to read the whole scene. 
-This link jumps you to the monologue, 
+                title="👆 Click here to read the whole scene.
+This link jumps you to the monologue,
 scroll up to read from the top of the scene."
-              ><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; &middot;
+              ><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span><span class="summary-icon" onclick="openStaticSummaryModal('scene')" title="Show scene summary" style="cursor:pointer;"><img src={Routes.static_path(@conn, "/images/scroll-summary-icon.svg")} alt="Scene summary" /></span>&nbsp; &middot;
               <span class="monologue-actscene"><%= row.style %></span><button
                 type="button"
                 class="heart-icon-btn"
@@ -52,7 +70,7 @@ scroll up to read from the top of the scene."
                 <%= row.character %><br />
               </span>
               <br />
-              <span class="monologue-show accent-font"><%= raw(row.body) %></span>
+              <span class="monologue-show accent-font"><%= raw(row.body) %></span><span class="summary-icon" onclick="openStaticSummaryModal('paraphrase')" title="Show modern paraphrasing" style="cursor:pointer;"><img src={Routes.static_path(@conn, "/images/thinking-paraphrase-icon.svg")} alt="Modern paraphrasing" /></span>
               <%= link to: raw(row.pdf), method: :get, target: "_blank", rel: "noopener" do %>
                 <img
                   src={Routes.static_path(@conn, "/images/pdf_file_icon_16x16.png")}
@@ -68,3 +86,131 @@ scroll up to read from the top of the scene."
   </span>
 </div>
 
+<%= if @rows != [] and assigns[:extras] do %>
+  <% r2 = hd(@rows) %>
+  <% ex = @extras %>
+  <%!--
+    Server-rendered AI content (paraphrase + play/scene summaries) and the
+    same-play related links. Kept in the DOM — visually hidden — so search
+    crawlers and LLM agents that read raw HTML can see this differentiating
+    content. Sighted users reach the summaries/paraphrase through the scroll
+    and paraphrase icons in the row above, which open the modal below (this is
+    a plain controller page, not a LiveView, so the modal is vanilla JS that
+    reveals the already-rendered text rather than generating on demand).
+  --%>
+  <div class="visually-hidden">
+    <%= if ex.paraphrase do %>
+      <div id="static-content-paraphrase" data-title={"Modern Paraphrasing: #{r2.character}"}>
+        <%= raw(ex.paraphrase) %>
+      </div>
+    <% end %>
+    <%= if ex.scene_summary do %>
+      <div id="static-content-scene" data-title={"Scene Summary: #{r2.play}, #{r2.location}"}>
+        <%= raw(ex.scene_summary) %>
+      </div>
+    <% end %>
+    <%= if ex.play_summary do %>
+      <div id="static-content-play" data-title={"Play Summary: #{r2.play}"}>
+        <%= raw(ex.play_summary) %>
+      </div>
+    <% end %>
+    <%= if ex.related != [] do %>
+      <nav class="monologue-related" aria-label="More monologues from this play">
+        <h2>More monologues from <%= r2.play %></h2>
+        <ul>
+          <%= for rel <- ex.related do %>
+            <li>
+              <a href={"/monologues/#{rel.id}"}>
+                <%= rel.character %> — “<%= rel.firstline %>” (<%= rel.location %>)
+              </a>
+            </li>
+          <% end %>
+        </ul>
+      </nav>
+    <% end %>
+  </div>
+
+  <div
+    id="static-summary-modal"
+    class="summary-modal-overlay"
+    style="display:none;"
+    data-play-href={"/play/#{r2.id}"}
+    data-play-name={r2.play}
+    data-character={r2.character}
+    onclick="if(event.target===this)closeStaticSummaryModal();"
+  >
+    <div class="summary-modal-content">
+      <div class="summary-modal-header">
+        <h3 class="summary-modal-title" id="static-summary-title"></h3>
+        <button class="summary-modal-close" aria-label="Close modal" onclick="closeStaticSummaryModal()">&times;</button>
+      </div>
+      <div class="summary-modal-body">
+        <div class="summary-content" id="static-summary-body"></div>
+        <div class="summary-modal-footer" id="static-summary-disclaimer">
+          <div class="ai-disclaimer">
+            <em>Note: This content was generated by AI (Claude). It may contain errors.</em>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var events = {
+        paraphrase: "paraphrasing_requested",
+        scene: "scene_summary_requested",
+        play: "play_summary_requested"
+      };
+      var titles = { paraphrase: "Modern Paraphrasing", scene: "Scene Summary", play: "Play Summary" };
+      var labels = { paraphrase: "modern paraphrase", scene: "scene summary", play: "play summary" };
+      var modal = document.getElementById("static-summary-modal");
+      var monoId = <%= r2.monologues %>;
+      var playHref = modal.getAttribute("data-play-href");
+      var playName = modal.getAttribute("data-play-name");
+
+      window.openStaticSummaryModal = function (key) {
+        var src = document.getElementById("static-content-" + key);
+        var titleEl = document.getElementById("static-summary-title");
+        var bodyEl = document.getElementById("static-summary-body");
+        var disclaimerEl = document.getElementById("static-summary-disclaimer");
+        var cached = !!src;
+
+        if (cached) {
+          titleEl.textContent = src.getAttribute("data-title") || titles[key];
+          bodyEl.innerHTML = src.innerHTML;
+          disclaimerEl.style.display = "";
+        } else {
+          // Not generated yet — a static page can't call the API, so point the
+          // user at the play page (a LiveView) where they can generate it.
+          titleEl.textContent = titles[key];
+          var link = document.createElement("a");
+          link.href = playHref;
+          link.textContent = playName;
+          bodyEl.textContent =
+            "The " + labels[key] + " for this monologue hasn’t been generated yet.";
+          bodyEl.appendChild(document.createElement("br"));
+          bodyEl.appendChild(
+            document.createTextNode("You can generate it from the play’s page: ")
+          );
+          bodyEl.appendChild(link);
+          disclaimerEl.style.display = "none";
+        }
+
+        modal.style.display = "block";
+        if (typeof posthog !== "undefined" && events[key]) {
+          posthog.capture(events[key], {
+            source: "standalone_monologue_page",
+            monologue_id: monoId,
+            cached: cached
+          });
+        }
+      };
+      window.closeStaticSummaryModal = function () {
+        modal.style.display = "none";
+      };
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") window.closeStaticSummaryModal();
+      });
+    })();
+  </script>
+<% end %>

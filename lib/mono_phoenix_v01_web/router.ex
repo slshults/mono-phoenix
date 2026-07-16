@@ -44,6 +44,11 @@ defmodule MonoPhoenixV01Web.Router do
   scope "/api", MonoPhoenixV01Web do
     pipe_through(:api)
 
+    # Public read-only monologue data API (JSON).
+    get("/monologues.json", ApiController, :monologues)
+    get("/monologues/:id", ApiController, :monologue)
+    get("/monologue-of-the-day.json", ApiController, :monologue_of_the_day)
+
     post("/posthog/identity", PostHogIdentityController, :sign)
 
     # Stripe webhook. The :api pipeline omits :protect_from_forgery so
@@ -79,6 +84,7 @@ defmodule MonoPhoenixV01Web.Router do
     end
 
     get("/monologues/:monoid", MonologuesPageController, :monologues)
+    get("/sitemap.xml", SitemapController, :index)
     get("/aboutus", StaticPageController, :aboutus)
     get("/faq", StaticPageController, :faq)
     get("/home", StaticPageController, :home)
