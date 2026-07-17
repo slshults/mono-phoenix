@@ -43,17 +43,23 @@ defmodule MonoPhoenixV01.SitemapTest do
     refute "https://www.shakespeare-monologues.org/women/30" in l
   end
 
-  test "uses the monologue's own updated_at as its lastmod" do
+  test "floors each lastmod at the site-rebuild date (never the stale 2023)" do
     entries = Sitemap.build_entries(@monos)
     entry = Enum.find(entries, &(&1.loc == "https://www.shakespeare-monologues.org/monologues/2"))
-    assert entry.lastmod == ~D[2016-06-01]
+    # data date is 2016, but the page was rebuilt more recently, so lastmod is newer
+    assert Date.compare(entry.lastmod, ~D[2016-06-01]) == :gt
+    # the old bug stamped everything 2023-03-30
+    refute entry.lastmod == ~D[2023-03-30]
+    # every entry (hubs, plays, monologues) reads recent — none stale
+    assert Enum.all?(entries, &(Date.compare(&1.lastmod, ~D[2020-01-01]) == :gt))
   end
 
-  test "render/1 produces a well-formed urlset with loc and lastmod" do
+  test "render/1 produces a well-formed urlset with loc and lastmod, no stale date" do
     xml = @monos |> Sitemap.build_entries() |> Sitemap.render()
     assert xml =~ ~s(<?xml version="1.0" encoding="UTF-8"?>)
     assert xml =~ "<urlset"
     assert xml =~ "<loc>https://www.shakespeare-monologues.org/monologues/1</loc>"
-    assert xml =~ "<lastmod>2015-01-01</lastmod>"
+    assert xml =~ "<lastmod>"
+    refute xml =~ "2023-03-30"
   end
 end
