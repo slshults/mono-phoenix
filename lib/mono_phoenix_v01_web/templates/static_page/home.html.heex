@@ -1,5 +1,25 @@
 <title>Shakespeare's Monologues</title>
 
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Shakespeare's Monologues",
+  "alternateName": "shakespeare-monologues.org",
+  "url": "https://www.shakespeare-monologues.org/",
+  "description": "A complete, searchable database of every monologue in Shakespeare's plays — organized by play and gender, with full text, scene context, modern-English paraphrases, and printable PDFs. Online since 1997.",
+  "inLanguage": "en",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "https://www.shakespeare-monologues.org/search_bar?q={search_term_string}"
+    },
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+
 <div class="home-page center-that" style="vertical-align: top;">
   <table
     align="center"
@@ -73,6 +93,36 @@ Click to browse monologues for all genders."
                <br /><br />
             </td>
           </tr>
+          <%!--
+            Monologue of the Day — the most recently posted daily monologue,
+            linking to its permalink page. Gives crawlers (and readers) a
+            daily-changing internal link into the deep /monologues/{id} pages.
+            Hidden until at least one monologue has been posted.
+          --%>
+          <%= if assigns[:daily_monologue] do %>
+            <tr>
+              <td width="545px" align="center" class="accent-font" style="padding-bottom: 10px;">
+                <a
+                  href={"/monologues/#{@daily_monologue.id}"}
+                  class="mod-card"
+                  style="text-decoration: none; color: inherit; display: inline-block; max-width: 520px; border: 1px solid #E0E0C0; background-color: #F9F9DF; border-radius: 6px; padding: 12px 18px;"
+                >
+                  <div style="font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.7;">
+                    Monologue of the Day
+                  </div>
+                  <div style="font-size: 1.2em; margin-top: 5px;">
+                    <%= @daily_monologue.character %> · <%= @daily_monologue.play_title %>
+                  </div>
+                  <div style="font-style: italic; margin-top: 3px;">
+                    “<%= @daily_monologue.first_line %>”
+                  </div>
+                  <div style="font-size: 0.85em; opacity: 0.75; margin-top: 3px;">
+                    <%= MonoPhoenixV01.MonologueMeta.format_location(@daily_monologue.location) %> · <%= @daily_monologue.style %>
+                  </div>
+                </a>
+              </td>
+            </tr>
+          <% end %>
         </table>
       </td>
     </tr>

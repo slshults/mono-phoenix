@@ -18,7 +18,7 @@ defmodule MonoPhoenixV01Web do
   """
 
   def static_paths do
-    ~w(assets fonts images favicon.ico robots.txt ads.txt sitemap.xml)
+    ~w(assets fonts images favicon.ico robots.txt ads.txt llms.txt)
   end
 
   def controller do

@@ -41,21 +41,60 @@ defmodule MonoPhoenixV01Web.MonologuesPageController do
             }
           )
 
-        rows = MonoPhoenixV01.Repo.all(query)
+        case MonoPhoenixV01.Repo.all(query) do
+          [] ->
+            # Valid positive integer, but no such monologue — 404 rather than a
+            # blank 200 (thin empty pages hurt indexing).
+            not_found(conn)
 
-        render(conn, "monologues.html",
-          rows: rows,
-          layout: {MonoPhoenixV01Web.LayoutView, "static.html"}
-        )
+          rows ->
+            conn
+            |> assign_monologue_meta(rows, monoid)
+            |> render("monologues.html",
+              rows: rows,
+              extras: monologue_extras(rows, monoid),
+              layout: {MonoPhoenixV01Web.LayoutView, "static.html"}
+            )
+        end
 
       _ ->
-        conn
-        |> put_status(:not_found)
-        |> put_view(MonoPhoenixV01Web.ErrorView)
-        |> render("404.html")
-        |> halt()
+        not_found(conn)
     end
   end
+
+  defp not_found(conn) do
+    conn
+    |> put_status(:not_found)
+    |> put_view(MonoPhoenixV01Web.ErrorView)
+    |> render("404.html")
+    |> halt()
+  end
+
+  # Assigns the per-page SEO metadata the root layout renders (unique <title>,
+  # meta description, canonical URL). Only set here, so every other page is
+  # unaffected. No-op when the id matched no row (leaves the site-wide defaults).
+  defp assign_monologue_meta(conn, [row | _], monoid) do
+    conn
+    |> assign(:meta_title, MonoPhoenixV01.MonologueMeta.title(row))
+    |> assign(:meta_description, MonoPhoenixV01.MonologueMeta.description(row))
+    |> assign(:canonical_url, MonoPhoenixV01.MonologueMeta.canonical_url(monoid))
+    |> assign(:json_ld, MonoPhoenixV01.MonologueMeta.json_ld(row))
+  end
+
+  defp assign_monologue_meta(conn, _rows, _monoid), do: conn
+
+  # Related monologues (same play) + any cached AI paraphrase/summaries, rendered
+  # server-side so they're visible to crawlers/LLMs. nil when the id had no row.
+  defp monologue_extras([row | _], monoid) do
+    %{
+      related: MonoPhoenixV01.MonologueExtras.related_in_play(row.id, monoid),
+      paraphrase: MonoPhoenixV01.MonologueExtras.paraphrase_html(monoid),
+      play_summary: MonoPhoenixV01.MonologueExtras.play_summary_html(row.play),
+      scene_summary: MonoPhoenixV01.MonologueExtras.scene_summary_html(row.play, row.location)
+    }
+  end
+
+  defp monologue_extras(_rows, _monoid), do: nil
 end
 
 # rows below this line commented out while trying to get test route for all monologues working

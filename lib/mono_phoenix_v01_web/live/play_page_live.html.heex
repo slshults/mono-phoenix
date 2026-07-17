@@ -1,8 +1,19 @@
 <.live_title prefix="Monologues from ">
   <%= if length(@rows) > 0,
-    do: "#{hd(@rows).play} &middot; Shakespeare's Monologues",
+    do: "#{hd(@rows).play} · Shakespeare's Monologues",
     else: "Shakespeare's Monologues" %>
 </.live_title>
+<%= if @rows != [] do %>
+  <script type="application/ld+json">
+    <%= raw(
+      MonoPhoenixV01.MonologueMeta.breadcrumb_json_ld([
+        {"Home", "/home"},
+        {"All plays", "/plays"},
+        {hd(@rows).play, nil}
+      ])
+    ) %>
+  </script>
+<% end %>
 
 <div class="center-column-header accent-font">
   <h3>Search or browse monologues from</h3>
@@ -88,7 +99,7 @@ scroll up to read from the top of the scene."
                 title="This is the name of the character who speaks this monologue."
               >
                 <%= row.character %>
-              </span>
+              </span><a href={"/monologues/#{row.monologues}"} class="visually-hidden">Permanent link to this monologue</a>
               <br />
               <div
                 class="monologue-firstline-table"

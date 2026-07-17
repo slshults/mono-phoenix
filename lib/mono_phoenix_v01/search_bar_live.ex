@@ -6,9 +6,32 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
   alias MonoPhoenixV01Web.LiveFavoritesHelpers
 
   @impl true
+  # Standalone GET landing with a query (?q=...), e.g. the WebSite SearchAction /
+  # Google's sitelinks search box. Pre-runs the search so the user lands on the
+  # full, normal search UI with results already showing — not a stripped page.
+  # Embedded uses (live_render on the hub/play pages) never hit this clause: a
+  # nested LiveView's mount params are :not_mounted_at_router, not a map.
+  def mount(%{"q" => q}, session, socket) when is_binary(q) and q != "" do
+    {:ok,
+     assign_favorites_state(socket, session || %{})
+     |> assign(
+       # noindex,follow: don't let per-query results pages get indexed (thin
+       # content); the SearchAction target still works regardless.
+       robots: "noindex, follow",
+       meta_title: "Search: #{q} — Shakespeare's Monologues",
+       search_results: MonoPhoenixV01Web.SearchBar.get_all(q),
+       search_query: q,
+       active_requests: MapSet.new(),
+       async_metadata: %{}
+     )}
+  end
+
   def mount(_params, session, socket) do
     {:ok, assign_favorites_state(socket, session || %{})
      |> assign(
+       # Only reaches the root <title> on the standalone /search_bar route; when
+       # this LiveView is embedded (live_render) the parent renders the layout.
+       meta_title: "Search — Shakespeare's Monologues",
        search_results: [],
        search_query: "",
        active_requests: MapSet.new(),

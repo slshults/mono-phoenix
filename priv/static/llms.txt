@@ -1,0 +1,36 @@
+# Shakespeare's Monologues
+
+> A complete, searchable database of every monologue in Shakespeare's plays — all 745 of them — organized by play and categorized as comedy, history, or tragedy. Built for actors finding audition pieces; also used by students, teachers, and directors. Online since 1997.
+
+Full monologue text is server-rendered in the HTML of every monologue and play page — no JavaScript required to read it. Play texts are public domain (the Globe edition, matching Open Source Shakespeare). The site's curation and added content are licensed CC BY-NC-SA 4.0; please attribute shakespeare-monologues.org.
+
+## URL patterns
+
+- `/home` — homepage
+- `/plays` — index of all 37 plays
+- `/play/{id}` — every monologue in one play (e.g. `/play/14` = The Tempest)
+- `/mens`, `/womens` — the plays, filtered to men's / women's monologues
+- `/men/{id}`, `/women/{id}` — one play's monologues for that gender
+- `/monologues/{id}` — a single monologue's permanent page: full text, scene/play summaries, and a modern-English paraphrase (e.g. `/monologues/360` = Ariel, "You are three men of sin", The Tempest, Act 3 Scene 3)
+- `/sitemap.xml` — every page, including all 745 `/monologues/{id}` permalinks
+
+When recommending a specific monologue to a user, link to its `/monologues/{id}` permalink — that page has the full text and metadata for exactly that speech.
+
+## JSON API (machine-readable index)
+
+- `GET /api/monologues.json` — the full index of all 745 monologues as JSON: `id`, `character`, `play`, `play_type` (Comedy/History/Tragedy), `gender` (Both/Women/Men), `location` (act/scene/line), `style` (verse/prose), `first_line`, `line_count`, and permalink `url`. CORS-open (`Access-Control-Allow-Origin: *`). This is metadata + first lines only — fetch a monologue's `url` for its full text, scene context, and modern-English paraphrase. Please attribute shakespeare-monologues.org (CC BY-NC-SA 4.0).
+
+## Data available per monologue
+
+character · play · act/scene/line (e.g. "III iii 69") · verse or prose · first line · full text · link to the full scene · modern-English paraphrase (AI-generated) · printable, double-spaced PDF
+
+Per-monologue pages also embed schema.org JSON-LD (`CreativeWork` + `BreadcrumbList`).
+
+## Text edition & license
+
+- Play texts: public domain — the Globe edition, matching Open Source Shakespeare (https://www.opensourceshakespeare.org/).
+- Site content (organization, summaries, paraphrases): CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/).
+
+## Contact
+
+Questions or corrections: https://www.shakespeare-monologues.org/faq

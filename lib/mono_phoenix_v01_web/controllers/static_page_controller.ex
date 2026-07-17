@@ -6,6 +6,10 @@ defmodule MonoPhoenixV01Web.StaticPageController do
 
     render(conn, "home.html",
       page_title: page_title,
+      daily_monologue: MonoPhoenixV01.DailyMonologue.Current.get(),
+      # `/` 301-redirects to `/home`, so point the canonical at /home to settle
+      # the split Google was indexing.
+      canonical_url: "https://www.shakespeare-monologues.org/home",
       layout: {MonoPhoenixV01Web.LayoutView, "static.html"}
     )
   end
