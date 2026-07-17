@@ -12,7 +12,8 @@ defmodule MonoPhoenixV01.Sitemap do
       actually has monologues of that gender), and
     * all 745 `/monologues/{id}` permalink pages,
 
-  each with a real `lastmod` derived from the monologue's `updated_at`.
+  each with a `lastmod` that's the later of the monologue's `updated_at` and the
+  date the pages were last rebuilt (so freshly re-templated pages read as recent).
 
   `build_entries/1` is split out from the DB query so it can be unit-tested
   with plain sample rows.
@@ -21,9 +22,13 @@ defmodule MonoPhoenixV01.Sitemap do
   alias MonoPhoenixV01.Repo
 
   @host "https://www.shakespeare-monologues.org"
-  # Used when a row is missing updated_at, and as the site-wide floor. Matches
-  # the date the previous static sitemap used, so nothing regresses to "older".
-  @fallback_date ~D[2023-03-30]
+  # The date the site's pages were last substantially rebuilt (the LLM-agent
+  # optimization: new titles/meta/JSON-LD + the permalink treatment). Used as a
+  # floor for every URL's lastmod: the underlying monologue DATA is old
+  # (2010–2017), but the PAGES changed now — a recent, honest date is what we
+  # want, and it nudges crawlers to (re)index the freshly-exposed permalinks.
+  # Bump this on the next significant template/content change.
+  @content_updated ~D[2026-07-16]
 
   @doc "Full sitemap XML as a string."
   def to_xml, do: entries() |> render()
@@ -87,7 +92,7 @@ defmodule MonoPhoenixV01.Sitemap do
       monos
       |> Enum.sort_by(& &1.id)
       |> Enum.map(fn m ->
-        %{loc: "#{@host}/monologues/#{m.id}", lastmod: to_date(m.updated_at), priority: "0.6"}
+        %{loc: "#{@host}/monologues/#{m.id}", lastmod: lastmod(m.updated_at), priority: "0.6"}
       end)
 
     hub ++ info ++ play_entries ++ mono_entries
@@ -114,11 +119,14 @@ defmodule MonoPhoenixV01.Sitemap do
     """
   end
 
-  defp to_date(nil), do: @fallback_date
+  # A page's lastmod: the later of the underlying data date and the site rebuild.
+  defp lastmod(updated_at), do: Enum.max([@content_updated, to_date(updated_at)], Date)
+
+  defp to_date(nil), do: @content_updated
   defp to_date(%NaiveDateTime{} = dt), do: NaiveDateTime.to_date(dt)
   defp to_date(%DateTime{} = dt), do: DateTime.to_date(dt)
   defp to_date(%Date{} = d), do: d
 
-  defp max_date([]), do: @fallback_date
-  defp max_date(dates), do: Enum.max([@fallback_date | dates], Date)
+  defp max_date([]), do: @content_updated
+  defp max_date(dates), do: Enum.max([@content_updated | dates], Date)
 end
