@@ -12,6 +12,11 @@ defmodule MonoPhoenixV01Web.BlockedUserAgents do
   Android-13-with-Chrome-109 pairing does not occur on legitimate
   traffic and is safe to block.
 
+  Also blocks two July 2026 Ashburn AWS clusters (inbox reports
+  019f5bcb… and 019f56a3…): pinned Windows Chrome 127 and Linux
+  Chrome 145 UAs, each cycling six unrelated AWS IPs with zero
+  engagement events, so again the UA is the only safe lever.
+
   Each signature is a list of substrings that must **all** appear in
   the user agent (case-insensitively) for it to be blocked. To add or
   remove a signature, edit `@signatures` here. The `BlockBotUserAgent`
@@ -19,7 +24,15 @@ defmodule MonoPhoenixV01Web.BlockedUserAgents do
   """
 
   @signatures [
-    ["Android 13", "Chrome/109.0.5414.117"]
+    ["Android 13", "Chrome/109.0.5414.117"],
+    [
+      "Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
+    ],
+    # Chrome 145 went stable 2026-02-10, five versions behind current (150) when
+    # this cluster ran — auto-update makes real pinned-145 traffic a rarity.
+    [
+      "X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+    ]
   ]
 
   @doc "The blocked user-agent signatures as lists of required substrings."

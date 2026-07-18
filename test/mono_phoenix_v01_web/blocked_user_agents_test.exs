@@ -4,10 +4,20 @@ defmodule MonoPhoenixV01Web.BlockedUserAgentsTest do
   alias MonoPhoenixV01Web.BlockedUserAgents
 
   @spoofed_ua "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.5414.117 Mobile Safari/537.36"
+  @ashburn_windows_ua "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
+  @ashburn_linux_ua "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
 
   describe "blocked?/1" do
     test "blocks the St. Louis Android 13 / Chrome 109 spoofed UA" do
       assert BlockedUserAgents.blocked?(@spoofed_ua)
+    end
+
+    test "blocks the Ashburn Windows Chrome 127 spoofed UA" do
+      assert BlockedUserAgents.blocked?(@ashburn_windows_ua)
+    end
+
+    test "blocks the Ashburn Linux Chrome 145 spoofed UA" do
+      assert BlockedUserAgents.blocked?(@ashburn_linux_ua)
     end
 
     test "matches case-insensitively" do
@@ -30,6 +40,16 @@ defmodule MonoPhoenixV01Web.BlockedUserAgentsTest do
     test "allows ordinary browser user agents" do
       refute BlockedUserAgents.blocked?(
                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+             )
+
+      # Current-version Chrome (150, July 2026) on the same platforms as
+      # the pinned Ashburn signatures must not be caught.
+      refute BlockedUserAgents.blocked?(
+               "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36"
+             )
+
+      refute BlockedUserAgents.blocked?(
+               "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36"
              )
 
       refute BlockedUserAgents.blocked?(
