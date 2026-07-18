@@ -28,8 +28,8 @@ defmodule MonoPhoenixV01Web.BlockedUserAgents do
     [
       "Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
     ],
-    # Chrome 145 does not exist yet (stable is ~138 as of July 2026). When it
-    # ships (~early 2027) this will match real Linux Chrome users — remove it then.
+    # Chrome 145 went stable 2026-02-10, five versions behind current (150) when
+    # this cluster ran — auto-update makes real pinned-145 traffic a rarity.
     [
       "X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
     ]

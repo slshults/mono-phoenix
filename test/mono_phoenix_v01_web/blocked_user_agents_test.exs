@@ -42,14 +42,14 @@ defmodule MonoPhoenixV01Web.BlockedUserAgentsTest do
                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
              )
 
-      # Current-version Chrome on the same platforms as the pinned
-      # Ashburn signatures must not be caught.
+      # Current-version Chrome (150, July 2026) on the same platforms as
+      # the pinned Ashburn signatures must not be caught.
       refute BlockedUserAgents.blocked?(
-               "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+               "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36"
              )
 
       refute BlockedUserAgents.blocked?(
-               "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+               "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36"
              )
 
       refute BlockedUserAgents.blocked?(
