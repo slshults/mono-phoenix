@@ -299,8 +299,13 @@
       host so the obfuscated anti-debug portion doesn't grab DevTools
       focus during local dev. On prod, this is what shows the EU
       "Consent / Manage options" banner to AdSense visitors.
+
+      Also gated by show_ads?/1: patrons pay for ad-free, so they get
+      neither the AdSense CMP nor the ad-block-recovery nag. The PostHog
+      init gate further down MUST keep the same condition — see there.
     --%>
-    <%= if String.ends_with?(@conn.host || "", "shakespeare-monologues.org") do %>
+    <%= if String.ends_with?(@conn.host || "", "shakespeare-monologues.org") and
+             MonoPhoenixV01Web.UserAuth.show_ads?(@conn.assigns[:current_scope]) do %>
     <!-- begin google adsense ad blocking recovery -->
     <script
       async
@@ -411,8 +416,13 @@
     // before PostHog initialises; everywhere else gdprApplies is false and
     // PostHog starts immediately. The listener stays registered so a later
     // grant (via the reopened consent message) still initialises PostHog.
-    // Off production the CMP isn't loaded, so initialise directly.
-    <%= if String.ends_with?(@conn.host || "", "shakespeare-monologues.org") do %>
+    // Off production the CMP isn't loaded, so initialise directly. Same
+    // for patrons: the FC block above is skipped for them (show_ads?), so
+    // __tcfapi never appears — this gate must match the FC block's
+    // condition or the poller below waits forever and PostHog (and the
+    // Conversations support widget) never starts for paying users.
+    <%= if String.ends_with?(@conn.host || "", "shakespeare-monologues.org") and
+             MonoPhoenixV01Web.UserAuth.show_ads?(@conn.assigns[:current_scope]) do %>
     (function () {
       function maybeInit(tcData) {
         if (!tcData) return;
