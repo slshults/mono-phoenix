@@ -8,16 +8,22 @@ defmodule MonoPhoenixV01Web.LayoutFundingChoicesTest do
   @prod_host "www.shakespeare-monologues.org"
   @fc_marker "fundingchoicesmessages.google.com"
 
-  test "anonymous visitor on the production host gets the FundingChoices scripts", %{conn: conn} do
+  # The PostHog init is TCF-gated (polls for __tcfapi) only when the FC CMP
+  # renders; visitors without the CMP must get the direct-init branch or
+  # PostHog never starts for them.
+  @tcf_marker "__tcfapi('addEventListener'"
+
+  test "anonymous visitor on the production host gets the FundingChoices scripts and TCF-gated PostHog init", %{conn: conn} do
     html =
       %{conn | host: @prod_host}
       |> get("/aboutus")
       |> html_response(200)
 
     assert html =~ @fc_marker
+    assert html =~ @tcf_marker
   end
 
-  test "patron on the production host gets no FundingChoices scripts", %{conn: conn} do
+  test "patron on the production host gets no FundingChoices scripts and a direct PostHog init", %{conn: conn} do
     user = user_fixture()
 
     html =
@@ -26,14 +32,16 @@ defmodule MonoPhoenixV01Web.LayoutFundingChoicesTest do
       |> html_response(200)
 
     refute html =~ @fc_marker
+    refute html =~ @tcf_marker
   end
 
-  test "non-production host gets no FundingChoices scripts", %{conn: conn} do
+  test "non-production host gets no FundingChoices scripts and a direct PostHog init", %{conn: conn} do
     html =
       conn
       |> get("/aboutus")
       |> html_response(200)
 
     refute html =~ @fc_marker
+    refute html =~ @tcf_marker
   end
 end
