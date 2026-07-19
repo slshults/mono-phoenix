@@ -404,6 +404,32 @@
                 })) {
                   return null;
                 }
+
+                // Drop uncaught network-failure TypeErrors — "Failed to
+                // fetch" (Chromium), "Load failed" (Safari), "NetworkError
+                // when attempting to fetch resource" (Firefox). These come
+                // from fetch()es we don't own: chiefly PostHog's own
+                // session-recording bundle inlining page assets, and the
+                // cross-origin Google head scripts (Funding Choices, AdSense,
+                // gtag). They fire on flaky mobile networks or when a content
+                // blocker aborts the request — nothing in our app is broken.
+                // These are non-synthetic and DO carry in-app frames (PostHog
+                // serves its recorder same-origin via the reverse proxy, so
+                // rrweb/posthog-recorder frames are flagged in_app), so the
+                // synthetic/frameless rule above never catches them; match on
+                // the network-failure value instead. Our own two fetch() calls
+                // in app.js are both .catch()-guarded, so an *uncaught*
+                // network-failure TypeError is never our code; genuine app bugs
+                // surface as other error values and are kept.
+                if (exceptions.length > 0 && exceptions.every(function (e) {
+                  if (!e) return false;
+                  var type = e.type || '';
+                  var value = e.value || '';
+                  return (type === 'TypeError' || type === '') &&
+                    /^(Failed to fetch|Load failed|NetworkError when attempting to fetch resource)$/.test(value);
+                })) {
+                  return null;
+                }
               }
               return event;
             },
