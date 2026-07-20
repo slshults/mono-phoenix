@@ -42,9 +42,24 @@ let Hooks = {}
 // best-effort UI bookkeeping (closing a modal, resetting a success banner);
 // if the socket is gone there's nothing to deliver to and nothing is broken,
 // so swallow the error instead of surfacing console / error-tracking noise.
+//
+// As of phoenix_live_view 1.0.18 `pushEventTo` returns a Promise and throws
+// that error asynchronously inside the library's own promise chain, so a plain
+// synchronous try/catch can't catch the rejection. Guard both paths: skip the
+// push entirely when the socket is known-disconnected, and attach a `.catch()`
+// to swallow any late rejection that still escapes.
 function safePushEventTo(hook, target, event, payload = {}) {
+  if (window.liveSocket && !window.liveSocket.isConnected()) {
+    console.debug("safePushEventTo: skipped '" + event + "' (socket not connected)")
+    return
+  }
   try {
-    hook.pushEventTo(target, event, payload)
+    const result = hook.pushEventTo(target, event, payload)
+    if (result && typeof result.catch === "function") {
+      result.catch((err) => {
+        console.debug("safePushEventTo: dropped '" + event + "' (socket not connected):", err)
+      })
+    }
   } catch (err) {
     console.debug("safePushEventTo: dropped '" + event + "' (socket not connected):", err)
   }
