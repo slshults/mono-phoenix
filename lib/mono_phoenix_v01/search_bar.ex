@@ -7,18 +7,22 @@ defmodule MonoPhoenixV01Web.SearchBar do
   @spec get_all(String.t()) :: list()
 
   def get_all(query) do
-    query = String.downcase(query)
-    cleaned_query = Regex.replace(~r/[^\w\s]/, query, "")
-    words = String.split(cleaned_query, ~r/\s+/, trim: true)
-
-    if length(words) <= 1 do
-      # Single word: go straight to ranked FTS (phrase match returns unranked noise)
-      ranked_search(cleaned_query)
+    if is_nil(query) or not String.valid?(query) do
+      []
     else
-      # Multi-word: try phrase match first (preserves "to be or not" exact matching)
-      case phrase_search(cleaned_query) do
-        [] -> ranked_search(cleaned_query)
-        results -> results
+      query = String.downcase(query)
+      cleaned_query = Regex.replace(~r/[^\w\s]/u, query, "")
+      words = String.split(cleaned_query, ~r/\s+/u, trim: true)
+
+      if length(words) <= 1 do
+        # Single word: go straight to ranked FTS (phrase match returns unranked noise)
+        ranked_search(cleaned_query)
+      else
+        # Multi-word: try phrase match first (preserves "to be or not" exact matching)
+        case phrase_search(cleaned_query) do
+          [] -> ranked_search(cleaned_query)
+          results -> results
+        end
       end
     end
   end

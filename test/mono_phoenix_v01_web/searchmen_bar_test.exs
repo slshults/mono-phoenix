@@ -29,4 +29,21 @@ defmodule MonoPhoenixV01Web.SearchmenBarTest do
   test "excludes Women monologues" do
     assert SearchmenBar.get_all("Juliet") == []
   end
+
+  # Regression: non-ASCII input used to leave a lone UTF-8 lead byte behind
+  # after the byte-mode regex cleaning, crashing the query with a Postgrex
+  # "invalid byte sequence for encoding UTF8" error.
+  test "curly punctuation does not crash and still matches", %{men: men} do
+    assert [%{monologues: id}] = SearchmenBar.get_all("Romeo’")
+    assert id == men.id
+  end
+
+  test "supplementary-plane characters do not crash and still match", %{men: men} do
+    assert [%{monologues: id}] = SearchmenBar.get_all("Romeo 😀")
+    assert id == men.id
+  end
+
+  test "returns [] for a query that is only non-ASCII" do
+    assert SearchmenBar.get_all("’😀") == []
+  end
 end
