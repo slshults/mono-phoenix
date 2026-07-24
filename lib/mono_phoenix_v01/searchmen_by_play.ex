@@ -7,12 +7,12 @@ defmodule MonoPhoenixV01Web.SearchmenByPlay do
   @spec get_all(String.t(), non_neg_integer()) :: list()
 
   def get_all(query, play_id) do
-    if is_nil(query) or String.trim(query) == "" do
+    if is_nil(query) or not String.valid?(query) or String.trim(query) == "" do
       []
     else
       query = String.downcase(query)
-      cleaned_query = Regex.replace(~r/[^\w\s]/, query, "")
-      words = String.split(cleaned_query, ~r/\s+/, trim: true)
+      cleaned_query = Regex.replace(~r/[^\w\s]/u, query, "")
+      words = String.split(cleaned_query, ~r/\s+/u, trim: true)
 
       if length(words) <= 1 do
         ranked_search(cleaned_query, play_id)

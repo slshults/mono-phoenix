@@ -31,4 +31,21 @@ defmodule MonoPhoenixV01Web.SearchmenByPlayTest do
   test "returns [] for a blank query" do
     assert SearchmenByPlay.get_all("", 1) == []
   end
+
+  # Regression: non-ASCII input used to leave a lone UTF-8 lead byte behind
+  # after the byte-mode regex cleaning, crashing the query with a Postgrex
+  # "invalid byte sequence for encoding UTF8" error.
+  test "curly punctuation does not crash and still matches", %{men_p1: men_p1} do
+    assert [%{monologues: id}] = SearchmenByPlay.get_all("ghost’", 1)
+    assert id == men_p1.id
+  end
+
+  test "supplementary-plane characters do not crash and still match", %{men_p1: men_p1} do
+    assert [%{monologues: id}] = SearchmenByPlay.get_all("ghost 😀", 1)
+    assert id == men_p1.id
+  end
+
+  test "returns [] for a query that is only non-ASCII" do
+    assert SearchmenByPlay.get_all("’😀", 1) == []
+  end
 end
