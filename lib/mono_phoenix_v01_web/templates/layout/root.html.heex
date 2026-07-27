@@ -384,6 +384,25 @@
                   return null;
                 }
 
+                // Drop errors from JavaScript that in-app browsers inject into
+                // the page. Meta's Instagram/Facebook WKWebView adds a native
+                // bridge (sendDataToNative / sendPageHideMessage) that assumes
+                // window.webkit.messageHandlers is populated and throws a
+                // TypeError when it isn't. Autocapture hooks window.onerror, so
+                // it grabs this even though none of these functions exist in
+                // our source. Match on the bridge's API/function names in the
+                // message or any stack frame.
+                var frameNames = exceptions.reduce(function (acc, e) {
+                  var frames = (e && e.stacktrace && e.stacktrace.frames) || [];
+                  return acc.concat(frames.map(function (f) {
+                    return (f && (f.function || f.raw_id)) || '';
+                  }));
+                }, []);
+                var injectedHaystack = haystack + ' ' + frameNames.join(' ');
+                if (/window\.webkit\.messageHandlers|sendDataToNative|sendPageHideMessage/.test(injectedHaystack)) {
+                  return null;
+                }
+
                 // Drop frameless cross-origin third-party script errors. The
                 // Google bundles loaded in the <head> (Funding Choices, AdSense,
                 // gtag) run cross-origin, so when one throws the browser hands
