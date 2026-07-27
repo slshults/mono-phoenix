@@ -34,4 +34,21 @@ defmodule MonoPhoenixV01Web.SearchByPlayTest do
     assert Enum.sort(Map.keys(row)) ==
              ~w(body character firstline location monologues pdf play scene style)a
   end
+
+  # Regression: non-ASCII input used to leave a lone UTF-8 lead byte behind
+  # after the byte-mode regex cleaning, crashing the query with a Postgrex
+  # "invalid byte sequence for encoding UTF8" error.
+  test "curly punctuation does not crash and still matches", %{a: a} do
+    assert [%{monologues: id}] = SearchByPlay.get_all("ghost’", 1)
+    assert id == a.id
+  end
+
+  test "supplementary-plane characters do not crash and still match", %{a: a} do
+    assert [%{monologues: id}] = SearchByPlay.get_all("ghost 😀", 1)
+    assert id == a.id
+  end
+
+  test "returns [] for a query that is only non-ASCII" do
+    assert SearchByPlay.get_all("’😀", 1) == []
+  end
 end

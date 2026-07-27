@@ -70,5 +70,20 @@ defmodule MonoPhoenixV01Web.SearchBarTest do
       assert Enum.sort(Map.keys(row)) ==
                ~w(body character firstline location monologues pdf play play_id scene style)a
     end
+
+    # Regression: non-ASCII input used to leave a lone UTF-8 lead byte behind
+    # after the byte-mode regex cleaning, crashing the query with a Postgrex
+    # "invalid byte sequence for encoding UTF8" error.
+    test "curly punctuation does not crash and still matches" do
+      assert [%{monologues: 2}] = SearchBar.get_all("Macbeth’")
+    end
+
+    test "supplementary-plane characters do not crash and still match" do
+      assert [%{monologues: 2}] = SearchBar.get_all("Macbeth 😀")
+    end
+
+    test "returns [] for a query that is only non-ASCII" do
+      assert SearchBar.get_all("’😀") == []
+    end
   end
 end
