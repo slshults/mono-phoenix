@@ -30,26 +30,50 @@ defmodule MonoPhoenixV01Web.UserSessionController do
   end
 
   # email + password login
-  defp create(conn, %{"user" => user_params}, info) do
-    %{"email" => email, "password" => password} = user_params
-
+  defp create(conn, %{"user" => %{"email" => email, "password" => password} = user_params}, info)
+       when is_binary(email) and is_binary(password) do
     if user = Accounts.get_user_by_email_and_password(email, password) do
       conn
       |> put_flash(:info, info)
       |> UserAuth.maybe_log_in_user(user, user_params)
     else
-      # Generic wording so we don't disclose whether the email is registered
-      # (basic user-enumeration hygiene), but also hint at the email-link
-      # option for users who never set a password.
-      conn
-      |> put_flash(
-        :error,
-        "Couldn't sign you in with that email and password. If you haven't set a password yet, use the email-link option above."
-      )
-      |> put_flash(:email, String.slice(email, 0, 160))
-      |> redirect(to: ~p"/users/log-in")
+      invalid_login(conn, email)
     end
   end
+
+  # Malformed login params: no "user" key, a missing email/password, or
+  # non-binary values (e.g. a client that posts only an email field).
+  # Treat it as a validation failure and return the normal
+  # invalid-credentials response instead of raising a MatchError while
+  # destructuring the request data.
+  defp create(conn, params, _info) do
+    email =
+      case params do
+        %{"user" => %{"email" => email}} when is_binary(email) -> email
+        _ -> nil
+      end
+
+    invalid_login(conn, email)
+  end
+
+  defp invalid_login(conn, email) do
+    # Generic wording so we don't disclose whether the email is registered
+    # (basic user-enumeration hygiene), but also hint at the email-link
+    # option for users who never set a password.
+    conn
+    |> put_flash(
+      :error,
+      "Couldn't sign you in with that email and password. If you haven't set a password yet, use the email-link option above."
+    )
+    |> maybe_put_email_flash(email)
+    |> redirect(to: ~p"/users/log-in")
+  end
+
+  defp maybe_put_email_flash(conn, email) when is_binary(email) do
+    put_flash(conn, :email, String.slice(email, 0, 160))
+  end
+
+  defp maybe_put_email_flash(conn, _email), do: conn
 
   def update_password(conn, %{"user" => user_params}) do
     user = conn.assigns.current_scope.user

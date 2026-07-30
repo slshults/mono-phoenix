@@ -67,6 +67,40 @@ defmodule MonoPhoenixV01Web.UserSessionControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't sign you in"
       assert redirected_to(conn) == ~p"/users/log-in"
     end
+
+    test "handles a missing password without crashing", %{conn: conn, user: user} do
+      # A malformed request that supplies only an email field used to raise
+      # a MatchError while destructuring params. It should now return the
+      # normal invalid-credentials response and echo the email back.
+      conn =
+        post(conn, ~p"/users/log-in", %{
+          "user" => %{"email" => user.email}
+        })
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't sign you in"
+      assert Phoenix.Flash.get(conn.assigns.flash, :email) == user.email
+      assert redirected_to(conn) == ~p"/users/log-in"
+      refute get_session(conn, :user_token)
+    end
+
+    test "handles missing user params without crashing", %{conn: conn} do
+      conn = post(conn, ~p"/users/log-in", %{"email" => "nobody@example.com"})
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't sign you in"
+      assert redirected_to(conn) == ~p"/users/log-in"
+      refute get_session(conn, :user_token)
+    end
+
+    test "handles a non-string password without crashing", %{conn: conn, user: user} do
+      conn =
+        post(conn, ~p"/users/log-in", %{
+          "user" => %{"email" => user.email, "password" => %{"nested" => "junk"}}
+        })
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't sign you in"
+      assert redirected_to(conn) == ~p"/users/log-in"
+      refute get_session(conn, :user_token)
+    end
   end
 
   describe "POST /users/log-in - magic link" do
