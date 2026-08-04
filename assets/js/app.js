@@ -527,6 +527,67 @@ document.addEventListener('click', function (event) {
   }
 }, false);
 
+// --- Deep-linkable monologue expansion -------------------------------------
+// Each monologue's full text lives in a Bootstrap collapse panel with a stable
+// id ("collapse-<monologue_id>"). We mirror the open panel into the URL hash so
+// a shared link, a refresh, or a back-navigation reopens the same monologue and
+// scrolls it into view — instead of dumping the reader at the top of a long,
+// fully collapsed list and making them re-find and re-click their way back in.
+(function () {
+  // Monologue ids are positive integers; only treat "#collapse-<n>" as ours.
+  const HASH_RE = /^#collapse-\d+$/;
+
+  function targetFromHash() {
+    const hash = window.location.hash;
+    if (!HASH_RE.test(hash)) return null;
+    const el = document.getElementById(hash.slice(1));
+    return el && el.classList.contains('collapse') ? el : null;
+  }
+
+  // Open the panel named by the current hash and scroll it into view. Uses
+  // Bootstrap's collapse plugin when present (keeps its internal state in sync)
+  // and falls back to the plain ".in" class it toggles otherwise.
+  function openMonologueFromHash() {
+    const el = targetFromHash();
+    if (!el || el.classList.contains('in')) return;
+    if (window.jQuery && typeof window.jQuery(el).collapse === 'function') {
+      window.jQuery(el).collapse('show');
+    } else {
+      el.classList.add('in');
+      el.style.height = 'auto';
+    }
+    // Defer so the just-expanded panel has laid out before we scroll to it.
+    window.requestAnimationFrame(function () {
+      el.scrollIntoView({ block: 'center' });
+    });
+  }
+
+  // Keep the hash in step as the reader opens/closes monologues, so the current
+  // position survives a back-navigation and a copied URL reopens it. Capture
+  // phase runs before Bootstrap's own handler, so we read the pre-toggle state.
+  document.addEventListener('click', function (event) {
+    const trigger = event.target.closest && event.target.closest('.monologue-firstline-table');
+    if (!trigger) return;
+    const selector = trigger.getAttribute('data-target');
+    if (!selector || !HASH_RE.test('#' + selector.replace(/^#/, ''))) return;
+    const el = document.querySelector(selector);
+    if (!el) return;
+    const frag = '#' + el.id;
+    const clearedUrl = window.location.pathname + window.location.search;
+    if (el.classList.contains('in')) {
+      // About to collapse — drop our hash if it points at this panel.
+      if (window.location.hash === frag) history.replaceState(null, '', clearedUrl);
+    } else {
+      // About to expand — record it without triggering a scroll jump.
+      history.replaceState(null, '', frag);
+    }
+  }, true);
+
+  document.addEventListener('DOMContentLoaded', openMonologueFromHash);
+  // bfcache restores (back/forward) don't re-run DOMContentLoaded.
+  window.addEventListener('pageshow', openMonologueFromHash);
+})();
+
 // Attach event listener to summary/paraphrasing icon clicks for PostHog custom event
 document.addEventListener('click', function (event) {
   if (event.target.matches('.summary-icon') || 

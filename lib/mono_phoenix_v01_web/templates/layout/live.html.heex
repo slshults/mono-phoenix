@@ -47,6 +47,7 @@
   </div>
 <% end %>
 
+<% {men_href, women_href} = MonoPhoenixV01Web.LayoutView.section_nav_targets(assigns) %>
 <!-- The site heading, or banner, or title or whatso'er shall please you -->
 <div class="col-md-12 text-center accent-font" style="padding-top: 0; padding-bottom: 0;">
   <!-- Dark Mode Toggle.
@@ -92,7 +93,7 @@
     style="display: inline; text-align: center; margin: 0 auto;"
   >
     <!-- left column menu -->
-    <a href="/mens">Men</a>&nbsp; · <a href="/womens">Women</a>&nbsp; · <a href="/plays">All</a>
+    <a href={men_href}>Men</a>&nbsp; · <a href={women_href}>Women</a>&nbsp; · <a href="/plays">All</a>
     <br />
     <div align="center">
       <a href="/home">Home</a>&nbsp; · <a
@@ -131,7 +132,7 @@
   <!-- end dynamic inner inner content -->
   <div class="center-column-footer accent-font">
     <div class="link-menu-bottom">
-      <a href="/mens">The Men</a>&nbsp; · <a href="/womens">The Women</a>&nbsp; · <a href="/plays">All</a>&nbsp; · <a href="/links">Links</a>&nbsp; · <a
+      <a href={men_href}>The Men</a>&nbsp; · <a href={women_href}>The Women</a>&nbsp; · <a href="/plays">All</a>&nbsp; · <a href="/links">Links</a>&nbsp; · <a
         rel="me"
         href="https://bsky.app/profile/shakesmonos.bsky.social"
         target="_blank"
