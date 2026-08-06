@@ -767,6 +767,25 @@ span.toggle-control>a.toggle-mono>img {
     transform: scale(1.2);
 }
 
+/* Pressed feedback the instant the icon is clicked. */
+.summary-icon:active {
+    transform: scale(0.95);
+}
+
+/* Pending state, held from the click until the summary modal opens (toggled in
+   app.js). Gives immediate acknowledgment even when a request for the same
+   content is already generating, so the click is never a silent no-op. */
+.summary-icon.is-pending {
+    cursor: progress;
+    opacity: 0.5;
+    animation: summary-icon-pulse 1s ease-in-out infinite;
+}
+
+@keyframes summary-icon-pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 0.85; }
+}
+
 .summary-icon img {
     width: 16px;
     height: 16px;

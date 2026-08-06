@@ -48,6 +48,13 @@ defmodule MonoPhoenixV01Web.MenplayPageLive do
     request_key = "play_summary:#{play_title}"
     
     if MapSet.member?(socket.assigns.active_requests, request_key) do
+      # Request already in progress - reopen the modal in its loading state so a
+      # repeat click while generation is in flight isn't dropped as a silent no-op.
+      send_update(MonoPhoenixV01Web.SummaryModalComponent, 
+        id: "summary-modal", 
+        action: "show_play_summary", 
+        play_title: play_title
+      )
       {:noreply, socket}
     else
       send_update(MonoPhoenixV01Web.SummaryModalComponent, 
@@ -68,6 +75,14 @@ defmodule MonoPhoenixV01Web.MenplayPageLive do
     request_key = "scene_summary:#{play_title}:#{location}"
     
     if MapSet.member?(socket.assigns.active_requests, request_key) do
+      # Request already in progress - reopen the modal in its loading state so a
+      # repeat click while generation is in flight isn't dropped as a silent no-op.
+      send_update(MonoPhoenixV01Web.SummaryModalComponent, 
+        id: "summary-modal", 
+        action: "show_scene_summary", 
+        play_title: play_title, 
+        location: location
+      )
       {:noreply, socket}
     else
       send_update(MonoPhoenixV01Web.SummaryModalComponent, 
@@ -89,6 +104,15 @@ defmodule MonoPhoenixV01Web.MenplayPageLive do
     request_key = "paraphrasing:#{monologue_id}"
 
     if MapSet.member?(socket.assigns.active_requests, request_key) do
+      # Request already in progress - reopen the modal in its loading state so a
+      # repeat click while generation is in flight isn't dropped as a silent no-op.
+      send_update(MonoPhoenixV01Web.SummaryModalComponent,
+        id: "summary-modal",
+        action: "show_paraphrasing",
+        monologue_id: monologue_id,
+        monologue_text: monologue_text,
+        character: character
+      )
       {:noreply, socket}
     else
       send_update(MonoPhoenixV01Web.SummaryModalComponent,

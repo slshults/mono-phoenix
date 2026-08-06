@@ -485,8 +485,10 @@ document.addEventListener('click', function (event) {
     const targetId = firstLineElement.getAttribute('data-target');
     const collapseElement = targetId ? document.querySelector(targetId) : null;
     
-    // Determine if this is expanding or collapsing
-    const isExpanding = collapseElement && !collapseElement.classList.contains('show');
+    // Determine if this is expanding or collapsing. The site loads Bootstrap 3,
+    // which marks open collapse panels with `in` (not Bootstrap 4+'s `show`), so
+    // testing `show` was always true and fired monologue_expanded on collapse too.
+    const isExpanding = collapseElement && !collapseElement.classList.contains('in');
     
     if (isExpanding) {
       // Get monologue details from the row context
@@ -527,12 +529,44 @@ document.addEventListener('click', function (event) {
   }
 }, false);
 
+// Clear the pending state on summary icons once a summary modal becomes visible,
+// so the loading spinner takes over as the feedback. Observes each overlay's
+// style/data-loading attributes; guarded so each overlay is only watched once.
+function watchSummaryModals() {
+  document.querySelectorAll('.summary-modal-overlay').forEach(function (overlay) {
+    if (overlay._pendingWatch) return;
+    overlay._pendingWatch = true;
+    const clearPending = function () {
+      if (overlay.style.display && overlay.style.display !== 'none') {
+        document.querySelectorAll('.summary-icon.is-pending').forEach(el => el.classList.remove('is-pending'));
+      }
+    };
+    new MutationObserver(clearPending).observe(overlay, {
+      attributes: true,
+      attributeFilter: ['style', 'data-loading']
+    });
+    clearPending();
+  });
+}
+document.addEventListener('DOMContentLoaded', watchSummaryModals);
+
 // Attach event listener to summary/paraphrasing icon clicks for PostHog custom event
 document.addEventListener('click', function (event) {
-  if (event.target.matches('.summary-icon') || 
+  if (event.target.matches('.summary-icon') ||
       event.target.closest('.summary-icon')) {
     const summaryIcon = event.target.closest('.summary-icon') || event.target;
-    
+
+    // Immediate client-side feedback: mark the clicked icon as pending until the
+    // modal (loading spinner) takes over, so the click is acknowledged even when
+    // a previous request for the same content is still generating. Cleared when a
+    // summary modal becomes visible (see watchSummaryModals), with a timeout so it
+    // can never get stuck if the modal never opens.
+    document.querySelectorAll('.summary-icon.is-pending').forEach(el => el.classList.remove('is-pending'));
+    summaryIcon.classList.add('is-pending');
+    window.clearTimeout(summaryIcon._pendingTimer);
+    summaryIcon._pendingTimer = window.setTimeout(() => summaryIcon.classList.remove('is-pending'), 10000);
+    watchSummaryModals();
+
     // Get details from the attributes
     const monologue_id = summaryIcon.getAttribute('phx-value-monologue-id');
     const character_name = summaryIcon.getAttribute('phx-value-character');
