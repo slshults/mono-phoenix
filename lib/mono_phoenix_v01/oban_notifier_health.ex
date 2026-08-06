@@ -1,6 +1,14 @@
 defmodule MonoPhoenixV01.ObanNotifierHealth do
   @moduledoc """
-  Watchdog for Oban's Postgres notifier connection.
+  Watchdog for Oban's notifier.
+
+  NOTE: As of the switch to `Oban.Notifiers.PG` (see the Oban block in
+  `config/runtime.exs`), the specific failure this watchdog was built for —
+  a degraded Postgres `LISTEN` connection — can no longer happen, because the
+  PG notifier holds no database connection. On a single node the PG notifier
+  reports `:solitary`, so this watchdog now sits idle as defense-in-depth
+  against any future notifier stall rather than as the primary safeguard. The
+  original rationale is kept below for context.
 
   Background: Oban's Cron plugin needs a healthy `Oban.Notifier` to
   function reliably (leader signaling, queue notifications). The Notifier
