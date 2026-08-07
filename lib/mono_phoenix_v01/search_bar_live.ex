@@ -461,7 +461,7 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
                       title="Show play summary">
                   <img src={Routes.static_path(@socket, "/images/scroll-summary-icon.svg")} alt="Play summary" />
                 </span>&nbsp; &middot; <span class="monologue-actscene"                 alt="👆 Click here to read the whole scene. This link jumps you to the monologue, scroll up to read from the top of the scene."
-                                title="👆 Click here to read the whole scene. This link jumps you to the monologue, scroll up to read from the top of the scene."><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span><span class="summary-icon" 
+                                title="👆 Click here to read the whole scene. This link jumps you to the monologue, scroll up to read from the top of the scene."><%= link to: raw(sanitize_body(row.scene)), method: :get, target: "_blank" do %><%= row.location %><% end %></span><span class="summary-icon" 
                       phx-click="show_scene_summary" 
                       phx-value-play-title={row.play}
                       phx-value-location={row.location}
@@ -491,7 +491,7 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
                 id={"collapse-#{index}"}
                 >
                   <br />
-                  <%= raw(row.body) %>&nbsp;
+                  <%= raw(sanitize_body(row.body)) %>&nbsp;
                   <span class="summary-icon" 
                         phx-click="show_paraphrasing" 
                         phx-value-monologue-id={row.monologues}
@@ -501,7 +501,7 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
                         title="Show modern paraphrasing">
                     <img src={Routes.static_path(@socket, "/images/thinking-paraphrase-icon.svg")} alt="Modern paraphrasing" />
                   </span>&nbsp;
-                  <%= link to: raw(row.pdf), method: :get, target: "_blank", rel: "noopener" do %>
+                  <%= link to: raw(sanitize_body(row.pdf)), method: :get, target: "_blank", rel: "noopener" do %>
                   <img
                   src={Routes.static_path(@socket, "/images/pdf_file_icon_16x16.png")}
                   alt="Click for a double-spaced PDF of this monologue"

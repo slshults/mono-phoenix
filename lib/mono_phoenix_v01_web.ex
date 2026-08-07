@@ -113,6 +113,10 @@ defmodule MonoPhoenixV01Web do
 
       import MonoPhoenixV01Web.ErrorHelpers
       import MonoPhoenixV01Web.Gettext
+
+      # Sanitize stored HTML (monologue bodies, link URLs) before `raw/1` so a
+      # malformed tag in one row can't break a LiveView DOM patch.
+      import MonoPhoenixV01Web.HtmlSanitizer
       alias MonoPhoenixV01Web.Router.Helpers, as: Routes
 
       unquote(verified_routes())

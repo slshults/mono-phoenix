@@ -36,7 +36,7 @@
                       phx-value-play-title={row.play}
                       title="Show play summary">
                   <img src={Routes.static_path(@conn, "/images/scroll-summary-icon.svg")} alt="Play summary" />
-                </span>&nbsp; &middot;  <span class="monologue-actscene"><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span><span class="summary-icon" 
+                </span>&nbsp; &middot;  <span class="monologue-actscene"><%= link to: raw(sanitize_body(row.scene)), method: :get, target: "_blank" do %><%= row.location %><% end %></span><span class="summary-icon" 
                       phx-click="show_scene_summary" 
                       phx-value-play-title={row.play}
                       phx-value-location={row.location}
@@ -63,8 +63,8 @@
                   id={"collapse-" <> to_string(row.monologues)}
                 >
                   <br />
-                  <%= raw(row.body) %>&nbsp;
-                  <%= link to: raw(row.pdf), method: :get, target: "_blank", rel: "noopener" do %>
+                  <%= raw(sanitize_body(row.body)) %>&nbsp;
+                  <%= link to: raw(sanitize_body(row.pdf)), method: :get, target: "_blank", rel: "noopener" do %>
                     <img
                       src={Routes.static_path(@conn, "/images/pdf_file_icon_16x16.png")}
                       alt="Click for a double-spaced PDF of this monologue"
