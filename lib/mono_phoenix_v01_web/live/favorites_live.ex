@@ -184,7 +184,7 @@ defmodule MonoPhoenixV01Web.FavoritesLive do
                     ><%= row.play %></span> &middot; <span
                       class="monologue-actscene"
                       title={"Open the scene in a new tab"}
-                    ><%= if row.scene && row.scene != "" do %><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %><% else %><%= row.location %><% end %></span> &middot;
+                    ><%= if row.scene && row.scene != "" do %><%= link to: raw(sanitize_body(row.scene)), method: :get, target: "_blank" do %><%= row.location %><% end %><% else %><%= row.location %><% end %></span> &middot;
                     <span class="monologue-actscene"><%= row.style %></span>
                     <span class="favorites-row-heart">
                       <.heart_icon
@@ -215,9 +215,9 @@ defmodule MonoPhoenixV01Web.FavoritesLive do
                       id={"fav-collapse-" <> Integer.to_string(row.monologue_id)}
                     >
                       <br />
-                      <%= raw(row.body || "") %>&nbsp;
+                      <%= raw(sanitize_body(row.body)) %>&nbsp;
                       <%= if row.pdf && row.pdf != "" do %>
-                        <%= link to: raw(row.pdf), method: :get, target: "_blank", rel: "noopener" do %>
+                        <%= link to: raw(sanitize_body(row.pdf)), method: :get, target: "_blank", rel: "noopener" do %>
                           <img
                             src={Routes.static_path(@socket, "/images/pdf_file_icon_16x16.png")}
                             alt="Click for a double-spaced PDF of this monologue"

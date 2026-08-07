@@ -30,7 +30,7 @@
           <%= for row <- @rows do %>
             <tr class="monologue_list">
               <td class="{ (index.even? ? 'even' : 'odd') }">
-                <span class="monologue-playname"><%= row.play %></span>&nbsp; · <span class="monologue-actscene"><%= link to: raw(row.scene), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; ·
+                <span class="monologue-playname"><%= row.play %></span>&nbsp; · <span class="monologue-actscene"><%= link to: raw(sanitize_body(row.scene)), method: :get, target: "_blank" do %><%= row.location %><% end %></span>&nbsp; ·
                 <span class="monologue-actscene"><%= row.style %></span>
                 <br />
                 <span class="monologue-character"><%= row.character %></span>
@@ -47,8 +47,8 @@
                   id={"collapse-" <> to_string(row.monologues)}
                 >
                   <br />
-                  <%= raw(row.body) %>&nbsp;
-                  <%= link to: raw(row.pdf), method: :get, target: "_blank", rel: "noopener" do %>
+                  <%= raw(sanitize_body(row.body)) %>&nbsp;
+                  <%= link to: raw(sanitize_body(row.pdf)), method: :get, target: "_blank", rel: "noopener" do %>
                     <img
                       src={Routes.static_path(@conn, "/images/pdf_file_icon_16x16.png")}
                       alt="Click for a double-spaced PDF of this monologue"
