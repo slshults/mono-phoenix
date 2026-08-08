@@ -49,22 +49,26 @@ if [ ! -d "$ASSETS_DIR" ]; then
   exit 0
 fi
 
-# Resolve a posthog-cli invocation. Prefer an installed binary, then npx, then
-# the standalone installer. All best-effort -- if none work we just clean up.
+# Resolve a posthog-cli invocation. Prefer an installed binary, else a pinned
+# npx version. Best-effort -- if neither works we just clean up.
+#
+# The version is PINNED deliberately. Gigalixir runs `mix assets.deploy` (and
+# therefore this script) inside the build container, where every prod config
+# var is present in the environment: DATABASE_URL, ACCOUNTS_DATABASE_URL, the
+# live Stripe keys, SECRET_KEY_BASE, ANTHROPIC_API_KEY. Resolving `@latest`
+# there means every deploy executes whatever was published to npm minutes
+# earlier, with all of that in reach -- which is precisely how the Shai-Hulud
+# worm exfiltrated credentials in Nov 2025, via this same package family.
+# Bump this pin deliberately, after the release has been out long enough to
+# be vetted. Same reason the `curl | sh` installer fallback was removed: an
+# unpinned remote script piped into a shell in a secret-bearing container.
+POSTHOG_CLI_VERSION="0.10.0"
+
 CLI=""
 if command -v posthog-cli >/dev/null 2>&1; then
   CLI="posthog-cli"
 elif command -v npx >/dev/null 2>&1; then
-  CLI="npx -y @posthog/cli@latest"
-else
-  echo "[sourcemaps] installing posthog-cli via download.posthog.com ..."
-  curl --proto '=https' --tlsv1.2 -LsSf https://download.posthog.com/cli | sh >/dev/null 2>&1
-  if command -v posthog-cli >/dev/null 2>&1; then
-    CLI="posthog-cli"
-  else
-    found="$(find "$HOME" -name posthog-cli -type f 2>/dev/null | head -n1)"
-    [ -n "$found" ] && CLI="$found"
-  fi
+  CLI="npx -y @posthog/cli@${POSTHOG_CLI_VERSION}"
 fi
 
 if [ -z "$CLI" ]; then
