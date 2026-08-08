@@ -10,10 +10,13 @@ import Config
 # which you should run after static files are built and
 # before starting your production server.
 
-# Configure your database
-config :mono_phoenix_v01, MonoPhoenixV01.Repo,
-  url: System.get_env("DATABASE_URL"),
-  pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
+# The database is configured in config/runtime.exs, not here. This file is
+# evaluated at BUILD time, where DATABASE_URL isn't set, and runtime.exs
+# overrides whatever it produced anyway. It used to declare a second,
+# conflicting POOL_SIZE default ("10") alongside runtime.exs's ("2"), which
+# made the real pool size ambiguous to anyone reading this file while trying
+# to work out a connection budget. Removed rather than reconciled, so there
+# is exactly one place that decides it.
 
 config :mono_phoenix_v01, MonoPhoenixV01Web.Endpoint,
   url: [
