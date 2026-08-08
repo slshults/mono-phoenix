@@ -264,7 +264,7 @@ defmodule MonoPhoenixV01Web.PlaysPageLive do
   def handle_info({:track_llm, properties}, socket) do
     # Forward LLM analytics events to PostHog via JavaScript
     # Using PostHog's standard $ai_generation event name
-    socket = push_event(socket, "phx:posthog_capture", %{
+    socket = push_event(socket, "posthog_capture", %{
       event: "$ai_generation",
       properties: properties
     })
