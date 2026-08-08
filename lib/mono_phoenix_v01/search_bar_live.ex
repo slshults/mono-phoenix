@@ -421,7 +421,7 @@ defmodule MonoPhoenixV01Web.SearchBarLive do
   ## render the search results
   def render_search_bar(assigns) do
     ~H"""
-    <div class="center-this monologue-list">
+    <div class="monologue-list">
       <table class="monologue-list">
         <tbody>
         <%= if !is_nil(@search_results) do %>
