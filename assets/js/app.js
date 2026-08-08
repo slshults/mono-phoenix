@@ -541,6 +541,15 @@ document.addEventListener('click', function (event) {
     
     // Determine request type using phx-click attribute (reliable, not DOM-structure dependent)
     const phxClick = summaryIcon.getAttribute('phx-click');
+
+    // The /monologues/:id permalink page is a plain controller page, not a
+    // LiveView: its .summary-icon spans use a bare onclick and capture their
+    // own *_requested event inline. Without this guard every click there also
+    // lands here, and because phxClick is null it falls through to the else
+    // branch below — emitting a second, always-mislabelled
+    // paraphrasing_requested with a null monologue_id, whatever was clicked.
+    if (!phxClick) return;
+
     const monologueRow = summaryIcon.closest('tr');
     let event_name = 'paraphrasing_requested'; // default
     let properties = {
