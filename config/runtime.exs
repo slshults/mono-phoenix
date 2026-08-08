@@ -47,8 +47,8 @@ if config_env() == :prod do
   # short `idle_interval` keep pool connections warm so Gigalixir's network
   # layer doesn't drop them after some idle period (we observed
   # `ssl recv (idle): closed` errors before adding these). This protects the
-  # Repo's pool but does NOT directly protect Oban's separate Notifier
-  # connection — see `lib/mono_phoenix_v01/oban_notifier_health.ex` for that.
+  # Repo's pool. Oban no longer holds a separate notifier connection to
+  # protect — its pub/sub now runs over `:pg` (see the Oban config below).
   config :mono_phoenix_v01, MonoPhoenixV01.Repo,
     ssl: true,
     ssl_opts: [
@@ -177,16 +177,45 @@ if config_env() == :prod do
     """
   end
 
-  # Oban plugins for prod. Note: setting `plugins:` to an explicit list opts
-  # out of any Oban defaults, so we enumerate everything we want here.
-  # Oban 2.17+ folded the old Stager plugin into the queue producers, so
-  # there's no Stager to add here (and trying to load it raises at boot).
+  # Oban config for prod.
+  #
+  # notifier: Oban.Notifiers.PG — use Erlang process groups (`:pg`) for
+  # pub/sub instead of the default `Oban.Notifiers.Postgres`, which holds a
+  # dedicated `LISTEN` connection open against the database. That extra
+  # connection is worth eliminating on Gigalixir for two reasons:
+  #
+  #   1. Connection pressure. Non-reserved connection slots are scarce on the
+  #      hosted database, and every process that keeps a connection open
+  #      counts against `max_connections`. Twice in two weeks the database
+  #      briefly ran out of slots; when it did, the Postgres notifier hammered
+  #      reconnects roughly twice a second (each a full TCP+TLS handshake that
+  #      the saturated server immediately rejected with `FATAL 53300`),
+  #      producing 60+ `too_many_connections` errors in a single burst and
+  #      adding connection-establishment load to an already-starved database.
+  #      The PG notifier holds no database connection, so it cannot fail this
+  #      way and frees a slot for the Repo pools.
+  #   2. Reliability. The Postgres notifier's `LISTEN` connection is exactly
+  #      the connection that silently degraded and stopped the daily Cron tick
+  #      (see `lib/mono_phoenix_v01/oban_notifier_health.ex`). The PG notifier
+  #      has no such connection to lose.
+  #
+  # This app runs as a single Gigalixir node (Oban reports `:solitary`), so
+  # `:pg`'s local process groups deliver notifications fine. During the brief
+  # two-node overlap of a rolling deploy the nodes aren't clustered and won't
+  # share pub/sub, but Oban degrades gracefully to local polling there, so
+  # jobs still run — only slightly later.
+  #
+  # plugins: setting `plugins:` to an explicit list opts out of any Oban
+  # defaults, so we enumerate everything we want here. Oban 2.17+ folded the
+  # old Stager plugin into the queue producers, so there's no Stager to add
+  # here (and trying to load it raises at boot).
   #
   # Pruner — keeps oban_jobs from growing unbounded
   # Lifeline — rescues `executing` jobs orphaned by a crashed node
   # Cron — daily MOTD trigger at 13:00 UTC (== 09:00 US Eastern DST,
   #        08:00 EST outside DST). Repo + queues live in config/config.exs.
   config :mono_phoenix_v01, Oban,
+    notifier: Oban.Notifiers.PG,
     plugins: [
       {Oban.Plugins.Pruner, max_age: 60 * 60 * 24 * 7},
       Oban.Plugins.Lifeline,
