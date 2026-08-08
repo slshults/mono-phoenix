@@ -13,7 +13,8 @@ defmodule MonoPhoenixV01Web.UserSessionController do
   end
 
   # magic link login
-  defp create(conn, %{"user" => %{"token" => token} = user_params}, info) do
+  defp create(conn, %{"user" => %{"token" => token} = user_params}, info)
+       when is_binary(token) do
     case Accounts.login_user_by_magic_link(token) do
       {:ok, {user, tokens_to_disconnect}} ->
         UserAuth.disconnect_sessions(tokens_to_disconnect)
@@ -41,11 +42,13 @@ defmodule MonoPhoenixV01Web.UserSessionController do
     end
   end
 
-  # Malformed login params: no "user" key, a missing email/password, or
-  # non-binary values (e.g. a client that posts only an email field).
-  # Treat it as a validation failure and return the normal
-  # invalid-credentials response instead of raising a MatchError while
-  # destructuring the request data.
+  # Malformed login params: no "user" key, a missing email/password, a
+  # non-binary token, or non-binary email/password values (e.g. a client
+  # that posts only an email field). Treat it as a validation failure and
+  # return the normal invalid-credentials response instead of crashing --
+  # either on the destructure here, or further in on the guards of
+  # Accounts.get_user_by_email_and_password/2 and the Base.url_decode64/2
+  # call behind login_user_by_magic_link/1.
   defp create(conn, params, _info) do
     email =
       case params do

@@ -157,6 +157,35 @@ defmodule MonoPhoenixV01Web.UserSessionControllerTest do
 
       assert redirected_to(conn) == ~p"/users/log-in"
     end
+
+    test "handles a token that isn't valid Base64 without crashing", %{conn: conn} do
+      # "invalid" above happens to decode cleanly; this doesn't, so it used
+      # to raise on the {:ok, query} = match in login_user_by_magic_link/1.
+      conn =
+        post(conn, ~p"/users/log-in", %{
+          "user" => %{"token" => "!!!not-base64!!!"}
+        })
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "The link is invalid or it has expired."
+
+      assert redirected_to(conn) == ~p"/users/log-in"
+      refute get_session(conn, :user_token)
+    end
+
+    test "handles a non-binary token without crashing", %{conn: conn} do
+      # A token posted as a map no longer matches the magic-link clause, so
+      # it falls through to the catch-all instead of raising inside
+      # Base.url_decode64/2.
+      conn =
+        post(conn, ~p"/users/log-in", %{
+          "user" => %{"token" => %{"nested" => "junk"}}
+        })
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't sign you in"
+      assert redirected_to(conn) == ~p"/users/log-in"
+      refute get_session(conn, :user_token)
+    end
   end
 
   describe "DELETE /users/log-out" do
