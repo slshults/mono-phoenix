@@ -582,24 +582,43 @@
           var key = 'paid_accounts_promo_dismissed_at';
           var thirtyDays = 30 * 24 * 60 * 60 * 1000;
 
+          // posthog.capture() does not exist until posthog.init() has run:
+          // the snippet attaches the stub queueing methods *inside* init().
+          // Here init() is gated behind the Funding Choices TCF callback,
+          // which always resolves after the body has parsed, so a capture
+          // made during body parse (reveal) silently no-ops. That is why
+          // paid_accounts_promo_shown fell from 282/day to 2/day on
+          // 2026-06-16, the day after the consent gate landed (ed67e59).
+          // Wait for PostHog instead: once init() has run the call is
+          // queued by the stub and replayed when array.js loads. If
+          // consent is never granted init() never runs and nothing is
+          // sent, which is the intended behaviour.
+          function capturePH(name, props) {
+            function ready() {
+              return typeof posthog !== 'undefined' && typeof posthog.capture === 'function';
+            }
+            if (ready()) { posthog.capture(name, props); return; }
+            var tries = 0;
+            var t = setInterval(function () {
+              if (ready()) { clearInterval(t); posthog.capture(name, props); }
+              else if (++tries > 120) { clearInterval(t); }
+            }, 250);
+          }
+
           function reveal() {
             var elem = document.getElementById('paid-accounts-promo');
             if (!elem) return;
             var dismissedAt = parseInt(localStorage.getItem(key) || '0', 10);
             if (dismissedAt && (Date.now() - dismissedAt) < thirtyDays) return;
             elem.style.display = 'flex';
-            if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
-              posthog.capture('paid_accounts_promo_shown');
-            }
+            capturePH('paid_accounts_promo_shown');
           }
 
           function dismiss(reason) {
             localStorage.setItem(key, Date.now().toString());
             var elem = document.getElementById('paid-accounts-promo');
             if (elem) elem.style.display = 'none';
-            if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
-              posthog.capture('paid_accounts_promo_dismissed', { reason: reason });
-            }
+            capturePH('paid_accounts_promo_dismissed', { reason: reason });
           }
 
           // Document-level event delegation — works regardless of how LV
@@ -618,9 +637,7 @@
               // so the user doesn't see this again on the post-Checkout
               // back-navigation. Don't preventDefault — let the <a> go.
               localStorage.setItem(key, Date.now().toString());
-              if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
-                posthog.capture('paid_accounts_promo_accepted');
-              }
+              capturePH('paid_accounts_promo_accepted');
             }
           });
 
