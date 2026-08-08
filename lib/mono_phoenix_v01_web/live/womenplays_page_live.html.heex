@@ -6,13 +6,11 @@
     <h2>Search or browse women's monologues</h2>
   </div>
   <!-- Enter The Search Box -->
-  <div class="search-box-dark search-box-default input-group accent-font form-control center-this">
+  <div class="accent-font">
     <%= live_render(
       @socket,
       MonoPhoenixV01Web.SearchwomenBarLive,
-      id: "searchbar",
-      class:
-        "search-box-dark search-box-default input-group accent-font form-control monologue-list"
+      id: "searchbar"
     ) %>
   </div>
   <!-- Exeunt The Search Box -->
