@@ -486,7 +486,7 @@ document.addEventListener('click', function (event) {
     const collapseElement = targetId ? document.querySelector(targetId) : null;
     
     // Determine if this is expanding or collapsing
-    const isExpanding = collapseElement && !collapseElement.classList.contains('show');
+    const isExpanding = collapseElement && !collapseElement.classList.contains('in');
     
     if (isExpanding) {
       // Get monologue details from the row context
