@@ -349,6 +349,16 @@
     <!-- end google adsense page-level mobile ads -->
     <% end %>
 
+<%!--
+  Tell the client whether the server considers anyone logged in. Read by the
+  `loaded` callback in posthog.init below, which drops a stale PostHog identity
+  when the two disagree. Must be defined BEFORE the snippet so it exists by the
+  time the SDK finishes loading.
+--%>
+<script>
+  window.__phHasUser = <%= if match?(%{user: %{}}, assigns[:current_scope]), do: "true", else: "false" %>;
+</script>
+
 <script>
     !function(t,e){var o,n,p,r;e.__SV||(window.posthog && window.posthog.__loaded)||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js?v=<%= Date.utc_today() %>",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init ns hs wi ls ds rs os capture calculateEventProperties fs register register_once register_for_session unregister unregister_for_session bs getFeatureFlag getFeatureFlagPayload getFeatureFlagResult isFeatureEnabled reloadFeatureFlags updateFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey displaySurvey cancelPendingSurvey canRenderSurvey canRenderSurveyAsync identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException startExceptionAutocapture stopExceptionAutocapture loadToolbar get_property getSessionProperty gs cs createPersonProfile setInternalOrTestUser ts ys opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing get_explicit_consent_status is_capturing clear_opt_in_out_capturing vs debug M ps getPageViewId captureTraceFeedback captureTraceMetric Xr".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
 
@@ -365,6 +375,40 @@
             ui_host: 'https://us.posthog.com',
             defaults: '2026-01-30',
             person_profiles: 'identified_only',
+            loaded: function (ph) {
+                // Drop a stale identity when the SDK thinks it is identified but
+                // the server says nobody is logged in. Covers three cases:
+                //
+                //  1. Logout / session expiry. push_posthog_identify identifies with
+                //     the patron's EMAIL as distinct_id, and nothing reset it on the
+                //     way out, so their later anonymous browsing kept being attributed
+                //     to them. Also matters on a shared device.
+                //  2. Visitors flipped out of identified_only by the posthog-js
+                //     Conversations bug of ~1.372-1.376 (May 2026). Those kept an
+                //     anonymous uuid distinct_id, so only $user_state gives them away.
+                //     Roughly 1,700 browsers are still carrying that state; each gets
+                //     cleaned once, on its next visit.
+                //  3. Any future accidental identification of an anonymous visitor.
+                //
+                // $user_state is an internal persistence key, not a documented API,
+                // so everything here is wrapped and fails CLOSED: if the SDK ever
+                // renames it, the check silently stops matching and we simply stop
+                // resetting. It can never reset someone who IS logged in, because
+                // __phHasUser short-circuits first.
+                try {
+                    if (window.__phHasUser) return;
+
+                    var identified =
+                        (typeof ph.get_property === 'function' &&
+                            ph.get_property('$user_state') === 'identified') ||
+                        (typeof ph.getSessionProperty === 'function' &&
+                            ph.getSessionProperty('$user_state') === 'identified');
+
+                    if (identified && typeof ph.reset === 'function') {
+                        ph.reset();
+                    }
+                } catch (e) {}
+            },
             disable_session_recording: isLocalDev,
             // Drop exceptions thrown by visitors' browser extensions (password
             // managers, ad blockers, etc.) before they reach the error-tracking
