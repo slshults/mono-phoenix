@@ -843,23 +843,21 @@ window.addEventListener("phx:posthog_identify", (e) => {
 // checking for it is a reliable readiness signal.
 function verifyPostHogIdentity() {
   if (typeof posthog === 'undefined') return;
-  if (typeof posthog.get_distinct_id !== 'function') return;
   if (typeof posthog.setIdentity !== 'function') return;
 
-  var distinctId;
-  try { distinctId = posthog.get_distinct_id(); } catch (e) { return; }
-  if (!distinctId) return;
-
+  // No body: the endpoint signs the email on the caller's own session and
+  // ignores anything sent to it. Sending a distinct_id is what made it an HMAC
+  // oracle for any patron whose email you knew.
   fetch('/api/posthog/identity', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-    body: JSON.stringify({ distinct_id: distinctId }),
+    headers: { 'Accept': 'application/json' },
     credentials: 'same-origin'
   })
     .then(function(r) { return r.ok ? r.json() : null; })
     .then(function(data) {
-      if (!data || !data.hash) return;
-      posthog.setIdentity(distinctId, data.hash);
+      // Use the id the server signed, so the two can never drift apart.
+      if (!data || !data.hash || !data.distinct_id) return;
+      posthog.setIdentity(data.distinct_id, data.hash);
     })
     .catch(function() { /* widget falls back to session-based access */ });
 }
