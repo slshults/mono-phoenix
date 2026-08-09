@@ -14,9 +14,8 @@ defmodule MonoPhoenixV01Web.WomenplayPageLive do
 
     rows = fetch_monologues(playid, "")
     
-    # Subscribe to PubSub events for retry functionality and PostHog LLM analytics
+    # Subscribe to PubSub events for retry functionality
     Phoenix.PubSub.subscribe(MonoPhoenixV01.PubSub, "play_page_events")
-    Phoenix.PubSub.subscribe(MonoPhoenixV01.PubSub, "posthog_events")
     
     {:ok, assign(socket, search_bar: %{}, search_value: "", rows: rows, play_id: playid, active_requests: MapSet.new(), async_metadata: %{})}
   end
@@ -297,19 +296,6 @@ defmodule MonoPhoenixV01Web.WomenplayPageLive do
         acc_socket
       end
     end)
-    
-    {:noreply, socket}
-  end
-
-  # Handle LLM analytics events from AnthropicService
-  @impl true
-  def handle_info({:track_llm, properties}, socket) do
-    # Forward LLM analytics events to PostHog via JavaScript
-    # Using PostHog's standard $ai_generation event name
-    socket = push_event(socket, "posthog_capture", %{
-      event: "$ai_generation",
-      properties: properties
-    })
     
     {:noreply, socket}
   end

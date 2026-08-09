@@ -487,20 +487,23 @@ defmodule MonoPhoenixV01.AnthropicService do
       properties
     end
 
-    # Send directly to PostHog (this works in all contexts)
+    # Sent server-side, once, anonymously ($process_person_profile: false).
+    #
+    # There used to be a second path here: a PubSub broadcast on the global
+    # "posthog_events" topic, which the four browse LiveViews subscribed to and
+    # forwarded to the browser as a client-side $ai_generation. That was dead
+    # for a long while (the push used the wrong event name), and un-breaking it
+    # revealed why it should not exist: the topic is global and the
+    # subscriptions are unconditional, so every generation was delivered to
+    # EVERY connected visitor on those pages, and each browser captured it
+    # under that visitor's own distinct_id. The result was N duplicate
+    # $ai_generation events per generation, inflated cost metrics, and
+    # generations attributed to readers who did nothing -- with the full
+    # $ai_input prompt and $ai_output_choices along for the ride.
+    #
+    # The server-side capture below already does this correctly and completely,
+    # so the second path is removed rather than repaired.
     MonoPhoenixV01.PostHog.capture("$ai_generation", properties)
-
-    # Also send to Phoenix LiveView for backward compatibility (when in LiveView context)
-    try do
-      Phoenix.PubSub.broadcast(
-        MonoPhoenixV01.PubSub,
-        "posthog_events",
-        {:track_llm, properties}
-      )
-    rescue
-      error ->
-        Logger.debug("Failed to broadcast LLM analytics event (expected when not in LiveView): #{inspect(error)}")
-    end
   end
 
   # Generate a unique trace ID for grouping related AI operations
