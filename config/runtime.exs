@@ -43,6 +43,28 @@ if config_env() == :prod do
 
   maybe_ipv6 = if System.get_env("ECTO_IPV6"), do: [:inet6], else: []
 
+  # CONNECTION BUDGET - read this before raising any pool size.
+  #
+  # The Gigalixir database is size 0.6, which caps total connections at
+  # 25, and Postgres reserves some of those for superuser use, so the
+  # usable ceiling is lower still. Per app instance we spend:
+  #
+  #   MonoPhoenixV01.Repo           POOL_SIZE           (currently 9)
+  #   MonoPhoenixV01.Accounts.Repo  ACCOUNTS_POOL_SIZE  (unset -> 2)
+  #   Oban notifier                 0, since we moved to Notifiers.PG
+  #                                 (see the Oban block below; was 1)
+  #
+  # Oban queues draw from the Repo pool, so they cost nothing extra.
+  #
+  # The trap is DEPLOYS: Gigalixir rolls the new pod up before the old
+  # one goes away, so the budget briefly DOUBLES. At POOL_SIZE=9 that
+  # was 2 x (9 + 2 + 1) = 24 against a ceiling near 22, which produced
+  # the 64 FATAL 53300 (too_many_connections) errors in one minute on
+  # 2026-08-05 and the >15s pool checkout the day after.
+  #
+  # So the number that matters is 2 x (POOL_SIZE + ACCOUNTS_POOL_SIZE),
+  # not the steady-state figure. Keep it comfortably under 22.
+  #
   # Postgres connection options for prod. The `keepalive` socket option +
   # short `idle_interval` keep pool connections warm so Gigalixir's network
   # layer doesn't drop them after some idle period (we observed
@@ -186,7 +208,20 @@ if config_env() == :prod do
   # Lifeline — rescues `executing` jobs orphaned by a crashed node
   # Cron — daily MOTD trigger at 13:00 UTC (== 09:00 US Eastern DST,
   #        08:00 EST outside DST). Repo + queues live in config/config.exs.
+  #
+  # Notifier - Oban.Notifiers.PG rather than the default Postgres one.
+  # The Postgres notifier holds its OWN dedicated connection, outside
+  # the Repo pool, purely for LISTEN/NOTIFY. Per the budget above, on a
+  # size-0.6 database that is a meaningful share of the ceiling, and it
+  # is the connection that retry-storms on reconnect. Notifiers.PG uses
+  # :pg process groups instead and costs zero database connections.
+  # With a single un-clustered node this is a strict improvement. If a
+  # second node ever appears without clustering, Oban degrades to
+  # polling (about a 1s dispatch delay); leadership is unaffected
+  # either way, because Oban.Peers.Database elects through the
+  # oban_peers table rather than the notifier.
   config :mono_phoenix_v01, Oban,
+    notifier: Oban.Notifiers.PG,
     plugins: [
       {Oban.Plugins.Pruner, max_age: 60 * 60 * 24 * 7},
       Oban.Plugins.Lifeline,
