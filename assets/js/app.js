@@ -34,34 +34,58 @@ import topbar from "../vendor/topbar"
 
 let Hooks = {}
 
+// Record a push that never reached the server.
+//
+// Deliberately NOT silent. Swallowing the rejection removes the console and
+// error-tracking noise, but it does not fix anything — LiveView drops the push
+// either way. If we only console.debug it we lose the only signal that this is
+// happening at all, and it IS happening: 68 occurrences across 18 distinct
+// users in the 120 days before this landed, still firing, mostly Mobile
+// Safari on play pages.
+//
+// The `user_visible` flag matters because the two call sites are not equal.
+// `reset_feedback_success` only hides a "Thanks!" banner. But
+// `modal_close_request` is the ACTUAL close mechanism — the component sets
+// `show: false` server-side (summary_modal_component.ex) — so when that push
+// is dropped, the summary modal genuinely stays open for that reader. That is
+// a real UX failure, not bookkeeping, and it deserves to stay countable.
+function reportDroppedPush(event, reason, err) {
+  console.debug("safePushEventTo: dropped '" + event + "' (" + reason + ")", err || "")
+
+  if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
+    posthog.capture('liveview_push_dropped', {
+      pushed_event: event,
+      reason: reason,
+      user_visible: event === 'modal_close_request'
+    })
+  }
+}
+
 // Push a hook event to a LiveComponent, tolerating a dead socket.
 //
-// `pushEventTo` throws "unable to push hook event. LiveView not connected"
+// `pushEventTo` fails with "unable to push hook event. LiveView not connected"
 // when the socket is down at the moment we push — a transient race on network
-// drops, socket timeouts, or while the page is unloading. These pushes are all
-// best-effort UI bookkeeping (closing a modal, resetting a success banner);
-// if the socket is gone there's nothing to deliver to and nothing is broken,
-// so swallow the error instead of surfacing console / error-tracking noise.
+// drops, socket timeouts, or while the page is unloading.
 //
-// As of phoenix_live_view 1.0.18 `pushEventTo` returns a Promise and throws
-// that error asynchronously inside the library's own promise chain, so a plain
-// synchronous try/catch can't catch the rejection. Guard both paths: skip the
-// push entirely when the socket is known-disconnected, and attach a `.catch()`
-// to swallow any late rejection that still escapes.
+// As of phoenix_live_view 1.0.18 `pushEventTo` returns a Promise and REJECTS
+// rather than throwing, so a synchronous try/catch never sees it and the
+// rejection escapes as an unhandled error. Guard both paths: skip the push
+// when the socket is known-disconnected, and attach a `.catch()` for any late
+// rejection. (The early return is belt-and-braces — LiveView's own check is
+// strictly broader, so it can never skip a push that would have been
+// delivered — but it avoids constructing a Promise only to reject it.)
 function safePushEventTo(hook, target, event, payload = {}) {
   if (window.liveSocket && !window.liveSocket.isConnected()) {
-    console.debug("safePushEventTo: skipped '" + event + "' (socket not connected)")
+    reportDroppedPush(event, 'socket_not_connected')
     return
   }
   try {
     const result = hook.pushEventTo(target, event, payload)
     if (result && typeof result.catch === "function") {
-      result.catch((err) => {
-        console.debug("safePushEventTo: dropped '" + event + "' (socket not connected):", err)
-      })
+      result.catch((err) => reportDroppedPush(event, 'push_rejected', err))
     }
   } catch (err) {
-    console.debug("safePushEventTo: dropped '" + event + "' (socket not connected):", err)
+    reportDroppedPush(event, 'push_threw', err)
   }
 }
 
