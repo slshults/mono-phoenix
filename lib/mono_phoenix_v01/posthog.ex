@@ -17,6 +17,11 @@ defmodule MonoPhoenixV01.PostHog do
   @project_api_key "phc_6aYLpkqQsmYJanYseJ8SJcOMicomCxj9v9Pl6hnZQS3"
   @default_distinct_id "shakespeare_monologues_server"
 
+  # Server-side capture is disabled under MIX_ENV=test so the suite does not
+  # post fixture users to the live project. config/test.exs is gitignored, so
+  # the default has to live here to travel between checkouts.
+  @enabled Application.compile_env(:mono_phoenix_v01, [__MODULE__, :enabled], Mix.env() != :test)
+
   @doc """
   Capture a server-side event. Returns `:ok` on success or `{:error, reason}`
   on transport / HTTP failure. Exceptions are caught and logged.
@@ -46,6 +51,10 @@ defmodule MonoPhoenixV01.PostHog do
   """
   @spec capture(String.t(), map(), keyword()) :: :ok | {:error, term()}
   def capture(event_name, properties, opts \\ []) do
+    if @enabled, do: send_capture(event_name, properties, opts), else: :ok
+  end
+
+  defp send_capture(event_name, properties, opts) do
     distinct_id = Keyword.get(opts, :distinct_id, @default_distinct_id)
     person_profile = Keyword.get(opts, :person_profile, false)
     host = System.get_env("POSTHOG_HOST", "https://us.i.posthog.com")
