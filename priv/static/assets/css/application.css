@@ -547,7 +547,6 @@ th.th-pad-right {
     -webkit-box-shadow: none;
     box-shadow: none;
     box-sizing: border-box;
-    width: 95%;
     outline: -webkit-focus-ring-color auto 0px;
     background-color: #F9F9DF;
     color: #222222;
@@ -627,7 +626,6 @@ span.toggle-control>a.toggle-mono>img {
     border-color: unset;
     -webkit-box-shadow: none;
     box-sizing: border-box;
-    width: 95%;
     outline: -webkit-focus-ring-color auto 0px; 
     background-color: #F9F9DF;
     color: #222222;
@@ -729,7 +727,6 @@ span.toggle-control>a.toggle-mono>img {
     -webkit-box-shadow: none;
     box-shadow: none;
     box-sizing: border-box;
-    width: 95%;
     outline: -webkit-focus-ring-color auto 0px;
     background-color: #2b2a2a;
     color: #F9F9DF;
@@ -740,7 +737,6 @@ span.toggle-control>a.toggle-mono>img {
     -webkit-box-shadow: none;
     box-shadow: none;
     box-sizing: border-box;
-    width: 95%;
     outline: -webkit-focus-ring-color auto 0px;
     background-color: #2b2a2a;
     color: #F9F9DF;
