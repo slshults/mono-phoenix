@@ -6,6 +6,7 @@ defmodule MonoPhoenixV01Web.UserAuth do
 
   alias MonoPhoenixV01.Accounts
   alias MonoPhoenixV01.Accounts.Scope
+  alias MonoPhoenixV01.PostHog
 
   # Make the remember me cookie valid for 14 days. This should match
   # the session validity setting in UserToken.
@@ -66,7 +67,10 @@ defmodule MonoPhoenixV01Web.UserAuth do
   def maybe_log_in_user(conn, %MonoPhoenixV01.Accounts.User{subscription_status: status} = user, params \\ %{}) do
     case status do
       "active" ->
-        log_in_user(conn, user, params)
+        props = login_props(user, params)
+        conn = log_in_user(conn, user, params)
+        track_login(user.email, props)
+        conn
 
       lapsed when lapsed in ~w(canceled lapsed past_due) ->
         conn
@@ -88,6 +92,30 @@ defmodule MonoPhoenixV01Web.UserAuth do
         |> redirect(to: ~p"/account/lapsed")
     end
   end
+
+  defp login_props(user, params) do
+    %{
+      method: login_method(params),
+      remember_me: params["remember_me"] == "true",
+      user_id: user.id,
+      subscription_status: user.subscription_status,
+      billing_period: user.billing_period
+    }
+  end
+
+  # Fire-and-forget: a slow or failing PostHog request must never stall a
+  # login. Properties are built by the caller so the params map -- which
+  # holds the plaintext password -- is not captured into the spawned
+  # process. Mirrors the Task.start pattern in NotFoundTracker.
+  defp track_login(email, props) do
+    Task.start(fn ->
+      PostHog.capture("user_logged_in", props, distinct_id: email, person_profile: true)
+    end)
+  end
+
+  defp login_method(%{"token" => token}) when is_binary(token), do: "magic_link"
+  defp login_method(%{"password" => pw}) when is_binary(pw), do: "password"
+  defp login_method(_params), do: "unknown"
 
   @doc """
   Returns true if the user has an active paid subscription. Used by
