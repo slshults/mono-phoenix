@@ -10,9 +10,8 @@ import Config
 # which you should run after static files are built and
 # before starting your production server.
 
-# The database is configured in config/runtime.exs, not here. This file is
-# evaluated at BUILD time, where DATABASE_URL isn't set, and runtime.exs
-# overrides whatever it produced anyway. It used to declare a second,
+# The database is configured in config/runtime.exs, not here -- runtime.exs
+# overrides whatever this file produces anyway. It used to declare a second,
 # conflicting POOL_SIZE default ("10") alongside runtime.exs's ("2"), which
 # made the real pool size ambiguous to anyone reading this file while trying
 # to work out a connection budget. Removed rather than reconciled, so there

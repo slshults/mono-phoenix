@@ -49,7 +49,7 @@ if config_env() == :prod do
   # 25, and Postgres reserves some of those for superuser use, so the
   # usable ceiling is lower still. Per app instance we spend:
   #
-  #   MonoPhoenixV01.Repo           POOL_SIZE           (currently 9)
+  #   MonoPhoenixV01.Repo           POOL_SIZE           (currently 8)
   #   MonoPhoenixV01.Accounts.Repo  ACCOUNTS_POOL_SIZE  (unset -> 2)
   #   Oban notifier                 0, since we moved to Notifiers.PG
   #                                 (see the Oban block below; was 1)
@@ -63,14 +63,19 @@ if config_env() == :prod do
   # 2026-08-05 and the >15s pool checkout the day after.
   #
   # So the number that matters is 2 x (POOL_SIZE + ACCOUNTS_POOL_SIZE),
-  # not the steady-state figure. Keep it comfortably under 22.
+  # not the steady-state figure, and the ceiling is about 22.
+  #
+  # At POOL_SIZE=9 that came to exactly 22 — no headroom at all, which is
+  # why it was lowered to 8 on 2026-08-08: 2 x (8 + 2) = 20. If 53300
+  # errors ever reappear during a deploy, lowering it further is the next
+  # lever before paying for a larger database.
   #
   # Postgres connection options for prod. The `keepalive` socket option +
   # short `idle_interval` keep pool connections warm so Gigalixir's network
   # layer doesn't drop them after some idle period (we observed
   # `ssl recv (idle): closed` errors before adding these). This protects the
-  # Repo's pool but does NOT directly protect Oban's separate Notifier
-  # connection — see `lib/mono_phoenix_v01/oban_notifier_health.ex` for that.
+  # Repo's pool. Oban no longer holds a separate Notifier connection at
+  # all — see the Oban block below.
   config :mono_phoenix_v01, MonoPhoenixV01.Repo,
     ssl: true,
     ssl_opts: [
