@@ -356,7 +356,7 @@
   time the SDK finishes loading.
 --%>
 <script>
-  window.__phHasUser = <%= if match?(%{user: %{}}, assigns[:current_scope]), do: "true", else: "false" %>;
+    window.__phHasUser = <%= match?(%{user: %{}}, @conn.assigns[:current_scope]) %>;
 </script>
 
 <script>
@@ -398,6 +398,15 @@
                 try {
                     if (window.__phHasUser) return;
 
+                    // Never trade an identity cleanup for a consent wipe. In the
+                    // SDK this site serves, reset() begins with consent.reset(),
+                    // which deletes the stored __ph_opt_in_out_<token> record --
+                    // so resetting someone who has opted out would silently put
+                    // them back to 'pending' and resume capture. They emit no
+                    // events anyway, so skipping their cleanup costs nothing.
+                    if (typeof ph.has_opted_out_capturing === 'function' &&
+                        ph.has_opted_out_capturing()) return;
+
                     var identified =
                         (typeof ph.get_property === 'function' &&
                             ph.get_property('$user_state') === 'identified') ||
@@ -406,6 +415,14 @@
 
                     if (identified && typeof ph.reset === 'function') {
                         ph.reset();
+                        // Emitted under the fresh anonymous id, so this is a
+                        // countable drain curve for the ~1,700 legacy browsers --
+                        // and an alarm if the rate ever stops decaying, which
+                        // would mean something is identifying anonymous visitors
+                        // again rather than this being a one-off cleanup.
+                        if (typeof ph.capture === 'function') {
+                            ph.capture('posthog_identity_reset');
+                        }
                     }
                 } catch (e) {}
             },
@@ -538,11 +555,15 @@
           // next page load to honor the withdrawal. (Consent Mode stops
           // Google's tags; PostHog isn't a Google product, so we stop it.)
           try {
-            if (window.posthog && typeof posthog.opt_out_capturing === 'function') {
-              posthog.opt_out_capturing();
-            }
+            // Order matters: reset() starts by clearing stored consent, so
+            // opting out FIRST would have the reset immediately wipe the
+            // opt-out record we just wrote, and capture would continue for
+            // the rest of the page. Reset, then record the opt-out.
             if (window.posthog && typeof posthog.reset === 'function') {
               posthog.reset();
+            }
+            if (window.posthog && typeof posthog.opt_out_capturing === 'function') {
+              posthog.opt_out_capturing();
             }
           } catch (e) {}
         }
