@@ -524,8 +524,23 @@ document.addEventListener('click', function (event) {
     const targetId = firstLineElement.getAttribute('data-target');
     const collapseElement = targetId ? document.querySelector(targetId) : null;
     
-    // Determine if this is expanding or collapsing
-    const isExpanding = collapseElement && !collapseElement.classList.contains('in');
+    // Determine if this is expanding or collapsing.
+    //
+    // Do NOT read the collapse classes here. Bootstrap 3 mutates them
+    // asymmetrically and asynchronously: hide() strips `in` synchronously,
+    // while show() only adds it on transitionend (~350ms later). Bootstrap's
+    // data-api handler is a parser-blocking <script> in <head> and app.js is
+    // deferred, so Bootstrap always runs first and `in` is absent in BOTH
+    // directions by the time we look — which is why testing for `in` (and,
+    // before that, Bootstrap 4/5's `show`) counted every collapse as an
+    // expand and doubled this event.
+    //
+    // aria-expanded is set synchronously in both show() and hide(), so it is
+    // the one signal that survives the ordering. Compare to the string: the
+    // attribute is absent in the server-rendered HTML and only exists once
+    // Bootstrap has run.
+    const isExpanding =
+      collapseElement && collapseElement.getAttribute('aria-expanded') === 'true';
     
     if (isExpanding) {
       // Get monologue details from the row context
