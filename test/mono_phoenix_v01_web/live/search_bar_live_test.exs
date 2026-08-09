@@ -1,7 +1,11 @@
 defmodule MonoPhoenixV01Web.SearchBarLiveTest do
-  # NOT async: SearchBarLive runs the search in its own process, so the
-  # monologues-repo sandbox has to be shared (see the extra setup below),
-  # which only works outside async mode.
+  # NOT async: the LiveView runs in its own process, separate from the test
+  # process, so the monologues-repo sandbox has to be shared with it (see the
+  # extra setup below), which only works outside async mode.
+  #
+  # (The search itself runs inline in SearchBarLive.handle_event/3 — there is
+  # no separate task. It is the LiveView process, not the query, that needs
+  # the shared connection.)
   use MonoPhoenixV01Web.ConnCase
 
   import Phoenix.LiveViewTest
