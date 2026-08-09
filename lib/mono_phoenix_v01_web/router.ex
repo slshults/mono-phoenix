@@ -15,6 +15,22 @@ defmodule MonoPhoenixV01Web.Router do
     plug(:fetch_current_scope_for_user)
   end
 
+  # JSON endpoints that need to know WHO is calling. Separate from :api,
+  # which deliberately has no session at all (the Stripe webhook and the
+  # public monologue API both rely on that).
+  #
+  # No :protect_from_forgery here on purpose. These endpoints change no
+  # state -- they derive a value from the caller's own session and return
+  # it -- and a cross-origin attacker cannot read the response anyway, so a
+  # CSRF token would buy nothing while breaking the plain fetch() the
+  # Conversations widget uses. Anything state-changing must NOT be added to
+  # this pipeline.
+  pipeline :api_authenticated do
+    plug(:accepts, ["json"])
+    plug(:fetch_session)
+    plug(:fetch_current_scope_for_user)
+  end
+
   pipeline :api do
     plug(:accepts, ["json"])
   end
@@ -49,13 +65,21 @@ defmodule MonoPhoenixV01Web.Router do
     get("/monologues/:id", ApiController, :monologue)
     get("/monologue-of-the-day.json", ApiController, :monologue_of_the_day)
 
-    post("/posthog/identity", PostHogIdentityController, :sign)
-
     # Stripe webhook. The :api pipeline omits :protect_from_forgery so
     # external POSTs from Stripe aren't rejected by CSRF. Signature
     # verification (via Billing.construct_webhook_event) provides
     # authenticity.
     post("/stripe/webhook", StripeWebhookController, :create)
+  end
+
+  # Signs the CURRENT patron's PostHog distinct_id for the Conversations
+  # widget. Session-bearing on purpose: this used to sit in the plain :api
+  # scope above and sign any distinct_id the caller supplied, which made it
+  # an HMAC oracle for any patron whose email address you knew.
+  scope "/api", MonoPhoenixV01Web do
+    pipe_through(:api_authenticated)
+
+    post("/posthog/identity", PostHogIdentityController, :sign)
   end
 
   scope "/", MonoPhoenixV01Web do

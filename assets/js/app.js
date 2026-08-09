@@ -846,6 +846,10 @@ function verifyPostHogIdentity() {
   if (typeof posthog.get_distinct_id !== 'function') return;
   if (typeof posthog.setIdentity !== 'function') return;
 
+  // Readiness check only. We deliberately do NOT send this to the server:
+  // the endpoint signs the email on the caller's own session and ignores any
+  // distinct_id in the body, because signing a client-supplied value made it
+  // an HMAC oracle for any patron whose email you knew.
   var distinctId;
   try { distinctId = posthog.get_distinct_id(); } catch (e) { return; }
   if (!distinctId) return;
@@ -853,13 +857,14 @@ function verifyPostHogIdentity() {
   fetch('/api/posthog/identity', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-    body: JSON.stringify({ distinct_id: distinctId }),
+    body: '{}',
     credentials: 'same-origin'
   })
     .then(function(r) { return r.ok ? r.json() : null; })
     .then(function(data) {
-      if (!data || !data.hash) return;
-      posthog.setIdentity(distinctId, data.hash);
+      // Use the id the server signed, not ours, so the two can never drift.
+      if (!data || !data.hash || !data.distinct_id) return;
+      posthog.setIdentity(data.distinct_id, data.hash);
     })
     .catch(function() { /* widget falls back to session-based access */ });
 }
