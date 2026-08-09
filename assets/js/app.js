@@ -36,27 +36,20 @@ let Hooks = {}
 
 // Record a push that never reached the server.
 //
-// Deliberately NOT silent. Swallowing the rejection removes the console and
-// error-tracking noise, but it does not fix anything — LiveView drops the push
-// either way. If we only console.debug it we lose the only signal that this is
-// happening at all, and it IS happening: 68 occurrences across 18 distinct
-// users in the 120 days before this landed, still firing, mostly Mobile
-// Safari on play pages.
-//
-// The `user_visible` flag matters because the two call sites are not equal.
-// `reset_feedback_success` only hides a "Thanks!" banner. But
-// `modal_close_request` is the ACTUAL close mechanism — the component sets
-// `show: false` server-side (summary_modal_component.ex) — so when that push
-// is dropped, the summary modal genuinely stays open for that reader. That is
-// a real UX failure, not bookkeeping, and it deserves to stay countable.
+// Deliberately NOT silent. Swallowing the rejection removes the noise but does
+// not fix anything — LiveView drops the push either way — and the two call
+// sites are not equal. `reset_feedback_success` only hides a "Thanks!" banner,
+// but `modal_close_request` is the ACTUAL close mechanism (the component sets
+// `show: false` server-side, in summary_modal_component.ex), so a dropped push
+// leaves the summary modal open for that reader. Break the counts down by
+// `pushed_event` in PostHog to tell the two apart.
 function reportDroppedPush(event, reason, err) {
   console.debug("safePushEventTo: dropped '" + event + "' (" + reason + ")", err || "")
 
   if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
     posthog.capture('liveview_push_dropped', {
       pushed_event: event,
-      reason: reason,
-      user_visible: event === 'modal_close_request'
+      reason: reason
     })
   }
 }

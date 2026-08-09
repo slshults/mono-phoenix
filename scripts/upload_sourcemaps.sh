@@ -69,27 +69,24 @@ if command -v posthog-cli >/dev/null 2>&1; then
   CLI="posthog-cli"
 elif command -v npx >/dev/null 2>&1; then
   CLI="npx -y @posthog/cli@${POSTHOG_CLI_VERSION}"
-fi
 
-# Staleness notice for the pin above. Pinning trades "always current" for
-# "never runs unvetted code", and the cost of that trade is having to
-# remember to bump it. This removes the remembering without giving the
-# automation back: it only PRINTS. Nothing here changes which version runs,
-# so bumping stays a deliberate, reviewed one-line edit.
-#
-# Deliberately best-effort and non-fatal -- a registry hiccup or an offline
-# builder must never fail a deploy over a courtesy message.
-if command -v npm >/dev/null 2>&1; then
-  if command -v timeout >/dev/null 2>&1; then
-    latest_cli="$(timeout 10 npm view @posthog/cli version 2>/dev/null | tr -d '[:space:]')"
-  else
-    latest_cli="$(npm view @posthog/cli version 2>/dev/null | tr -d '[:space:]')"
-  fi
+  # Staleness notice for the pin. PRINTS ONLY -- nothing here changes which
+  # version runs, so bumping stays a deliberate one-line edit. Scoped to this
+  # branch because POSTHOG_CLI_VERSION is only consulted here: telling you to
+  # bump a pin that isn't being used would be noise.
+  #
+  # Skipped entirely when we can't bound the network call. A courtesy message
+  # must never stall a deploy, and an unbounded `npm view` is the one way this
+  # block could. Also filtered through tr -cd so a hostile or broken registry
+  # response can't inject terminal escapes into the build log.
+  if command -v npm >/dev/null 2>&1 && command -v timeout >/dev/null 2>&1; then
+    latest_cli="$(timeout 10 npm view @posthog/cli version 2>/dev/null | tr -cd '0-9A-Za-z.+-')"
 
-  if [ -n "$latest_cli" ] && [ "$latest_cli" != "$POSTHOG_CLI_VERSION" ]; then
-    echo "[sourcemaps] NOTE: @posthog/cli is pinned at ${POSTHOG_CLI_VERSION}; ${latest_cli} is now published."
-    echo "[sourcemaps]       To adopt it, bump POSTHOG_CLI_VERSION in scripts/upload_sourcemaps.sh."
-    echo "[sourcemaps]       Worth letting a release age a few days first -- see the comment above the pin."
+    if [ -n "$latest_cli" ] && [ "$latest_cli" != "$POSTHOG_CLI_VERSION" ]; then
+      echo "[sourcemaps] NOTE: @posthog/cli is pinned at ${POSTHOG_CLI_VERSION}; ${latest_cli} is now published."
+      echo "[sourcemaps]       To adopt it, bump POSTHOG_CLI_VERSION in scripts/upload_sourcemaps.sh."
+      echo "[sourcemaps]       Worth letting a release age a few days first -- see the comment above the pin."
+    fi
   fi
 fi
 
