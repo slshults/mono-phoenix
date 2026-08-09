@@ -843,26 +843,19 @@ window.addEventListener("phx:posthog_identify", (e) => {
 // checking for it is a reliable readiness signal.
 function verifyPostHogIdentity() {
   if (typeof posthog === 'undefined') return;
-  if (typeof posthog.get_distinct_id !== 'function') return;
   if (typeof posthog.setIdentity !== 'function') return;
 
-  // Readiness check only. We deliberately do NOT send this to the server:
-  // the endpoint signs the email on the caller's own session and ignores any
-  // distinct_id in the body, because signing a client-supplied value made it
-  // an HMAC oracle for any patron whose email you knew.
-  var distinctId;
-  try { distinctId = posthog.get_distinct_id(); } catch (e) { return; }
-  if (!distinctId) return;
-
+  // No body: the endpoint signs the email on the caller's own session and
+  // ignores anything sent to it. Sending a distinct_id is what made it an HMAC
+  // oracle for any patron whose email you knew.
   fetch('/api/posthog/identity', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-    body: '{}',
+    headers: { 'Accept': 'application/json' },
     credentials: 'same-origin'
   })
     .then(function(r) { return r.ok ? r.json() : null; })
     .then(function(data) {
-      // Use the id the server signed, not ours, so the two can never drift.
+      // Use the id the server signed, so the two can never drift apart.
       if (!data || !data.hash || !data.distinct_id) return;
       posthog.setIdentity(data.distinct_id, data.hash);
     })

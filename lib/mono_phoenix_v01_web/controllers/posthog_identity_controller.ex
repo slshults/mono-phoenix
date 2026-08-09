@@ -15,11 +15,20 @@ defmodule MonoPhoenixV01Web.PostHogIdentityController do
   only ever sent back the distinct_id PostHog had already been given by
   `LiveFavoritesHelpers.push_posthog_identify/3`, which takes it from the
   logged-in scope on the server in the first place.
+
+  The 401 lives here rather than in a plug because `UserAuth.require_authenticated_user/2`
+  redirects with a flash, which is the wrong answer for a JSON endpoint.
   """
   use MonoPhoenixV01Web, :controller
+
+  alias MonoPhoenixV01.Accounts.{Scope, User}
+
   require Logger
 
-  def sign(%{assigns: %{current_scope: %{user: %{email: email}}}} = conn, _params) do
+  def sign(
+        %Plug.Conn{assigns: %{current_scope: %Scope{user: %User{email: email}}}} = conn,
+        _params
+      ) do
     case System.get_env("POSTHOG_SECRET_API_KEY") do
       blank when blank in [nil, ""] ->
         Logger.error("POSTHOG_SECRET_API_KEY missing; cannot sign widget identity")
@@ -33,8 +42,6 @@ defmodule MonoPhoenixV01Web.PostHogIdentityController do
           :crypto.mac(:hmac, :sha256, secret, email)
           |> Base.encode16(case: :lower)
 
-        # Return the id we actually signed. The client must use this rather than
-        # its own, so the two can never drift apart.
         json(conn, %{distinct_id: email, hash: hash})
     end
   end

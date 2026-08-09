@@ -25,7 +25,7 @@ defmodule MonoPhoenixV01Web.Router do
   # CSRF token would buy nothing while breaking the plain fetch() the
   # Conversations widget uses. Anything state-changing must NOT be added to
   # this pipeline.
-  pipeline :api_authenticated do
+  pipeline :api_scoped do
     plug(:accepts, ["json"])
     plug(:fetch_session)
     plug(:fetch_current_scope_for_user)
@@ -73,11 +73,10 @@ defmodule MonoPhoenixV01Web.Router do
   end
 
   # Signs the CURRENT patron's PostHog distinct_id for the Conversations
-  # widget. Session-bearing on purpose: this used to sit in the plain :api
-  # scope above and sign any distinct_id the caller supplied, which made it
-  # an HMAC oracle for any patron whose email address you knew.
+  # widget — from the session, never from the request body. See
+  # PostHogIdentityController for why that distinction matters.
   scope "/api", MonoPhoenixV01Web do
-    pipe_through(:api_authenticated)
+    pipe_through(:api_scoped)
 
     post("/posthog/identity", PostHogIdentityController, :sign)
   end
