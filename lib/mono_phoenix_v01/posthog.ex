@@ -102,7 +102,7 @@ defmodule MonoPhoenixV01.PostHog do
 
   ## Examples
 
-      MonoPhoenixV01.PostHog.identify("42",
+      MonoPhoenixV01.PostHog.identify("patron@example.com",
         set: %{subscription_status: "active", billing_period: "monthly"},
         set_once: %{signup_completed_at: "2026-05-25T18:00:00Z"})
   """

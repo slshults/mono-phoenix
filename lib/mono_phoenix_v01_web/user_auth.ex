@@ -67,8 +67,10 @@ defmodule MonoPhoenixV01Web.UserAuth do
   def maybe_log_in_user(conn, %MonoPhoenixV01.Accounts.User{subscription_status: status} = user, params \\ %{}) do
     case status do
       "active" ->
-        track_login(user, params)
-        log_in_user(conn, user, params)
+        props = login_props(user, params)
+        conn = log_in_user(conn, user, params)
+        track_login(user.email, props)
+        conn
 
       lapsed when lapsed in ~w(canceled lapsed past_due) ->
         conn
@@ -91,22 +93,23 @@ defmodule MonoPhoenixV01Web.UserAuth do
     end
   end
 
+  defp login_props(user, params) do
+    %{
+      method: login_method(params),
+      remember_me: params["remember_me"] == "true",
+      user_id: user.id,
+      subscription_status: user.subscription_status,
+      billing_period: user.billing_period
+    }
+  end
+
   # Fire-and-forget: a slow or failing PostHog request must never stall a
-  # login. Mirrors the Task.start pattern in NotFoundTracker.
-  defp track_login(user, params) do
+  # login. Properties are built by the caller so the params map -- which
+  # holds the plaintext password -- is not captured into the spawned
+  # process. Mirrors the Task.start pattern in NotFoundTracker.
+  defp track_login(email, props) do
     Task.start(fn ->
-      PostHog.capture(
-        "user_logged_in",
-        %{
-          method: login_method(params),
-          remember_me: params["remember_me"] == "true",
-          user_id: user.id,
-          subscription_status: user.subscription_status,
-          billing_period: user.billing_period
-        },
-        distinct_id: user.email,
-        person_profile: true
-      )
+      PostHog.capture("user_logged_in", props, distinct_id: email, person_profile: true)
     end)
   end
 
