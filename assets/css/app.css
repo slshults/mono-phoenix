@@ -593,7 +593,6 @@ input.search-box-default {
   -webkit-box-shadow: none;
   box-shadow: none;
   box-sizing: border-box;
-  width: 95%;
   outline: -webkit-focus-ring-color auto 0px;
 }
 
