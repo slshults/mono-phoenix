@@ -510,6 +510,23 @@
                 })) {
                   return null;
                 }
+
+                // Drop exceptions that carry no stack frames at all. In-app
+                // browsers inject script into the page — DuckDuckGo's iOS
+                // browser throws "invalid origin" — and autocapture reports
+                // some of these with mechanism.synthetic false and no
+                // stacktrace, so the synthetic/frameless rule above misses
+                // them. A payload whose every entry has zero frames can never
+                // be our own code: our uncaught errors always carry in-app
+                // frames. Require a non-empty list so empty payloads fall
+                // through to PostHog unchanged.
+                if (exceptions.length > 0 && exceptions.every(function (e) {
+                  if (!e) return false;
+                  var frames = (e.stacktrace && e.stacktrace.frames) || [];
+                  return frames.length === 0;
+                })) {
+                  return null;
+                }
               }
               return event;
             },
