@@ -485,6 +485,28 @@
                   return null;
                 }
 
+                // Drop errors from third-party JavaScript injected into the
+                // page at a path we never serve. A visitor's browser can inject
+                // a bundle from a same-origin sandbox path -- e.g.
+                // /__DLD__<hash>/resources/frontend.min.js -- and throw from it.
+                // Because it is same-origin, autocapture flags its frames in_app
+                // and gives them a real (non-synthetic) stack, so the frameless
+                // rule above never catches it. Our own scripts ship only from
+                // /assets/, so an exception whose every frame sits outside
+                // /assets/ is not ours. Match on the bundle path, not the error
+                // text, which differs per injector. Require a non-empty frame
+                // list so frameless payloads fall through to the rule above.
+                if (exceptions.length > 0 && exceptions.every(function (e) {
+                  if (!e) return false;
+                  var frames = (e.stacktrace && e.stacktrace.frames) || [];
+                  if (frames.length === 0) return false;
+                  return frames.every(function (f) {
+                    return ((f && f.filename) || '').indexOf('/assets/') === -1;
+                  });
+                })) {
+                  return null;
+                }
+
                 // Drop uncaught network-failure TypeErrors — "Failed to
                 // fetch" (Chromium), "Load failed" (Safari), "NetworkError
                 // when attempting to fetch resource" (Firefox). These come
