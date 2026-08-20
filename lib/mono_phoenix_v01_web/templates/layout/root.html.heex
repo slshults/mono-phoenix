@@ -464,6 +464,32 @@
                   return null;
                 }
 
+                // Drop errors thrown inside third-party ad scripts we never
+                // serve. Google's AdSense bundle (adsbygoogle.js) throws a
+                // DOMException — "Failed to execute 'postMessage' on 'Window':
+                // Invalid target origin 'null'" — from its own code during the
+                // vignette ad on /mens#google_vignette. The frame is
+                // non-synthetic and flagged in_app, and its value is neither a
+                // network failure nor empty, so the other rules miss it.
+                // Nothing in our source calls postMessage; autocapture grabs
+                // this only because it hooks window.onerror. PostHog drops the
+                // host from the normalised frame's filename, but the original
+                // URL survives at junk_drawer.raw_frame.filename. Match on ad
+                // hosts we never serve from, so this can never hide a bug of
+                // ours. Require a non-empty frame list.
+                var adHost = /(?:\/\/|\.)(?:(?:googlesyndication|googleadservices)\.com|doubleclick\.net)(?:[:\/?#]|$)/;
+                if (exceptions.length > 0 && exceptions.every(function (e) {
+                  if (!e) return false;
+                  var frames = (e.stacktrace && e.stacktrace.frames) || [];
+                  if (frames.length === 0) return false;
+                  return frames.every(function (f) {
+                    var raw = f && f.junk_drawer && f.junk_drawer.raw_frame;
+                    return adHost.test((raw && raw.filename) || '');
+                  });
+                })) {
+                  return null;
+                }
+
                 // Drop frameless cross-origin third-party script errors. The
                 // Google bundles loaded in the <head> (Funding Choices, AdSense,
                 // gtag) run cross-origin, so when one throws the browser hands
