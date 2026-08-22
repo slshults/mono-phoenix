@@ -982,10 +982,10 @@ document.addEventListener('DOMContentLoaded', function() {
     return overlay.style.display === 'flex';
   }
 
-  function showAdblockModal() {
+  function showAdblockModal(props) {
     if (promoVisible()) return;
     overlay.style.display = 'flex';
-    if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') posthog.capture('adblock_modal_shown');
+    if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') posthog.capture('adblock_modal_shown', props);
   }
 
   // Single dismissal path shared by every affordance (the "Got it" button, the
@@ -1005,6 +1005,19 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') posthog.capture('adblock_modal_dismissed');
   }
 
+  // Cosmetic filtering — hiding bait elements — is extension-only behaviour.
+  // A browser's built-in tracking protection (Firefox ETP blocks
+  // googlesyndication.com, which is on the Disconnect advertising list it
+  // ships with) blocks the network request but never touches the DOM. So a
+  // still-visible probe alongside a blocked request points at browser- or
+  // network-level blocking rather than an installed ad blocker.
+  function cosmeticFiltered() {
+    const probe = document.getElementById('adblock-probe');
+    return !probe ||
+      probe.offsetHeight === 0 ||
+      window.getComputedStyle(probe).display === 'none';
+  }
+
   setTimeout(function() {
     fetch('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', {
       mode: 'no-cors',
@@ -1014,19 +1027,17 @@ document.addEventListener('DOMContentLoaded', function() {
       // Genuine cross-origin no-cors fetch returns type 'opaque'.
       // Type 'basic' means UBO Lite intercepted and redirected to an empty response.
       if (r.type === 'basic') {
-        showAdblockModal();
+        showAdblockModal({ detection_method: 'redirected', cosmetic_filtering: cosmeticFiltered() });
         return;
       }
       // Fallback: CSS probe for cosmetic-blocking adblockers
-      const probe = document.getElementById('adblock-probe');
-      const cssBlocked = !probe ||
-        probe.offsetHeight === 0 ||
-        window.getComputedStyle(probe).display === 'none';
-      if (cssBlocked) showAdblockModal();
+      if (cosmeticFiltered()) {
+        showAdblockModal({ detection_method: 'cosmetic', cosmetic_filtering: true });
+      }
     })
     .catch(function() {
       // Hard network block (some adblockers do cause a network error)
-      showAdblockModal();
+      showAdblockModal({ detection_method: 'network_error', cosmetic_filtering: cosmeticFiltered() });
     });
   }, 5000);
 
