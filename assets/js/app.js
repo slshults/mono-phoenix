@@ -1019,6 +1019,12 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   setTimeout(function() {
+    // A backgrounded tab throttles this timer — one visitor's fired a full
+    // minute late — and a fetch issued from a suspended tab fails whether or
+    // not anything is blocking ads. Only probe while the page is on screen;
+    // a genuine blocker will still be caught on the next pageview.
+    if (document.visibilityState !== 'visible') return;
+
     const adProbe = fetch('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', {
       mode: 'no-cors',
       cache: 'no-store'
@@ -1037,16 +1043,21 @@ document.addEventListener('DOMContentLoaded', function() {
     Promise.all([adProbe, control]).then(function(results) {
       const adType = results[0];
       const controlReachable = results[1];
-      // Genuine cross-origin no-cors fetch returns type 'opaque'.
-      // Type 'basic' means UBO Lite intercepted and redirected to an empty response.
-      if (adType === 'basic') {
-        showAdblockModal({ detection_method: 'redirected', cosmetic_filtering: isCosmeticFiltered(), control_reachable: controlReachable });
-        return;
-      }
-      // Hard network block (some adblockers do cause a network error)
-      if (adType === 'error') {
-        showAdblockModal({ detection_method: 'network_error', cosmetic_filtering: isCosmeticFiltered(), control_reachable: controlReachable });
-        return;
+      // Nothing blocks the same-origin control request, so if it failed too the
+      // connection was down and the probe result proves nothing either way.
+      // The cosmetic check below is DOM-only and still stands on its own.
+      if (controlReachable) {
+        // Genuine cross-origin no-cors fetch returns type 'opaque'.
+        // Type 'basic' means UBO Lite intercepted and redirected to an empty response.
+        if (adType === 'basic') {
+          showAdblockModal({ detection_method: 'redirected', cosmetic_filtering: isCosmeticFiltered(), control_reachable: true });
+          return;
+        }
+        // Hard network block (some adblockers do cause a network error)
+        if (adType === 'error') {
+          showAdblockModal({ detection_method: 'network_error', cosmetic_filtering: isCosmeticFiltered(), control_reachable: true });
+          return;
+        }
       }
       // Fallback: CSS probe for cosmetic-blocking adblockers
       if (isCosmeticFiltered()) {
