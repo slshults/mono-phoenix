@@ -982,10 +982,10 @@ document.addEventListener('DOMContentLoaded', function() {
     return overlay.style.display === 'flex';
   }
 
-  function showAdblockModal() {
+  function showAdblockModal(props) {
     if (promoVisible()) return;
     overlay.style.display = 'flex';
-    if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') posthog.capture('adblock_modal_shown');
+    if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') posthog.capture('adblock_modal_shown', props);
   }
 
   // Single dismissal path shared by every affordance (the "Got it" button, the
@@ -1005,28 +1005,88 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') posthog.capture('adblock_modal_dismissed');
   }
 
-  setTimeout(function() {
-    fetch('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', {
+  // Cosmetic filtering — hiding bait elements — is extension-only behaviour.
+  // A browser's built-in tracking protection (Firefox ETP blocks
+  // googlesyndication.com, which is on the Disconnect advertising list it
+  // ships with) blocks the network request but never touches the DOM. So a
+  // still-visible probe alongside a blocked request points at browser- or
+  // network-level blocking rather than an installed ad blocker.
+  function isCosmeticFiltered() {
+    const probe = document.getElementById('adblock-probe');
+    return !probe ||
+      probe.offsetHeight === 0 ||
+      window.getComputedStyle(probe).display === 'none';
+  }
+
+  // The probe only means something when the page is on screen and the network
+  // is behaving. Support ticket #11: a visitor was told they blocked ads while
+  // AdSense served them interstitials in the same session — the probe had hung
+  // for about a minute on a flaky mobile connection and we read the rejection
+  // as an ad blocker.
+  const PROBE_BUDGET_MS = 15000;
+
+  function runAdblockProbe() {
+    const startedAt = Date.now();
+
+    const adProbe = fetch('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', {
       mode: 'no-cors',
       cache: 'no-store'
     })
-    .then(function(r) {
-      // Genuine cross-origin no-cors fetch returns type 'opaque'.
-      // Type 'basic' means UBO Lite intercepted and redirected to an empty response.
-      if (r.type === 'basic') {
-        showAdblockModal();
+      .then(function(r) { return r.type; })
+      .catch(function() { return 'error'; });
+
+    // A cross-origin fetch rejects identically whether it was blocked or the
+    // connection simply failed, so pair the probe with a same-origin request
+    // nothing would block.
+    const control = fetch('/favicon.ico', { cache: 'no-store' })
+      .then(function() { return true; })
+      .catch(function() { return false; });
+
+    Promise.all([adProbe, control]).then(function(results) {
+      const adType = results[0];
+      const controlReachable = results[1];
+      const elapsed = Date.now() - startedAt;
+      // Trust the network result only if the control succeeded and the probe
+      // finished inside its budget; otherwise it describes the connection, not
+      // ad blocking. Record the skip so a drop in modal volume stays readable.
+      // The cosmetic check below is DOM-only and stands on its own either way.
+      if (!controlReachable || elapsed > PROBE_BUDGET_MS) {
+        if (typeof posthog !== 'undefined' && typeof posthog.capture === 'function') {
+          posthog.capture('adblock_probe_skipped', {
+            reason: controlReachable ? 'probe_timed_out' : 'control_unreachable',
+            elapsed_ms: elapsed
+          });
+        }
+      } else if (adType === 'basic') {
+        // Genuine cross-origin no-cors fetch returns type 'opaque'.
+        // Type 'basic' means UBO Lite intercepted and redirected to an empty response.
+        showAdblockModal({ detection_method: 'redirected', cosmetic_filtering: isCosmeticFiltered(), control_reachable: true });
+        return;
+      } else if (adType === 'error') {
+        // Hard network block (some adblockers do cause a network error)
+        showAdblockModal({ detection_method: 'network_error', cosmetic_filtering: isCosmeticFiltered(), control_reachable: true });
         return;
       }
       // Fallback: CSS probe for cosmetic-blocking adblockers
-      const probe = document.getElementById('adblock-probe');
-      const cssBlocked = !probe ||
-        probe.offsetHeight === 0 ||
-        window.getComputedStyle(probe).display === 'none';
-      if (cssBlocked) showAdblockModal();
-    })
-    .catch(function() {
-      // Hard network block (some adblockers do cause a network error)
-      showAdblockModal();
+      if (isCosmeticFiltered()) {
+        showAdblockModal({ detection_method: 'cosmetic', cosmetic_filtering: true, control_reachable: controlReachable });
+      }
+    });
+  }
+
+  setTimeout(function() {
+    if (document.visibilityState === 'visible') {
+      runAdblockProbe();
+      return;
+    }
+    // Prerendered and backgrounded documents report 'hidden' and still run
+    // timers, so probing now would measure a page nobody is looking at. Chrome
+    // prerenders omnibox and search results, which is most of our traffic —
+    // wait for the page to come on screen rather than skipping the pageview.
+    document.addEventListener('visibilitychange', function onVisible() {
+      if (document.visibilityState !== 'visible') return;
+      document.removeEventListener('visibilitychange', onVisible);
+      runAdblockProbe();
     });
   }, 5000);
 
