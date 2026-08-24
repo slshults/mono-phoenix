@@ -510,6 +510,58 @@
                 })) {
                   return null;
                 }
+
+                // Drop call-stack overflows whose every frame is inline script
+                // in this document. In practice that is Google's Funding
+                // Choices ad-block recovery bundle, which ships as a
+                // Closure-compiled blob inline in this layout and overflows on
+                // iOS WebKit. (Google regenerates that blob per request, so the
+                // minified frame names differ run to run and there is no stable
+                // symbol to match on.) Inline frames are filenamed with the page
+                // URL, which makes them same-origin, non-synthetic and in_app
+                // with a real stack, so none of the rules above catch them.
+                // Worse, the filename carries the path, so one bug fingerprints
+                // into a fresh issue on every page it lands on — 10 issues from
+                // 78 events over 90 days, all Mobile Safari or Chrome on iOS,
+                // none on desktop.
+                //
+                // Match positively on "every frame is this page document"
+                // rather than negatively on "no frame is ours". The negative
+                // form looks equivalent but is not, for two reasons. First,
+                // plenty of legitimate third-party code is neither: PostHog's
+                // recorder is same-origin but served from /static/ on the
+                // autolycus proxy, and jQuery/Bootstrap load cross-origin with
+                // CORS, so all of them carry real filenames outside /assets/
+                // and all of them are actionable. Second, posthog-js caps a
+                // stack at 50 frames counting inward, so on an overflow the
+                // outermost frames — the entry point, the part that would name
+                // our code — are always discarded; absence of an /assets/ frame
+                // proves nothing. The positive form also fails open rather than
+                // closed if the SDK ever renames the field, which matters on an
+                // unpinned dependency.
+                //
+                // Kept: anything with an /assets/ frame, the recorder, the
+                // CDNs, and frameless overflows. Still dropped, unavoidably:
+                // a genuine overflow in this layout's own inline JS, which
+                // shares the page-URL filename. None of that inline code
+                // recurses today — the CMP poller uses setInterval rather than
+                // calling itself — but that is a fact to re-check before adding
+                // inline script here.
+                if (exceptions.length > 0 && exceptions.every(function (e) {
+                  if (!e) return false;
+                  if ((e.type || '') !== 'RangeError') return false;
+                  if (!/Maximum call stack size exceeded/i.test(e.value || '')) return false;
+                  var frames = (e.stacktrace && e.stacktrace.frames) || [];
+                  if (frames.length === 0) return false;
+                  var origin = window.location.origin;
+                  return frames.every(function (f) {
+                    return f && typeof f.filename === 'string' &&
+                      f.filename.indexOf(origin + '/') === 0 &&
+                      f.filename.indexOf('/assets/') === -1;
+                  });
+                })) {
+                  return null;
+                }
               }
               return event;
             },
