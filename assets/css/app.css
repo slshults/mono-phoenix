@@ -1528,3 +1528,16 @@ body.dark-mode .mod-card {
     border-color: #444 !important;
 }
 
+/* Empty state for a search that matched nothing. It sits directly under the
+   search box, so it carries its own top margin to separate the two. Border
+   colours follow the palette already in this file: #D0D0B0 light, #555 dark. */
+.search-no-results {
+  margin-top: 16px;
+  padding: 12px 16px;
+  border: 1px solid #D0D0B0;
+  border-radius: 3px;
+}
+
+body.dark-mode .search-no-results {
+  border-color: #555;
+}

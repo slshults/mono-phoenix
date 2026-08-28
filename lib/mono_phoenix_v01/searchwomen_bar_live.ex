@@ -1,5 +1,6 @@
 defmodule MonoPhoenixV01Web.SearchwomenBarLive do
   use MonoPhoenixV01Web, :live_view
+  import MonoPhoenixV01Web.Components.SearchNoResults
 
   @impl true
   def mount(_params, _session, socket) do
@@ -343,6 +344,9 @@ defmodule MonoPhoenixV01Web.SearchwomenBarLive do
   def render_searchwomen_bar(assigns) do
     ~H"""
     <div class="monologue-list">
+      <%= if no_results?(@search_query, @search_results) do %>
+        <.search_no_results show_scope_note={true} />
+      <% end %>
       <table class="monologue-list">
         <tbody>
         <%= if !is_nil(@search_results) do %>
