@@ -562,6 +562,41 @@
                 })) {
                   return null;
                 }
+
+                // Drop exceptions thrown inside the AdSense bundle itself.
+                // The tag at the bottom of this file sets crossorigin=
+                // "anonymous", so the browser hands us the real message and
+                // a real stack instead of an opaque "Script error." — and
+                // posthog-js then flags that third-party frame in_app, so
+                // the synthetic/frameless rule above lets it through. Each
+                // new message string fingerprints as a brand new issue: 6
+                // events over 90 days produced 6 separate issues, under
+                // rotating minified names (Xl.a.g, Dm.a.g, and a synthetic
+                // postMessage one). No visitor is affected — an ad fails to
+                // render and the page carries on.
+                //
+                // Deliberately scoped to the AdSense origin alone. Funding
+                // Choices is NOT included even though it is also Google:
+                // that bundle draws the consent banner and the ad-block
+                // recovery modal, which are real UI a visitor has to click,
+                // so its failures are ours to see. It has thrown nothing
+                // under its own filename in 90 days in any case, because it
+                // ships inline in this document and its frames are filenamed
+                // with the page URL — the call-stack rule above is what
+                // catches those. googletagmanager is left out for the same
+                // reason: if GTM breaks, analytics is broken and we want to
+                // know.
+                if (exceptions.length > 0 && exceptions.every(function (e) {
+                  if (!e) return false;
+                  var frames = (e.stacktrace && e.stacktrace.frames) || [];
+                  if (frames.length === 0) return false;
+                  return frames.every(function (f) {
+                    return f && typeof f.filename === 'string' &&
+                      f.filename.indexOf('https://pagead2.googlesyndication.com/') === 0;
+                  });
+                })) {
+                  return null;
+                }
               }
               return event;
             },
