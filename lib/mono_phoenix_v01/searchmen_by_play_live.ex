@@ -1,5 +1,6 @@
 defmodule MonoPhoenixV01Web.SearchmenByPlayLive do
   use MonoPhoenixV01Web, :live_view
+  import MonoPhoenixV01Web.Components.SearchNoResults
   import MonoPhoenixV01Web.Components.HeartIcon
 
   alias MonoPhoenixV01.Favorites
@@ -314,6 +315,9 @@ defmodule MonoPhoenixV01Web.SearchmenByPlayLive do
   def render_searchmen_by_play(assigns) do
     ~H"""
     <div class="monologue-list">
+      <%= if no_results?(@search_query, @search_results) do %>
+        <.search_no_results show_scope_note={true} />
+      <% end %>
       <table class="monologue-list">
         <tbody>
         <%= if !is_nil(@search_results) do %>
