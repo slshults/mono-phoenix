@@ -294,16 +294,18 @@ Hooks.FeedbackForm = {
       });
     }
 
-    // Remember which options were checked at submit time. The form is removed
-    // from the DOM once feedback_success flips, so we can't read it later when
-    // the "Thanks!" message tracks the completed submission.
+    // Capture the completed submission when the user clicks Send, using the
+    // options checked at that moment. This does not wait for the server to
+    // confirm the feedback email, so a positive rating is recorded even when
+    // the email send fails. dont_like is handled above and never submits.
     const form = this.el.querySelector('form');
     if (form && !form.dataset.feedbackBound) {
       form.dataset.feedbackBound = 'true';
       form.addEventListener('submit', () => {
-        this.pendingFeedback = Array.from(
+        const options = Array.from(
           this.el.querySelectorAll('input[name="feedback[]"]:checked')
         ).map(input => input.value);
+        this.trackPostHogFeedback(options, 'submitted');
       });
     }
 
@@ -344,14 +346,10 @@ Hooks.FeedbackForm = {
   setupAutoHideSuccess() {
     const thanksDiv = document.querySelector('.feedback-thanks');
     if (thanksDiv && thanksDiv.textContent.trim() === 'Thanks!' && !thanksDiv.dataset.tracked) {
-      // Track PostHog event when success is shown, using the options captured
-      // at submit time so feedback_type reflects the user's actual choice.
-      this.trackPostHogFeedback(this.pendingFeedback || [], 'submitted');
-      this.pendingFeedback = null;
-
-      // Mark as tracked to prevent double-tracking
+      // The submission is captured in the form submit listener, so the "Thanks!"
+      // message only needs to schedule the auto-hide reset once.
       thanksDiv.dataset.tracked = 'true';
-      
+
       // Auto-hide after 3 seconds
       setTimeout(() => {
         // Reset the feedback success state
