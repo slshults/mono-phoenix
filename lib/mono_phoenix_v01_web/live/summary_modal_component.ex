@@ -609,7 +609,10 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
         {:error, reason} ->
           require Logger
           Logger.error("Failed to send feedback email: #{inspect(reason)}")
-          {:noreply, assign(socket, sending_feedback: false)}
+          {:noreply, assign(socket,
+            sending_feedback: false,
+            validation_message: "Sorry, your feedback could not be sent. Please try again later."
+          )}
       end
     end
   end
