@@ -1,12 +1,19 @@
 defmodule MonoPhoenixV01.Accounts.UserNotifier do
   import Swoosh.Email
 
+  require Logger
+
   alias MonoPhoenixV01.Mailer
   alias MonoPhoenixV01.Accounts.User
 
   # Delivers the email using the application mailer.
   # TODO before launch: confirm the from-address is one your Gmail SMTP relay
   # actually accepts (or update the mailer config). Display name is final.
+  #
+  # Every LiveView caller (magic link, confirmation, email change) discards
+  # this result, so a failed send is invisible unless it's logged here. The
+  # subject identifies the path; the recipient is deliberately omitted (the
+  # server reply in `reason` may still echo an address on recipient rejection).
   defp deliver(recipient, subject, body) do
     email =
       new()
@@ -15,8 +22,13 @@ defmodule MonoPhoenixV01.Accounts.UserNotifier do
       |> subject(subject)
       |> text_body(body)
 
-    with {:ok, _metadata} <- Mailer.deliver(email) do
-      {:ok, email}
+    case Mailer.deliver(email) do
+      {:ok, _metadata} ->
+        {:ok, email}
+
+      {:error, reason} = error ->
+        Logger.error("Failed to send \"#{subject}\" email: #{inspect(reason)}")
+        error
     end
   end
 
