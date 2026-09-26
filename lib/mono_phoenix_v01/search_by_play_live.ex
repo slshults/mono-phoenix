@@ -111,40 +111,7 @@ defmodule MonoPhoenixV01Web.SearchByPlayLive do
   @impl true
   def handle_event("show_play_summary", %{"play-title" => play_title}, socket) do
     request_key = "play_summary:#{play_title}"
-    
-    # Check if this request is already in progress
-    active_requests = Map.get(socket.assigns, :active_requests, MapSet.new())
-    if MapSet.member?(active_requests, request_key) do
-      # Request already in progress - ignore duplicate click
-      {:noreply, socket}
-    else
-      # Show the modal first  
-      send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-        id: "search-summary-modal",
-        action: "show_play_summary", 
-        play_title: play_title
-      )
-      
-      # Start async request and track it
-      socket = start_async(socket, request_key, fn ->
-        MonoPhoenixV01.AnthropicService.get_play_summary(play_title)
-      end)
-      
-      # Add to active requests and store metadata
-      active_requests = MapSet.put(active_requests, request_key)
-      async_metadata = Map.put(socket.assigns.async_metadata, request_key, %{
-        type: :play_summary,
-        play_title: play_title
-      })
-      
-      {:noreply, assign(socket, active_requests: active_requests, async_metadata: async_metadata)}
-    end
-  end
 
-  @impl true
-  def handle_event("show_scene_summary", %{"play-title" => play_title, "location" => location}, socket) do
-    request_key = "scene_summary:#{play_title}:#{location}"
-    
     # Check if this request is already in progress
     active_requests = Map.get(socket.assigns, :active_requests, MapSet.new())
     if MapSet.member?(active_requests, request_key) do
@@ -152,27 +119,43 @@ defmodule MonoPhoenixV01Web.SearchByPlayLive do
       {:noreply, socket}
     else
       # Show the modal first
-      send_update(MonoPhoenixV01Web.SummaryModalComponent, 
+      send_update(MonoPhoenixV01Web.SummaryModalComponent,
         id: "search-summary-modal",
-        action: "show_scene_summary", 
+        action: "show_play_summary",
+        play_title: play_title
+      )
+
+      # Track this request and start the content generation
+      active_requests = MapSet.put(active_requests, request_key)
+      send(self(), {:generate_summary, "play_summary", %{play_title: play_title}, "search-summary-modal", request_key})
+
+      {:noreply, assign(socket, active_requests: active_requests)}
+    end
+  end
+
+  @impl true
+  def handle_event("show_scene_summary", %{"play-title" => play_title, "location" => location}, socket) do
+    request_key = "scene_summary:#{play_title}:#{location}"
+
+    # Check if this request is already in progress
+    active_requests = Map.get(socket.assigns, :active_requests, MapSet.new())
+    if MapSet.member?(active_requests, request_key) do
+      # Request already in progress - ignore duplicate click
+      {:noreply, socket}
+    else
+      # Show the modal first
+      send_update(MonoPhoenixV01Web.SummaryModalComponent,
+        id: "search-summary-modal",
+        action: "show_scene_summary",
         play_title: play_title,
         location: location
       )
-      
-      # Start async request and track it
-      socket = start_async(socket, request_key, fn ->
-        MonoPhoenixV01.AnthropicService.get_scene_summary(play_title, location)
-      end)
-      
-      # Add to active requests and store metadata
+
+      # Track this request and start the content generation
       active_requests = MapSet.put(active_requests, request_key)
-      async_metadata = Map.put(socket.assigns.async_metadata, request_key, %{
-        type: :scene_summary,
-        play_title: play_title,
-        location: location
-      })
-      
-      {:noreply, assign(socket, active_requests: active_requests, async_metadata: async_metadata)}
+      send(self(), {:generate_summary, "scene_summary", %{play_title: play_title, location: location}, "search-summary-modal", request_key})
+
+      {:noreply, assign(socket, active_requests: active_requests)}
     end
   end
 
@@ -181,9 +164,9 @@ defmodule MonoPhoenixV01Web.SearchByPlayLive do
     monologue_id = params["monologue-id"]
     monologue_text = params["monologue-text"]
     character = params["character"]
-    
+
     request_key = "paraphrasing:#{monologue_id}"
-    
+
     # Check if this request is already in progress
     active_requests = Map.get(socket.assigns, :active_requests, MapSet.new())
     if MapSet.member?(active_requests, request_key) do
@@ -191,92 +174,110 @@ defmodule MonoPhoenixV01Web.SearchByPlayLive do
       {:noreply, socket}
     else
       # Show the modal first
-      send_update(MonoPhoenixV01Web.SummaryModalComponent, 
+      send_update(MonoPhoenixV01Web.SummaryModalComponent,
         id: "search-summary-modal",
-        action: "show_paraphrasing", 
+        action: "show_paraphrasing",
         monologue_id: monologue_id,
         monologue_text: monologue_text,
         character: character
       )
-      
-      # Start async request and track it
-      socket = start_async(socket, request_key, fn ->
-        MonoPhoenixV01.AnthropicService.get_monologue_paraphrasing(monologue_id, monologue_text)
-      end)
-      
-      # Add to active requests and store metadata
+
+      # Track this request and start the content generation
       active_requests = MapSet.put(active_requests, request_key)
-      async_metadata = Map.put(socket.assigns.async_metadata, request_key, %{
-        type: :paraphrasing,
-        monologue_id: monologue_id,
-        character: character
-      })
-      
-      {:noreply, assign(socket, active_requests: active_requests, async_metadata: async_metadata)}
+      send(self(), {:generate_summary, "paraphrasing", %{monologue_id: monologue_id, monologue_text: monologue_text}, "search-summary-modal", request_key})
+
+      {:noreply, assign(socket, active_requests: active_requests)}
     end
+  end
+
+  # Start the generation without blocking the LiveView. The modal's Retry
+  # button sends this same message.
+  @impl true
+  def handle_info({:generate_summary, content_type, params, component_id, request_key}, socket) do
+    socket = start_async(socket, request_key, fn ->
+      case content_type do
+        "play_summary" ->
+          MonoPhoenixV01.AnthropicService.get_play_summary(params.play_title)
+        "scene_summary" ->
+          MonoPhoenixV01.AnthropicService.get_scene_summary(params.play_title, params.location)
+        "paraphrasing" ->
+          MonoPhoenixV01.AnthropicService.get_monologue_paraphrasing(params.monologue_id)
+      end
+    end)
+
+    # Store metadata for the async result handler
+    socket = assign(socket,
+      async_metadata: Map.put(socket.assigns.async_metadata, request_key, %{
+        content_type: content_type,
+        component_id: component_id,
+        request_key: request_key
+      })
+    )
+
+    {:noreply, socket}
+  end
+
+  # Handle cancellation requests from modal
+  @impl true
+  def handle_info({:cancel_generation, component_id}, socket) do
+    require Logger
+    Logger.info("Cancelling generation for component: #{component_id}")
+
+    # Cancel matching tasks; handle_async cleans up when each one exits
+    socket = Enum.reduce(socket.assigns.async_metadata, socket, fn {request_key, metadata}, acc_socket ->
+      if metadata.component_id == component_id do
+        cancel_async(acc_socket, request_key)
+      else
+        acc_socket
+      end
+    end)
+
+    {:noreply, socket}
   end
 
   @impl true
   def handle_async(request_key, {:ok, api_result}, socket) do
-    # Get metadata for this request
-    _metadata = Map.get(socket.assigns.async_metadata, request_key, %{})
-    
-    # Pattern match the API result to extract content and record_id
     case api_result do
       {:ok, %{content: content, id: record_id}} ->
-        # Update modal with the extracted content
-        send_update(MonoPhoenixV01Web.SummaryModalComponent, 
+        send_update(MonoPhoenixV01Web.SummaryModalComponent,
           id: "search-summary-modal",
-          action: "content_generated", 
+          action: "content_generated",
           content: content,
           record_id: record_id
         )
-      _ ->
-        # Handle unexpected API result format as error  
-        send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-          id: "search-summary-modal",
-          action: "error_occurred", 
-          error: "Sorry, there was an unexpected error with the API response format."
-        )
+
+      {:error, _reason} ->
+        # AnthropicService has already logged the cause.
+        send_update(MonoPhoenixV01Web.SummaryModalComponent, id: "search-summary-modal", action: "error_occurred")
     end
-    
-    # Clean up tracking (but keep metadata until modal closes)
-    active_requests = MapSet.delete(socket.assigns.active_requests, request_key)
-    
-    {:noreply, assign(socket, active_requests: active_requests)}
-  end
 
-  @impl true
-  def handle_async(request_key, {:error, _reason}, socket) do
-    # Update modal with error message using action-based pattern
-    send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-      id: "search-summary-modal",
-      action: "error_occurred", 
-      error: "Sorry, there was an error generating the content. Please try again later."
-    )
-    
     # Clean up tracking
     active_requests = MapSet.delete(socket.assigns.active_requests, request_key)
-    
-    {:noreply, assign(socket, active_requests: active_requests)}
+    async_metadata = Map.delete(socket.assigns.async_metadata, request_key)
+
+    {:noreply, assign(socket, active_requests: active_requests, async_metadata: async_metadata)}
   end
 
-  # Handle async task cancellation via exit
+  # A cancel (the reader force-closed the modal) needs no UI. Any other exit is
+  # a crash inside the task, which the reader should hear about.
   @impl true
-  def handle_async(request_key, {:exit, _reason}, socket) do
+  def handle_async(request_key, {:exit, reason}, socket) do
     require Logger
-    Logger.info("User confirmed cancellation - stopping generation")
-    
-    # Handle cancellation gracefully
-    send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-      id: "search-summary-modal", 
-      action: "generation_cancelled"
-    )
-    
+
+    case reason do
+      {:shutdown, :cancel} ->
+        Logger.info("Async task #{request_key} was cancelled")
+
+      _ ->
+        Logger.error("Async generation failed for #{request_key}: #{inspect(reason)}")
+        send_update(MonoPhoenixV01Web.SummaryModalComponent, id: "search-summary-modal", action: "error_occurred")
+    end
+
     # Clean up tracking
     active_requests = MapSet.delete(socket.assigns.active_requests, request_key)
-    
-    {:noreply, assign(socket, active_requests: active_requests)}
+    async_metadata = Map.delete(socket.assigns.async_metadata, request_key)
+
+    {:noreply, assign(socket, active_requests: active_requests, async_metadata: async_metadata)}
   end
 
   ## render assigns

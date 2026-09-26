@@ -15,3 +15,9 @@ Ecto.Adapters.SQL.Sandbox.mode(MonoPhoenixV01.Repo, :manual)
 Mox.defmock(MonoPhoenixV01.BillingMock,
   for: MonoPhoenixV01.Billing.StripeClient
 )
+
+# AnthropicService never reaches the real API in tests. Per-module config
+# outranks the module's own `adapter Tesla.Adapter.Mint`, and Tesla.Mock.mock/1
+# is per-process, so async tests can mock their own responses. A test that
+# calls the service without a mock fails instead of making a paid call.
+Application.put_env(:tesla, MonoPhoenixV01.AnthropicService, adapter: Tesla.Mock)
