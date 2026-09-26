@@ -25,11 +25,22 @@ defmodule MonoPhoenixV01.AnthropicService do
   # this has to leave room for the thinking as well as the reply.
   @max_tokens 16_000
 
+  # Titles, locations and ids arrive from the browser and anything cached here
+  # is shown to every later reader, so nothing is generated for input that
+  # doesn't match the database. The checks sit inside the generator functions,
+  # which only run on a cache miss.
+
   @doc """
   Gets or generates a play summary for the given play title.
   """
   def get_play_summary(play_title) do
-    get_or_generate_content("play_summary", play_title, &generate_play_summary/1)
+    get_or_generate_content("play_summary", play_title, fn _ ->
+      if Repo.exists?(from p in "plays", where: p.title == ^play_title) do
+        generate_play_summary(play_title)
+      else
+        {:error, "Unknown play: #{inspect(play_title, printable_limit: 100)}"}
+      end
+    end)
   end
 
   @doc """
@@ -38,20 +49,60 @@ defmodule MonoPhoenixV01.AnthropicService do
   def get_scene_summary(play_title, location) do
     identifier = "#{play_title}-#{location}"
     get_or_generate_content("scene_summary", identifier, fn _ ->
-      generate_scene_summary(play_title, location)
+      # The identifier alone can't tell "Play-II i 234" + "250" from "Play" +
+      # "II i 234-250", so the exact (play, location) pair must exist.
+      if scene_exists?(play_title, location) do
+        generate_scene_summary(play_title, location)
+      else
+        {:error, "Unknown scene: #{inspect({play_title, location}, printable_limit: 100)}"}
+      end
     end)
   end
 
   @doc """
-  Gets or generates a paraphrasing for the given monologue.
+  Gets or generates a paraphrasing for the given monologue. The text is read
+  from the database by id, never taken from the client.
   """
-  def get_monologue_paraphrasing(monologue_id, monologue_text) do
-    get_or_generate_content("paraphrasing", "mono_#{monologue_id}", fn _ ->
-      generate_paraphrasing(monologue_text)
-    end)
+  def get_monologue_paraphrasing(monologue_id) do
+    case parse_monologue_id(monologue_id) do
+      {:ok, id} ->
+        get_or_generate_content("paraphrasing", "mono_#{id}", fn _ ->
+          case Repo.one(from m in "monologues", where: m.id == ^id, select: m.body) do
+            body when is_binary(body) -> generate_paraphrasing(body)
+            nil -> {:error, "Unknown monologue: #{id}"}
+          end
+        end)
+
+      :error ->
+        {:error, "Invalid monologue id: #{inspect(monologue_id, printable_limit: 100)}"}
+    end
   end
 
   # Private functions
+
+  # Integer ids keep the cache key canonical ("042" and "42" are one monologue).
+  # monologues.id is a Postgres integer, so anything larger can't be a real id.
+  @max_monologue_id 2_147_483_647
+
+  defp parse_monologue_id(id) when is_integer(id) and id > 0 and id <= @max_monologue_id, do: {:ok, id}
+
+  defp parse_monologue_id(id) when is_binary(id) do
+    case Integer.parse(id) do
+      {n, ""} when n > 0 and n <= @max_monologue_id -> {:ok, n}
+      _ -> :error
+    end
+  end
+
+  defp parse_monologue_id(_), do: :error
+
+  defp scene_exists?(play_title, location) do
+    Repo.exists?(
+      from m in "monologues",
+        join: p in "plays",
+        on: m.play_id == p.id,
+        where: p.title == ^play_title and m.location == ^location
+    )
+  end
 
   defp get_scene_url(play_title, location) do
     import Ecto.Query
@@ -426,7 +477,11 @@ defmodule MonoPhoenixV01.AnthropicService do
     # current (2026-09); unknown models fall back to Sonnet pricing.
     estimated_cost = case model do
       "claude-opus-5-5" ->
-        (input_tokens * 0.004 / 1000) + (output_tokens * 0.020 / 1000)
+        # input_tokens excludes cached tokens, which are priced separately:
+        # 5-minute cache writes at $5/MTok, cache reads at $0.20/MTok.
+        (input_tokens * 0.004 / 1000) + (output_tokens * 0.020 / 1000) +
+          ((cache_creation_input_tokens || 0) * 0.005 / 1000) +
+          ((cache_read_input_tokens || 0) * 0.0002 / 1000)
       "claude-3-5-sonnet-20241022" ->
         (input_tokens * 0.003 / 1000) + (output_tokens * 0.015 / 1000)
       "claude-3-5-haiku-20241022" ->

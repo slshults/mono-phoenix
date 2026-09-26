@@ -118,7 +118,7 @@ defmodule MonoPhoenixV01Web.WomenplaysPageLive do
         "scene_summary" ->
           MonoPhoenixV01.AnthropicService.get_scene_summary(params.play_title, params.location)
         "paraphrasing" ->
-          MonoPhoenixV01.AnthropicService.get_monologue_paraphrasing(params.monologue_id, params.monologue_text)
+          MonoPhoenixV01.AnthropicService.get_monologue_paraphrasing(params.monologue_id)
       end
     end)
     
@@ -137,63 +137,42 @@ defmodule MonoPhoenixV01Web.WomenplaysPageLive do
   # Handle async results
   @impl true
   def handle_async(request_key, {:ok, api_result}, socket) do
-    # Get metadata for this request
-    _metadata = Map.get(socket.assigns.async_metadata, request_key, %{})
-    
-    # Pattern match the API result to extract content and record_id
     case api_result do
       {:ok, %{content: content, id: record_id}} ->
-        # Update modal with the extracted content
-        send_update(MonoPhoenixV01Web.SummaryModalComponent, 
+        send_update(MonoPhoenixV01Web.SummaryModalComponent,
           id: "summary-modal",
-          action: "content_generated", 
+          action: "content_generated",
           content: content,
           record_id: record_id
         )
-      _ ->
-        # Handle unexpected API result format as error  
-        send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-          id: "summary-modal",
-          action: "error_occurred", 
-          error: "Sorry, there was an unexpected error with the API response format."
-        )
-    end
-    
-    # Clean up tracking (but keep metadata until modal closes)
-    active_requests = MapSet.delete(socket.assigns.active_requests, request_key)
-    async_metadata = Map.delete(socket.assigns.async_metadata, request_key)
-    
-    {:noreply, assign(socket, active_requests: active_requests, async_metadata: async_metadata)}
-  end
 
-  @impl true
-  def handle_async(request_key, {:error, _reason}, socket) do
-    # Update modal with error message using action-based pattern
-    send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-      id: "summary-modal",
-      action: "error_occurred", 
-      error: "Sorry, there was an error generating the content. Please try again later."
-    )
-    
+      {:error, _reason} ->
+        # AnthropicService has already logged the cause.
+        send_update(MonoPhoenixV01Web.SummaryModalComponent, id: "summary-modal", action: "error_occurred")
+    end
+
     # Clean up tracking
     active_requests = MapSet.delete(socket.assigns.active_requests, request_key)
     async_metadata = Map.delete(socket.assigns.async_metadata, request_key)
-    
+
     {:noreply, assign(socket, active_requests: active_requests, async_metadata: async_metadata)}
   end
 
-  # Handle async task cancellation via exit
+  # A cancel (the reader force-closed the modal) needs no UI. Any other exit is
+  # a crash inside the task, which the reader should hear about.
   @impl true
-  def handle_async(request_key, {:exit, _reason}, socket) do
+  def handle_async(request_key, {:exit, reason}, socket) do
     require Logger
-    Logger.info("User confirmed cancellation - stopping generation")
-    
-    # Handle cancellation gracefully
-    send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-      id: "summary-modal", 
-      action: "generation_cancelled"
-    )
-    
+
+    case reason do
+      {:shutdown, :cancel} ->
+        Logger.info("Async task #{request_key} was cancelled")
+
+      _ ->
+        Logger.error("Async generation failed for #{request_key}: #{inspect(reason)}")
+        send_update(MonoPhoenixV01Web.SummaryModalComponent, id: "summary-modal", action: "error_occurred")
+    end
+
     # Clean up tracking
     active_requests = MapSet.delete(socket.assigns.active_requests, request_key)
     async_metadata = Map.delete(socket.assigns.async_metadata, request_key)
