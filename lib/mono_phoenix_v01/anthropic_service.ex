@@ -15,9 +15,15 @@ defmodule MonoPhoenixV01.AnthropicService do
 
   # Mint adapter (modern Erlang HTTP client; no separate hackney
   # dependency). `timeout` is the receive timeout — Anthropic
-  # generations can take 30+ seconds, so bump to 60s. `transport_opts`
-  # controls the TLS connection setup.
-  adapter Tesla.Adapter.Mint, timeout: 60_000, transport_opts: [timeout: 30_000]
+  # generations can take 30+ seconds, and a non-streaming response sends
+  # nothing until generation finishes, so this caps the whole generation.
+  # Opus 5.5 thinks before answering (the longest monologue took ~33s), so
+  # allow 180s. `transport_opts` controls the TLS connection setup.
+  adapter Tesla.Adapter.Mint, timeout: 180_000, transport_opts: [timeout: 30_000]
+
+  # Opus 5.5 always thinks, and thinking tokens count toward max_tokens, so
+  # this has to leave room for the thinking as well as the reply.
+  @max_tokens 16_000
 
   @doc """
   Gets or generates a play summary for the given play title.
@@ -132,6 +138,7 @@ defmodule MonoPhoenixV01.AnthropicService do
     - You MUST always write the summary. NEVER respond with a clarification question or a refusal.
     - NEVER say you cannot access URLs or external resources. You already know Shakespeare's works — write from your own knowledge.
     - If any part of a reference seems unfamiliar, use your best judgment and write the summary anyway.
+    - Your response is shown on the website exactly as you write it, and readers can't reply to you. So write only the summary itself: no title or introduction, no closing remarks, and no questions or offers to the reader.
     """
 
     user_prompt = "Please provide a 2 to 4 paragraph overview and summary of the events in Shakespeare's play \"#{play_title}\". Do not include commentary about the play, beyond summarizing the events of the play. Don't insert literary commentary such as this example: \"...one of Shakespeare's most complex and tonally ambiguous plays...\", just focus on the events of the play."
@@ -177,6 +184,7 @@ defmodule MonoPhoenixV01.AnthropicService do
     - NEVER say you cannot access URLs. You do not need to access any URL — write the summary from your own knowledge of Shakespeare's works.
     - If a reference URL is mentioned, it is purely for context. You already know this material.
     - If any part of the scene reference seems unfamiliar or you are unsure about edition-specific numbering, use your best judgment and write the summary anyway.
+    - Your response is shown on the website exactly as you write it, and readers can't reply to you. So write only the summary itself: no title or introduction, no closing remarks, and no questions or offers to the reader.
     """
 
     url_context = if scene_url do
@@ -227,6 +235,7 @@ defmodule MonoPhoenixV01.AnthropicService do
     - You MUST always produce the paraphrase. NEVER respond with a clarification question or a refusal.
     - NEVER say you cannot access URLs or external resources. The monologue text is provided below — paraphrase it directly.
     - If any part of the text seems unfamiliar, use your best judgment and paraphrase it anyway.
+    - Your response is shown on the website exactly as you write it, and readers can't reply to you. So write only the Original/Modern line pairs: no title or introduction, no performance notes or other commentary, no closing remarks, and no questions or offers to the reader.
     """
 
     user_prompt = """
@@ -274,7 +283,8 @@ defmodule MonoPhoenixV01.AnthropicService do
 
     body = %{
       "model" => model,
-      "max_tokens" => 2000,
+      "max_tokens" => @max_tokens,
+      "output_config" => %{"effort" => "medium"},
       "system" => [
         %{
           "type" => "text",
@@ -298,13 +308,19 @@ defmodule MonoPhoenixV01.AnthropicService do
     start_time = System.monotonic_time(:millisecond)
     
     case post("/messages", body, headers: headers) do
-      {:ok, %{status: 200, body: %{"content" => [%{"text" => text}], "usage" => usage}}} ->
+      {:ok, %{status: 200, body: %{"stop_reason" => "end_turn", "content" => content} = response}} ->
         end_time = System.monotonic_time(:millisecond)
         latency_ms = end_time - start_time
-        
+
         Logger.info("API request successful on attempt #{attempt + 1}")
-        
-        # Extract token usage from Anthropic response
+
+        # The reply starts with thinking block(s) ahead of the text, so select
+        # text blocks by type rather than by position.
+        text = for %{"type" => "text", "text" => t} <- content, into: "", do: t
+        usage = Map.get(response, "usage", %{})
+
+        # Extract token usage from Anthropic response. output_tokens includes
+        # the thinking tokens, which are billed as output.
         input_tokens = Map.get(usage, "input_tokens", estimated_input_tokens)
         output_tokens = Map.get(usage, "output_tokens", div(String.length(text), 4))
         
@@ -320,28 +336,21 @@ defmodule MonoPhoenixV01.AnthropicService do
         
         # Try to parse as JSON to extract the specific field
         case Jason.decode(text) do
-          {:ok, %{^response_key => content}} -> {:ok, content}
+          {:ok, %{^response_key => parsed}} -> {:ok, parsed}
           _ -> {:ok, text}  # Return raw text if not JSON
         end
-      
-      {:ok, %{status: 200, body: %{"content" => [%{"text" => text}]}}} ->
+
+      # A truncated ("max_tokens") or declined ("refusal") reply must not reach
+      # cache_content, which would keep it for good.
+      {:ok, %{status: 200, body: %{"stop_reason" => stop_reason}}} ->
         end_time = System.monotonic_time(:millisecond)
         latency_ms = end_time - start_time
-        
-        Logger.info("API request successful on attempt #{attempt + 1}")
-        
-        # Fallback when no usage data is provided
-        output_tokens = div(String.length(text), 4)
-        
-        # Track successful LLM call with estimated tokens (no cache data available)
-        track_llm_analytics(response_key, model, estimated_input_tokens, output_tokens, latency_ms, true, attempt + 1, nil, nil, nil, system_prompt, user_prompt, text)
-        
-        # Try to parse as JSON to extract the specific field
-        case Jason.decode(text) do
-          {:ok, %{^response_key => content}} -> {:ok, content}
-          _ -> {:ok, text}  # Return raw text if not JSON
-        end
-      
+
+        track_llm_analytics(response_key, model, estimated_input_tokens, 0, latency_ms, false, attempt + 1, "Incomplete response: #{stop_reason}", nil, nil, system_prompt, user_prompt, nil)
+
+        Logger.error("Anthropic API returned an incomplete response (stop_reason: #{stop_reason})")
+        {:error, "Incomplete response (stop_reason: #{stop_reason})"}
+
       {:ok, %{status: 200, body: response}} ->
         end_time = System.monotonic_time(:millisecond)
         latency_ms = end_time - start_time
@@ -413,9 +422,11 @@ defmodule MonoPhoenixV01.AnthropicService do
       nil
     end
     
-    # Calculate estimated cost based on Anthropic pricing (as of 2024)
-    # These are rough estimates - you should update with current pricing
+    # Estimated cost from Anthropic list pricing. Only the Opus 5.5 row is
+    # current (2026-09); unknown models fall back to Sonnet pricing.
     estimated_cost = case model do
+      "claude-opus-5-5" ->
+        (input_tokens * 0.004 / 1000) + (output_tokens * 0.020 / 1000)
       "claude-3-5-sonnet-20241022" ->
         (input_tokens * 0.003 / 1000) + (output_tokens * 0.015 / 1000)
       "claude-3-5-haiku-20241022" ->
@@ -438,7 +449,7 @@ defmodule MonoPhoenixV01.AnthropicService do
       "$ai_input_tokens" => input_tokens,
       "$ai_output_tokens" => output_tokens,
       "$ai_total_cost_usd" => Float.round(estimated_cost, 6),
-      "$ai_latency" => latency_ms,  # Keep in milliseconds as per PostHog docs
+      "$ai_latency" => latency_ms / 1000,  # PostHog expects seconds
       
       # Tracing properties
       "$ai_trace_id" => trace_id,
@@ -446,7 +457,7 @@ defmodule MonoPhoenixV01.AnthropicService do
       "$ai_span_name" => format_span_name(request_type),
       
       # Anthropic-specific properties
-      "$ai_max_tokens" => 2000,  # Our configured max_tokens
+      "$ai_max_tokens" => @max_tokens,
       "$ai_temperature" => nil,  # We don't set temperature, using default
       
       # Cache properties (Anthropic prompt caching data)
@@ -462,8 +473,10 @@ defmodule MonoPhoenixV01.AnthropicService do
       "generation_success" => success,
       "shakespeare_app_version" => "2025.1",
       "request_source" => "shakespeare_monologues",
-      "cache_hit" => cache_read_input_tokens != nil,
-      "cache_created" => cache_creation_input_tokens != nil,
+      # `|| 0` because the API reports 0 when nothing was cached and the error
+      # paths pass nil (and nil > 0 is true in Elixir's term ordering).
+      "cache_hit" => (cache_read_input_tokens || 0) > 0,
+      "cache_created" => (cache_creation_input_tokens || 0) > 0,
       "prompt_caching_enabled" => true,
       
       # Legacy properties for backward compatibility
@@ -527,19 +540,25 @@ defmodule MonoPhoenixV01.AnthropicService do
   end
 
   # Log cache usage metrics for monitoring
-  defp log_cache_usage(cache_creation_input_tokens, cache_read_input_tokens, total_input_tokens) do
+  defp log_cache_usage(cache_creation_input_tokens, cache_read_input_tokens, uncached_input_tokens) do
+    # The API reports 0 (not null) when nothing was cached, and input_tokens
+    # excludes cached tokens, so the whole prompt is the sum of all three.
+    created = cache_creation_input_tokens || 0
+    read = cache_read_input_tokens || 0
+    total_input_tokens = uncached_input_tokens + created + read
+
     cond do
-      cache_creation_input_tokens && cache_read_input_tokens ->
-        cache_efficiency = Float.round((cache_read_input_tokens / total_input_tokens) * 100, 1)
-        Logger.info("🚀 Prompt Cache: Created #{cache_creation_input_tokens} tokens, Read #{cache_read_input_tokens} tokens (#{cache_efficiency}% cache efficiency)")
-      
-      cache_creation_input_tokens ->
-        Logger.info("💾 Prompt Cache: Created new cache entry with #{cache_creation_input_tokens} tokens")
-      
-      cache_read_input_tokens ->
-        cache_efficiency = Float.round((cache_read_input_tokens / total_input_tokens) * 100, 1)
-        Logger.info("⚡ Prompt Cache: Hit! Read #{cache_read_input_tokens} tokens (#{cache_efficiency}% cache efficiency)")
-      
+      created > 0 and read > 0 ->
+        cache_efficiency = Float.round((read / total_input_tokens) * 100, 1)
+        Logger.info("🚀 Prompt Cache: Created #{created} tokens, Read #{read} tokens (#{cache_efficiency}% cache efficiency)")
+
+      created > 0 ->
+        Logger.info("💾 Prompt Cache: Created new cache entry with #{created} tokens")
+
+      read > 0 ->
+        cache_efficiency = Float.round((read / total_input_tokens) * 100, 1)
+        Logger.info("⚡ Prompt Cache: Hit! Read #{read} tokens (#{cache_efficiency}% cache efficiency)")
+
       true ->
         Logger.info("❌ Prompt Cache: No cache usage detected")
     end
