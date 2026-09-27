@@ -45,6 +45,17 @@ defmodule MonoPhoenixV01Web.SummaryModalComponentTest do
       assert socket.assigns.generation_params ==
                %{monologue_id: "89", monologue_text: "Think not I love him", character: "Phebe", location: "III v 111", play_title: "As You Like It"}
     end
+
+    test "leaves location and play_title nil for hosts that don't pass them" do
+      {:ok, socket} =
+        SummaryModalComponent.update(
+          %{action: "show_paraphrasing", monologue_id: "89", monologue_text: "Think not I love him", character: "Phebe"},
+          socket(%{})
+        )
+
+      assert socket.assigns.generation_params ==
+               %{monologue_id: "89", monologue_text: "Think not I love him", character: "Phebe", location: nil, play_title: nil}
+    end
   end
 
   describe "handle_event(\"retry_generation\", ...)" do
