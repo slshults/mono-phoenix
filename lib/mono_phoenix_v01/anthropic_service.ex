@@ -131,6 +131,7 @@ defmodule MonoPhoenixV01.AnthropicService do
         case generator_fn.(identifier) do
           {:ok, content} ->
             record = cache_content(content_type, identifier, content)
+            flag_for_review(record.id, content_type, identifier, content)
             {:ok, %{content: content, id: record.id, source: "claude"}}
           error ->
             error
@@ -138,6 +139,27 @@ defmodule MonoPhoenixV01.AnthropicService do
 
       cached_data ->
         {:ok, Map.put(cached_data, :source, "db")}
+    end
+  end
+
+  # Generated content is rendered as raw HTML, and as of 2026-09 none of the
+  # cached rows contains an angle bracket. Flag any that does so Steven can
+  # look at it: a PostHog alert on this event (prod only) posts to #shakesmonos.
+  defp flag_for_review(summary_id, content_type, identifier, content) do
+    if is_binary(content) and String.contains?(content, ["<", ">"]) do
+      Logger.warning("Generated #{content_type} contains < or > (summaries id #{summary_id}); flagged for review")
+
+      properties = %{
+        summary_id: summary_id,
+        content_type: content_type,
+        identifier: identifier,
+        model: Application.get_env(:mono_phoenix_v01, :anthropic)[:model],
+        environment: Application.get_env(:mono_phoenix_v01, :environment)
+      }
+
+      # Unlinked, so the event still goes out if the reader cancels or leaves
+      # (which kills this generation task) right after the row was cached.
+      Task.start(fn -> MonoPhoenixV01.PostHog.capture("ai_content_needs_review", properties) end)
     end
   end
 
@@ -297,7 +319,7 @@ defmodule MonoPhoenixV01.AnthropicService do
        Original: [original Shakespeare line]
        Modern: [modern paraphrase]
 
-    2. Ignore any lines that contain strikethroughs or HTML strike tags (<strike>, </strike>, <s>, </s>) - do not include these lines in your paraphrase.
+    2. Leave out any text inside strikethrough tags (<del>, </del>, <strike>, </strike>, <s>, </s>); these are cuts, so do not include or paraphrase them. If only part of a line is struck, paraphrase the rest of that line.
 
     3. Example of correct formatting:
        Original: But soft, what light through yonder window breaks?

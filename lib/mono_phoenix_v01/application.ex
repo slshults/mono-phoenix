@@ -7,6 +7,10 @@ defmodule MonoPhoenixV01.Application do
 
   @impl true
   def start(_type, _args) do
+    # Extra :logger handlers from `config :mono_phoenix_v01, :logger` — used by
+    # the local dev file log in the gitignored config/dev.exs. No-op elsewhere.
+    Logger.add_handlers(:mono_phoenix_v01)
+
     otel_enabled = Application.get_env(:mono_phoenix_v01, :otel_enabled, false)
 
     # PostHog distributed tracing (prod only, see config/runtime.exs). Must

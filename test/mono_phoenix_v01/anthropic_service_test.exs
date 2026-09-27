@@ -12,25 +12,26 @@ defmodule MonoPhoenixV01.AnthropicServiceTest do
   defp cached_rows, do: Repo.aggregate(from(s in "summaries"), :count)
 
   # An Opus 5.5 reply: thinking block(s) first, then the text.
-  defp reply(stop_reason) do
+  defp reply(stop_reason, text \\ "Original: Now is the winter of our discontent\nModern: Things are bad right now") do
     %{
       "stop_reason" => stop_reason,
       "content" => [
         %{"type" => "thinking", "thinking" => "", "signature" => "sig"},
-        %{"type" => "text", "text" => "Original: Now is the winter of our discontent\nModern: Things are bad right now"}
+        %{"type" => "text", "text" => text}
       ],
       "usage" => %{"input_tokens" => 900, "output_tokens" => 400, "cache_creation_input_tokens" => 0, "cache_read_input_tokens" => 565}
     }
   end
 
   # Mocks one Anthropic call, reporting the prompt it was sent back to the test.
-  defp mock_anthropic(stop_reason) do
+  defp mock_anthropic(stop_reason, text \\ nil) do
     test = self()
+    body = if text, do: reply(stop_reason, text), else: reply(stop_reason)
 
-    Tesla.Mock.mock(fn %{method: :post, body: body} ->
-      %{"messages" => [%{"content" => prompt}]} = Jason.decode!(body)
+    Tesla.Mock.mock(fn %{method: :post, body: request} ->
+      %{"messages" => [%{"content" => prompt}]} = Jason.decode!(request)
       send(test, {:prompt, prompt})
-      %Tesla.Env{status: 200, body: reply(stop_reason)}
+      %Tesla.Env{status: 200, body: body}
     end)
   end
 
@@ -53,11 +54,30 @@ defmodule MonoPhoenixV01.AnthropicServiceTest do
                Repo.query!("SELECT content FROM summaries WHERE content_type = 'paraphrasing' AND identifier = $1", ["mono_#{id}"])
     end
 
+    test "flags generated content that contains angle brackets for review", %{id: id} do
+      mock_anthropic("end_turn", "Original: Now is the winter\nModern: It's <b>bad</b> right now")
+
+      log = ExUnit.CaptureLog.capture_log(fn -> AnthropicService.get_monologue_paraphrasing(id) end)
+
+      assert log =~ "contains < or >"
+      assert log =~ "flagged for review"
+    end
+
+    test "doesn't flag ordinary content", %{id: id} do
+      mock_anthropic("end_turn")
+
+      log = ExUnit.CaptureLog.capture_log(fn -> AnthropicService.get_monologue_paraphrasing(id) end)
+
+      refute log =~ "flagged for review"
+    end
+
     test "doesn't cache a reply that was cut off or declined", %{id: id} do
       for stop_reason <- ["max_tokens", "refusal"] do
         mock_anthropic(stop_reason)
 
-        assert {:error, "Incomplete response (stop_reason: " <> _} = AnthropicService.get_monologue_paraphrasing(id)
+        ExUnit.CaptureLog.capture_log(fn ->
+          assert {:error, "Incomplete response (stop_reason: " <> _} = AnthropicService.get_monologue_paraphrasing(id)
+        end)
       end
 
       assert cached_rows() == 0
