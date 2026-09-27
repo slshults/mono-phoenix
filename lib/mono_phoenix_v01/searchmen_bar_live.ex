@@ -87,7 +87,7 @@ defmodule MonoPhoenixV01Web.SearchmenBarLive do
   end
 
   @impl true  
-  def handle_event("show_paraphrasing", %{"monologue-id" => monologue_id, "monologue-text" => monologue_text, "character" => character, "play-title" => play_title}, socket) do
+  def handle_event("show_paraphrasing", %{"monologue-id" => monologue_id, "monologue-text" => monologue_text, "character" => character, "play-title" => play_title, "location" => location}, socket) do
     request_key = "paraphrasing:#{monologue_id}"
     
     active_requests = Map.get(socket.assigns, :active_requests, MapSet.new())
@@ -100,11 +100,12 @@ defmodule MonoPhoenixV01Web.SearchmenBarLive do
         monologue_id: monologue_id,
         monologue_text: monologue_text,
         character: character,
-        play_title: play_title
+        play_title: play_title,
+        location: location
       )
       
       active_requests = MapSet.put(active_requests, request_key)
-      send(self(), {:generate_summary, "paraphrasing", %{monologue_id: monologue_id, monologue_text: monologue_text, character: character, play_title: play_title}, "search-summary-modal", request_key})
+      send(self(), {:generate_summary, "paraphrasing", %{monologue_id: monologue_id, monologue_text: monologue_text, character: character, play_title: play_title, location: location}, "search-summary-modal", request_key})
       
       {:noreply, assign(socket, active_requests: active_requests)}
     end
@@ -133,7 +134,7 @@ defmodule MonoPhoenixV01Web.SearchmenBarLive do
           _ -> nil
         end
         # Map.get: on a retry these params come from the modal, not this LiveView.
-        %{monologue_id: params.monologue_id, play_title: Map.get(params, :play_title), first_line: first_line, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+        %{monologue_id: params.monologue_id, play_title: Map.get(params, :play_title), character_name: Map.get(params, :character), location: Map.get(params, :location), first_line: first_line, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
     end
     
     socket = push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
@@ -170,7 +171,7 @@ defmodule MonoPhoenixV01Web.SearchmenBarLive do
 
     socket =
       case api_result do
-        {:ok, %{content: content, id: record_id}} ->
+        {:ok, %{content: content, id: record_id, source: source}} ->
           # Push PostHog event for content displayed
           event_name = case metadata.content_type do
             "play_summary" -> "play_summary_displayed"
@@ -180,9 +181,9 @@ defmodule MonoPhoenixV01Web.SearchmenBarLive do
 
           event_properties = case metadata.content_type do
             "play_summary" ->
-              %{play_title: metadata.params.play_title, record_id: record_id, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+              %{play_title: metadata.params.play_title, record_id: record_id, source: source, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
             "scene_summary" ->
-              %{play_title: metadata.params.play_title, location: metadata.params.location, record_id: record_id, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+              %{play_title: metadata.params.play_title, location: metadata.params.location, record_id: record_id, source: source, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
             "paraphrasing" ->
               # Get first line from monologue text if available
               first_line = case metadata.params.monologue_text do
@@ -191,7 +192,7 @@ defmodule MonoPhoenixV01Web.SearchmenBarLive do
                 _ -> nil
               end
               # Map.get: on a retry these params come from the modal, not this LiveView.
-              %{monologue_id: metadata.params.monologue_id, play_title: Map.get(metadata.params, :play_title), first_line: first_line, record_id: record_id, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+              %{monologue_id: metadata.params.monologue_id, play_title: Map.get(metadata.params, :play_title), character_name: Map.get(metadata.params, :character), location: Map.get(metadata.params, :location), first_line: first_line, record_id: record_id, source: source, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
           end
 
           send_update(MonoPhoenixV01Web.SummaryModalComponent,
@@ -365,6 +366,7 @@ defmodule MonoPhoenixV01Web.SearchmenBarLive do
                         phx-value-monologue-text={row.body}
                         phx-value-character={row.character}
                         phx-value-play-title={row.play}
+                        phx-value-location={row.location}
                         title="Show modern paraphrasing">
                     <img src={Routes.static_path(@socket, "/images/thinking-paraphrase-icon.svg")} alt="Modern paraphrasing" />
                   </span>&nbsp;
