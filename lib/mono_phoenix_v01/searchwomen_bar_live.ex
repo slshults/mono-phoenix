@@ -99,7 +99,8 @@ defmodule MonoPhoenixV01Web.SearchwomenBarLive do
         action: "show_paraphrasing", 
         monologue_id: monologue_id,
         monologue_text: monologue_text,
-        character: character
+        character: character,
+        play_title: play_title
       )
       
       active_requests = MapSet.put(active_requests, request_key)
@@ -131,7 +132,8 @@ defmodule MonoPhoenixV01Web.SearchwomenBarLive do
             text |> String.split("\n") |> List.first() |> String.slice(0, 100)
           _ -> nil
         end
-        %{monologue_id: params.monologue_id, first_line: first_line, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+        # Map.get: on a retry these params come from the modal, not this LiveView.
+        %{monologue_id: params.monologue_id, play_title: Map.get(params, :play_title), first_line: first_line, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
     end
     
     socket = push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
@@ -188,7 +190,8 @@ defmodule MonoPhoenixV01Web.SearchwomenBarLive do
                   text |> String.split("\n") |> List.first() |> String.slice(0, 100)
                 _ -> nil
               end
-              %{monologue_id: metadata.params.monologue_id, first_line: first_line, record_id: record_id, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+              # Map.get: on a retry these params come from the modal, not this LiveView.
+              %{monologue_id: metadata.params.monologue_id, play_title: Map.get(metadata.params, :play_title), first_line: first_line, record_id: record_id, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
           end
 
           send_update(MonoPhoenixV01Web.SummaryModalComponent,

@@ -126,7 +126,7 @@ defmodule MonoPhoenixV01Web.MenplayPageLive do
           _ -> nil
         end
         # Map.get: on a retry these params come from the modal, not this LiveView.
-        %{monologue_id: params.monologue_id, character_name: Map.get(params, :character), location: Map.get(params, :location), first_line: first_line, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+        %{monologue_id: params.monologue_id, play_title: page_play_title(socket), character_name: Map.get(params, :character), location: Map.get(params, :location), first_line: first_line, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
     end
 
     socket = push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
@@ -185,7 +185,7 @@ defmodule MonoPhoenixV01Web.MenplayPageLive do
               _ -> nil
             end
             # Map.get: on a retry these params come from the modal, not this LiveView.
-            %{monologue_id: metadata.params.monologue_id, character_name: Map.get(metadata.params, :character), location: Map.get(metadata.params, :location), first_line: first_line, record_id: record_id, source: source, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+            %{monologue_id: metadata.params.monologue_id, play_title: page_play_title(socket), character_name: Map.get(metadata.params, :character), location: Map.get(metadata.params, :location), first_line: first_line, record_id: record_id, source: source, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
         end
 
         socket = push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
@@ -259,6 +259,11 @@ defmodule MonoPhoenixV01Web.MenplayPageLive do
     
     {:noreply, socket}
   end
+
+  # Every row on this page is from the same play. The paraphrase params don't
+  # carry its title, and a Retry re-sends the modal's params, which never do.
+  defp page_play_title(%{assigns: %{rows: [%{play: play} | _]}}), do: play
+  defp page_play_title(_socket), do: nil
 
   # Update fetch_monologues/1 to fetch_monologues/2 and add search_value as an argument
   defp fetch_monologues(nil, _search_value), do: []
