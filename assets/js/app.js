@@ -286,6 +286,9 @@ Hooks.FeedbackForm = {
     this.setupAutoHideSuccess();
   },
 
+  // One listener per element: keyed by element, not event type, so a second
+  // call for the same element is ignored whatever its type. `handled` also
+  // records the "Thanks!" element once it has been tracked.
   listenOnce(el, type, handler) {
     if (!el || this.handled.has(el)) return;
     this.handled.add(el);
@@ -313,20 +316,20 @@ Hooks.FeedbackForm = {
     // Handle checkboxes that have associated details fields
     const toggles = ['wrong'];
     toggles.forEach(value => {
-      const checkbox = this.el.querySelector(`input[value="${value}"]`);
-      const detailsDiv = this.el.querySelector(`.feedback-details-field[data-for="${value}"]`);
-      if (checkbox && detailsDiv) {
-        this.listenOnce(checkbox, 'change', (e) => {
-          if (e.target.checked) {
-            detailsDiv.style.display = 'block';
-            detailsDiv.querySelector('textarea')?.focus();
-          } else {
-            detailsDiv.style.display = 'none';
-            const textarea = detailsDiv.querySelector('textarea');
-            if (textarea) textarea.value = '';
-          }
-        });
-      }
+      this.listenOnce(this.el.querySelector(`input[value="${value}"]`), 'change', (e) => {
+        // Looked up per change: this listener outlives re-renders, so a
+        // reference taken at bind time could point at a replaced element.
+        const detailsDiv = this.el.querySelector(`.feedback-details-field[data-for="${value}"]`);
+        if (!detailsDiv) return;
+        if (e.target.checked) {
+          detailsDiv.style.display = 'block';
+          detailsDiv.querySelector('textarea')?.focus();
+        } else {
+          detailsDiv.style.display = 'none';
+          const textarea = detailsDiv.querySelector('textarea');
+          if (textarea) textarea.value = '';
+        }
+      });
     });
 
     // "I don't like AI" — track and jump to FAQ#Q8 immediately, no Send required
