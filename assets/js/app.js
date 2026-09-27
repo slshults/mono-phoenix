@@ -282,8 +282,19 @@ Hooks.FeedbackForm = {
   },
 
   updated() {
+    // The fields are phx-update="ignore", so a re-render no longer clears them.
+    // Clear them here whenever the overlay is closed (Cancel, or the thumbs
+    // button toggling it shut), so reopening starts from a blank form.
+    if (this.el.style.display === 'none') this.resetFields();
     this.setupFeedbackInteractions();
     this.setupAutoHideSuccess();
+  },
+
+  resetFields() {
+    this.el.querySelector('form')?.reset();
+    this.el.querySelectorAll('.feedback-details-field').forEach(div => {
+      div.style.display = 'none';
+    });
   },
 
   // One listener per element: keyed by element, not event type, so a second

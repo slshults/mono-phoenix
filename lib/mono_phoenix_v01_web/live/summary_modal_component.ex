@@ -136,9 +136,10 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
                   <%= unless @feedback_success do %>
                     <h4>Send feedback for this <%= String.downcase(@content_type) %>?</h4>
                     <form phx-submit="submit_feedback" phx-target={@myself}>
-                      <%!-- The reader and the FeedbackForm hook own these fields. Without
-                           ignore, the re-render that shows the validation message resets
-                           them: the "wrong" box unticks, the text clears, the field hides. --%>
+                      <%!-- The reader and the FeedbackForm hook own these fields; the hook
+                           clears them when the overlay closes. Without ignore, the re-render
+                           that shows the validation message resets them: the "wrong" box
+                           unticks, the text clears, the field hides. --%>
                       <div id={"#{@id}-feedback-fields"} phx-update="ignore">
                         <div class="feedback-checkboxes">
                           <label>
