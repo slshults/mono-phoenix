@@ -176,7 +176,7 @@ if config_env() == :prod do
   # Anthropic API configuration for Shakespeare summaries
   config :mono_phoenix_v01, :anthropic,
     api_key: System.get_env("ANTHROPIC_API_KEY"),
-    model: "claude-sonnet-4-6"
+    model: "claude-opus-5-5"
 
   # Stripe production keys. Use fetch_env! so the release fails fast at
   # boot if any are missing — preferable to discovering a missing key

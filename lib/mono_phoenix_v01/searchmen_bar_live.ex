@@ -144,7 +144,7 @@ defmodule MonoPhoenixV01Web.SearchmenBarLive do
         "scene_summary" ->
           MonoPhoenixV01.AnthropicService.get_scene_summary(params.play_title, params.location)
         "paraphrasing" ->
-          MonoPhoenixV01.AnthropicService.get_monologue_paraphrasing(params.monologue_id, params.monologue_text)
+          MonoPhoenixV01.AnthropicService.get_monologue_paraphrasing(params.monologue_id)
       end
     end)
     
@@ -165,127 +165,74 @@ defmodule MonoPhoenixV01Web.SearchmenBarLive do
   @impl true
   def handle_async(request_key, {:ok, api_result}, socket) do
     metadata = socket.assigns.async_metadata[request_key]
-    
-    case api_result do
-      {:ok, %{content: content, id: record_id}} ->
-        # Push PostHog event for content displayed
-        event_name = case metadata.content_type do
-          "play_summary" -> "play_summary_displayed"
-          "scene_summary" -> "scene_summary_displayed" 
-          "paraphrasing" -> "paraphrasing_displayed"
-        end
-        
-        event_properties = case metadata.content_type do
-          "play_summary" -> 
-            %{play_title: metadata.params.play_title, record_id: record_id, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
-          "scene_summary" -> 
-            %{play_title: metadata.params.play_title, location: metadata.params.location, record_id: record_id, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
-          "paraphrasing" ->
-            # Get first line from monologue text if available
-            first_line = case metadata.params.monologue_text do
-              text when is_binary(text) and byte_size(text) > 0 ->
-                text |> String.split("\n") |> List.first() |> String.slice(0, 100)
-              _ -> nil
-            end
-            %{monologue_id: metadata.params.monologue_id, first_line: first_line, record_id: record_id, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
-        end
-        
-        _socket = push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
-        
-        send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-          id: metadata.component_id, 
-          action: "content_generated", 
-          content: content,
-          record_id: record_id
-        )
-      {:ok, content} when is_binary(content) ->
-        # Fallback for old format (shouldn't happen with new code) - still track display event
-        event_name = case metadata.content_type do
-          "play_summary" -> "play_summary_displayed"
-          "scene_summary" -> "scene_summary_displayed" 
-          "paraphrasing" -> "paraphrasing_displayed"
-        end
-        
-        event_properties = case metadata.content_type do
-          "play_summary" -> 
-            %{play_title: metadata.params.play_title, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
-          "scene_summary" -> 
-            %{play_title: metadata.params.play_title, location: metadata.params.location, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
-          "paraphrasing" ->
-            first_line = case metadata.params.monologue_text do
-              text when is_binary(text) and byte_size(text) > 0 ->
-                text |> String.split("\n") |> List.first() |> String.slice(0, 100)
-              _ -> nil
-            end
-            %{monologue_id: metadata.params.monologue_id, first_line: first_line, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
-        end
-        
-        _socket = push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
-        
-        send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-          id: metadata.component_id, 
-          action: "content_generated", 
-          content: content
-        )
-      {:error, reason} ->
-        send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-          id: metadata.component_id, 
-          action: "error_occurred", 
-          error: reason
-        )
-    end
-    
-    # Clean up metadata and active requests  
+
+    socket =
+      case api_result do
+        {:ok, %{content: content, id: record_id}} ->
+          # Push PostHog event for content displayed
+          event_name = case metadata.content_type do
+            "play_summary" -> "play_summary_displayed"
+            "scene_summary" -> "scene_summary_displayed"
+            "paraphrasing" -> "paraphrasing_displayed"
+          end
+
+          event_properties = case metadata.content_type do
+            "play_summary" ->
+              %{play_title: metadata.params.play_title, record_id: record_id, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+            "scene_summary" ->
+              %{play_title: metadata.params.play_title, location: metadata.params.location, record_id: record_id, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+            "paraphrasing" ->
+              # Get first line from monologue text if available
+              first_line = case metadata.params.monologue_text do
+                text when is_binary(text) and byte_size(text) > 0 ->
+                  text |> String.split("\n") |> List.first() |> String.slice(0, 100)
+                _ -> nil
+              end
+              %{monologue_id: metadata.params.monologue_id, first_line: first_line, record_id: record_id, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+          end
+
+          send_update(MonoPhoenixV01Web.SummaryModalComponent,
+            id: metadata.component_id,
+            action: "content_generated",
+            content: content,
+            record_id: record_id
+          )
+
+          push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
+
+        {:error, _reason} ->
+          # AnthropicService has already logged the cause.
+          send_update(MonoPhoenixV01Web.SummaryModalComponent, id: metadata.component_id, action: "error_occurred")
+          socket
+      end
+
+    # Clean up metadata and active requests
     active_requests = MapSet.delete(socket.assigns.active_requests, request_key)
     async_metadata = Map.delete(socket.assigns.async_metadata, request_key)
-    
+
     {:noreply, assign(socket, active_requests: active_requests, async_metadata: async_metadata)}
   end
 
+  # A cancel (the reader force-closed the modal) needs no UI. Any other exit is
+  # a crash inside the task, which the reader should hear about.
   @impl true
-  def handle_async(request_key, {:error, reason}, socket) do
-    metadata = socket.assigns.async_metadata[request_key]
-    
-    case reason do
-      %{reason: :cancelled} ->
-        # Handle cancellation gracefully without showing error
-        send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-          id: metadata.component_id, 
-          action: "generation_cancelled"
-        )
-      _ ->
-        send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-          id: metadata.component_id, 
-          action: "error_occurred", 
-          error: "API call failed unexpectedly"
-        )
-    end
-    
-    # Clean up metadata and active requests  
-    active_requests = MapSet.delete(socket.assigns.active_requests, request_key)
-    async_metadata = Map.delete(socket.assigns.async_metadata, request_key)
-    
-    {:noreply, assign(socket, active_requests: active_requests, async_metadata: async_metadata)}
-  end
-
-  # Handle async task cancellation via exit
-  @impl true
-  def handle_async(request_key, {:exit, _reason}, socket) do
+  def handle_async(request_key, {:exit, reason}, socket) do
     require Logger
-    Logger.info("User confirmed cancellation - stopping generation")
-    
     metadata = socket.assigns.async_metadata[request_key]
-    
-    # Handle cancellation gracefully
-    send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-      id: metadata.component_id, 
-      action: "generation_cancelled"
-    )
-    
-    # Clean up metadata and active requests  
+
+    case reason do
+      {:shutdown, :cancel} ->
+        Logger.info("Async task #{request_key} was cancelled")
+
+      _ ->
+        Logger.error("Async generation failed for #{request_key}: #{inspect(reason)}")
+        send_update(MonoPhoenixV01Web.SummaryModalComponent, id: metadata.component_id, action: "error_occurred")
+    end
+
+    # Clean up metadata and active requests
     active_requests = MapSet.delete(socket.assigns.active_requests, request_key)
     async_metadata = Map.delete(socket.assigns.async_metadata, request_key)
-    
+
     {:noreply, assign(socket, active_requests: active_requests, async_metadata: async_metadata)}
   end
 

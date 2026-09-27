@@ -107,6 +107,9 @@ config :mono_phoenix_v01, Oban,
   queues: [default: 10, social: 2]
 
 
+# Lets code tell prod from dev at runtime (Mix.env/0 isn't available in a release).
+config :mono_phoenix_v01, :environment, config_env()
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

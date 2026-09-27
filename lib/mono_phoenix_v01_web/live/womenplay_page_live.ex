@@ -14,9 +14,6 @@ defmodule MonoPhoenixV01Web.WomenplayPageLive do
 
     rows = fetch_monologues(playid, "")
     
-    # Subscribe to PubSub events for retry functionality
-    Phoenix.PubSub.subscribe(MonoPhoenixV01.PubSub, "play_page_events")
-    
     {:ok, assign(socket, search_bar: %{}, search_value: "", rows: rows, play_id: playid, active_requests: MapSet.new(), async_metadata: %{})}
   end
 
@@ -95,7 +92,8 @@ defmodule MonoPhoenixV01Web.WomenplayPageLive do
         action: "show_paraphrasing",
         monologue_id: monologue_id,
         monologue_text: monologue_text,
-        character: character
+        character: character,
+        location: location
       )
 
       active_requests = MapSet.put(socket.assigns.active_requests, request_key)
@@ -127,7 +125,8 @@ defmodule MonoPhoenixV01Web.WomenplayPageLive do
             text |> String.split("\n") |> List.first() |> String.slice(0, 100)
           _ -> nil
         end
-        %{monologue_id: params.monologue_id, character_name: params.character, location: params.location, first_line: first_line, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+        # Map.get: on a retry these params come from the modal, not this LiveView.
+        %{monologue_id: params.monologue_id, character_name: Map.get(params, :character), location: Map.get(params, :location), first_line: first_line, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
     end
 
     socket = push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
@@ -142,7 +141,7 @@ defmodule MonoPhoenixV01Web.WomenplayPageLive do
           MonoPhoenixV01.AnthropicService.get_scene_summary(params.play_title, params.location)
 
         "paraphrasing" ->
-          MonoPhoenixV01.AnthropicService.get_monologue_paraphrasing(params.monologue_id, params.monologue_text)
+          MonoPhoenixV01.AnthropicService.get_monologue_paraphrasing(params.monologue_id)
       end
     end)
     
@@ -185,7 +184,8 @@ defmodule MonoPhoenixV01Web.WomenplayPageLive do
                 text |> String.split("\n") |> List.first() |> String.slice(0, 100)
               _ -> nil
             end
-            %{monologue_id: metadata.params.monologue_id, character_name: metadata.params.character, location: metadata.params.location, first_line: first_line, record_id: record_id, source: source, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+            # Map.get: on a retry these params come from the modal, not this LiveView.
+            %{monologue_id: metadata.params.monologue_id, character_name: Map.get(metadata.params, :character), location: Map.get(metadata.params, :location), first_line: first_line, record_id: record_id, source: source, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
         end
 
         socket = push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
@@ -199,46 +199,10 @@ defmodule MonoPhoenixV01Web.WomenplayPageLive do
         
         {socket, :content_generated}
         
-      {:ok, content} when is_binary(content) ->
-        # Fallback for old format (shouldn't happen with new code) - still track display event
-        event_name = case metadata.content_type do
-          "play_summary" -> "play_summary_displayed"
-          "scene_summary" -> "scene_summary_displayed" 
-          "paraphrasing" -> "paraphrasing_displayed"
-        end
-        
-        event_properties = case metadata.content_type do
-          "play_summary" -> 
-            %{play_title: metadata.params.play_title, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
-          "scene_summary" -> 
-            %{play_title: metadata.params.play_title, location: metadata.params.location, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
-          "paraphrasing" ->
-            first_line = case metadata.params.monologue_text do
-              text when is_binary(text) and byte_size(text) > 0 ->
-                text |> String.split("\n") |> List.first() |> String.slice(0, 100)
-              _ -> nil
-            end
-            %{monologue_id: metadata.params.monologue_id, character_name: metadata.params.character, location: metadata.params.location, first_line: first_line, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
-        end
-
-        socket = push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
-
-        send_update(MonoPhoenixV01Web.SummaryModalComponent,
-          id: metadata.component_id,
-          action: "content_generated",
-          content: content
-        )
-        
-        {socket, :content_generated}
-        
       {:error, error} ->
         require Logger
         Logger.warning("API call failed for #{metadata.content_type}: #{error}")
-        send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-          id: metadata.component_id, 
-          action: "content_error", 
-          error: "Failed to generate #{metadata.content_type}: #{error}"
-        )
+        send_update(MonoPhoenixV01Web.SummaryModalComponent, id: metadata.component_id, action: "error_occurred")
         
         {socket, :error}
     end
@@ -265,11 +229,7 @@ defmodule MonoPhoenixV01Web.WomenplayPageLive do
         Logger.error("Async API call failed for #{request_key}: #{inspect(reason)}")
         
         if metadata do
-          send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-            id: metadata.component_id, 
-            action: "content_error", 
-            error: "API call failed unexpectedly"
-          )
+          send_update(MonoPhoenixV01Web.SummaryModalComponent, id: metadata.component_id, action: "error_occurred")
         end
     end
     

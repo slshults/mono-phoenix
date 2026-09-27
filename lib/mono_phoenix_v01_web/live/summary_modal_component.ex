@@ -1,6 +1,10 @@
 defmodule MonoPhoenixV01Web.SummaryModalComponent do
   use MonoPhoenixV01Web, :live_component
 
+  # Shown for every failed generation. The underlying cause is already in the
+  # server log and in PostHog ($ai_error), so readers get a plain message.
+  @generation_error "Sorry, this couldn't be generated right now. Please try again in a moment."
+
   @impl true
   def render(assigns) do
     ~H"""
@@ -531,7 +535,11 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
     {:noreply, socket}
   end
 
+  # A second click can already be queued before the first one sets loading, so
+  # ignore it rather than start a duplicate generation.
   @impl true
+  def handle_event("retry_generation", _, %{assigns: %{loading: true}} = socket), do: {:noreply, socket}
+
   def handle_event("retry_generation", _, socket) do
     params = socket.assigns.generation_params
     content_type = socket.assigns.content_type
@@ -546,12 +554,11 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
       _ -> String.downcase(content_type)
     end
 
-    # Use PubSub to communicate with parent LiveView
-    Phoenix.PubSub.broadcast(
-      MonoPhoenixV01.PubSub,
-      "play_page_events",
-      {:generate_summary, message_type, params, socket.assigns.id}
-    )
+    # A component runs in its parent LiveView's process, so self() is that
+    # LiveView. Every host handles this 5-tuple. The key is unique so a retry
+    # never collides with a request still in flight.
+    request_key = "retry:#{message_type}:#{System.unique_integer([:positive])}"
+    send(self(), {:generate_summary, message_type, params, socket.assigns.id, request_key})
 
     {:noreply, socket}
   end
@@ -658,14 +665,21 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
   end
 
   @impl true
-  def update(%{action: "show_paraphrasing", monologue_id: monologue_id, monologue_text: monologue_text, character: character}, socket) do
+  def update(%{action: "show_paraphrasing", monologue_id: monologue_id, monologue_text: monologue_text, character: character} = assigns, socket) do
     socket = assign(socket,
       show: true,
       loading: true,
       title: "Modern Paraphrasing: #{character}",
       content_type: "Paraphrasing",
       error: nil,
-      generation_params: %{monologue_id: monologue_id, monologue_text: monologue_text},
+      # Retry re-sends these, so keep what the host's analytics read. Only the
+      # play pages pass location.
+      generation_params: %{
+        monologue_id: monologue_id,
+        monologue_text: monologue_text,
+        character: character,
+        location: Map.get(assigns, :location)
+      },
       canceled: false,
       feedback_success: false,
       feedback_completed: false,
@@ -686,21 +700,11 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
   end
 
   @impl true
-  def update(%{action: "content_generated", content: content}, socket) do
-    # Fallback for updates without record_id (shouldn't happen with new code)
+  def update(%{action: "error_occurred"}, socket) do
     if socket.assigns.canceled do
       {:ok, socket}
     else
-      {:ok, assign(socket, loading: false, content: content)}
-    end
-  end
-
-  @impl true
-  def update(%{action: "content_error", error: error}, socket) do
-    if socket.assigns.canceled do
-      {:ok, socket}
-    else
-      {:ok, assign(socket, loading: false, error: error)}
+      {:ok, assign(socket, loading: false, error: @generation_error)}
     end
   end
 
