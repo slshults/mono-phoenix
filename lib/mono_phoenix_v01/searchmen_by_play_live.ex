@@ -160,6 +160,8 @@ defmodule MonoPhoenixV01Web.SearchmenByPlayLive do
     monologue_id = params["monologue-id"]
     monologue_text = params["monologue-text"]
     character = params["character"]
+    play_title = params["play-title"]
+    location = params["location"]
 
     request_key = "paraphrasing:#{monologue_id}"
 
@@ -175,12 +177,14 @@ defmodule MonoPhoenixV01Web.SearchmenByPlayLive do
         action: "show_paraphrasing",
         monologue_id: monologue_id,
         monologue_text: monologue_text,
-        character: character
+        character: character,
+        play_title: play_title,
+        location: location
       )
 
       # Track this request and start the content generation
       active_requests = MapSet.put(active_requests, request_key)
-      send(self(), {:generate_summary, "paraphrasing", %{monologue_id: monologue_id, monologue_text: monologue_text}, "search-summary-modal", request_key})
+      send(self(), {:generate_summary, "paraphrasing", %{monologue_id: monologue_id, monologue_text: monologue_text, character: character, play_title: play_title, location: location}, "search-summary-modal", request_key})
 
       {:noreply, assign(socket, active_requests: active_requests)}
     end
@@ -190,6 +194,31 @@ defmodule MonoPhoenixV01Web.SearchmenByPlayLive do
   # button sends this same message.
   @impl true
   def handle_info({:generate_summary, content_type, params, component_id, request_key}, socket) do
+    # Push PostHog event for generation started
+    event_name = case content_type do
+      "play_summary" -> "play_summary_generated"
+      "scene_summary" -> "scene_summary_generated"
+      "paraphrasing" -> "paraphrasing_generated"
+    end
+
+    event_properties = case content_type do
+      "play_summary" ->
+        %{play_title: params.play_title, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+      "scene_summary" ->
+        %{play_title: params.play_title, location: params.location, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+      "paraphrasing" ->
+        # Get first line from monologue text if available
+        first_line = case params.monologue_text do
+          text when is_binary(text) and byte_size(text) > 0 ->
+            text |> String.split("\n") |> List.first() |> String.slice(0, 100)
+          _ -> nil
+        end
+        # Map.get: on a retry these params come from the modal, not this LiveView.
+        %{monologue_id: params.monologue_id, play_title: Map.get(params, :play_title), character_name: Map.get(params, :character), location: Map.get(params, :location), first_line: first_line, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+    end
+
+    socket = push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
+
     socket = start_async(socket, request_key, fn ->
       case content_type do
         "play_summary" ->
@@ -206,7 +235,8 @@ defmodule MonoPhoenixV01Web.SearchmenByPlayLive do
       async_metadata: Map.put(socket.assigns.async_metadata, request_key, %{
         content_type: content_type,
         component_id: component_id,
-        request_key: request_key
+        request_key: request_key,
+        params: params
       })
     )
 
@@ -233,19 +263,48 @@ defmodule MonoPhoenixV01Web.SearchmenByPlayLive do
 
   @impl true
   def handle_async(request_key, {:ok, api_result}, socket) do
-    case api_result do
-      {:ok, %{content: content, id: record_id}} ->
-        send_update(MonoPhoenixV01Web.SummaryModalComponent,
-          id: "search-summary-modal",
-          action: "content_generated",
-          content: content,
-          record_id: record_id
-        )
+    metadata = socket.assigns.async_metadata[request_key]
 
-      {:error, _reason} ->
-        # AnthropicService has already logged the cause.
-        send_update(MonoPhoenixV01Web.SummaryModalComponent, id: "search-summary-modal", action: "error_occurred")
-    end
+    socket =
+      case api_result do
+        {:ok, %{content: content, id: record_id, source: source}} ->
+          # Push PostHog event for content displayed
+          event_name = case metadata.content_type do
+            "play_summary" -> "play_summary_displayed"
+            "scene_summary" -> "scene_summary_displayed"
+            "paraphrasing" -> "paraphrasing_displayed"
+          end
+
+          event_properties = case metadata.content_type do
+            "play_summary" ->
+              %{play_title: metadata.params.play_title, record_id: record_id, source: source, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+            "scene_summary" ->
+              %{play_title: metadata.params.play_title, location: metadata.params.location, record_id: record_id, source: source, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+            "paraphrasing" ->
+              # Get first line from monologue text if available
+              first_line = case metadata.params.monologue_text do
+                text when is_binary(text) and byte_size(text) > 0 ->
+                  text |> String.split("\n") |> List.first() |> String.slice(0, 100)
+                _ -> nil
+              end
+              # Map.get: on a retry these params come from the modal, not this LiveView.
+              %{monologue_id: metadata.params.monologue_id, play_title: Map.get(metadata.params, :play_title), character_name: Map.get(metadata.params, :character), location: Map.get(metadata.params, :location), first_line: first_line, record_id: record_id, source: source, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
+          end
+
+          send_update(MonoPhoenixV01Web.SummaryModalComponent,
+            id: "search-summary-modal",
+            action: "content_generated",
+            content: content,
+            record_id: record_id
+          )
+
+          push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
+
+        {:error, _reason} ->
+          # AnthropicService has already logged the cause.
+          send_update(MonoPhoenixV01Web.SummaryModalComponent, id: "search-summary-modal", action: "error_occurred")
+          socket
+      end
 
     # Clean up tracking
     active_requests = MapSet.delete(socket.assigns.active_requests, request_key)
@@ -394,6 +453,8 @@ defmodule MonoPhoenixV01Web.SearchmenByPlayLive do
                         phx-value-monologue-id={row.monologues}
                         phx-value-monologue-text={row.body}
                         phx-value-character={row.character}
+                        phx-value-play-title={row.play}
+                        phx-value-location={row.location}
                         title="Show modern paraphrasing">
                     <img src={Routes.static_path(@socket, "/images/thinking-paraphrase-icon.svg")} alt="Modern paraphrasing" />
                   </span>&nbsp;

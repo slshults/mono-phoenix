@@ -136,39 +136,45 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
                   <%= unless @feedback_success do %>
                     <h4>Send feedback for this <%= String.downcase(@content_type) %>?</h4>
                     <form phx-submit="submit_feedback" phx-target={@myself}>
-                      <div class="feedback-checkboxes">
-                        <label>
-                          <input type="checkbox" name="feedback[]" value="like_it" />
-                          I like it
-                        </label>
-                        <label>
-                          <input type="checkbox" name="feedback[]" value="dont_understand" />
-                          I don't understand it
-                        </label>
-                        <label>
-                          <input type="checkbox" name="feedback[]" value="wrong" />
-                          It's wrong, contains errors.
-                        </label>
-                        <label>
-                          <input type="checkbox" name="feedback[]" value="dont_like" />
-                          Why are you using AI? I don't like AI!
-                        </label>
-                        <label>
-                          <input type="checkbox" name="feedback[]" value="why_talking" />
-                          Why is it talking to me? (AI babble instead of summary)
-                        </label>
-                        <label>
-                          <input type="checkbox" name="feedback[]" value="button_pusher" />
-                          I just like to push buttons to see what they do
-                        </label>
-                      </div>
-                      <div class="feedback-details-field" data-for="wrong" style="display: none;">
-                        <textarea
-                          name="wrong_details"
-                          placeholder={"How, specifically, is it wrong?\nWhich publisher are you comparing to?"}
-                          rows="2"
-                          maxlength="250"
-                        ></textarea>
+                      <%!-- The reader and the FeedbackForm hook own these fields; the hook
+                           clears them when the overlay closes. Without ignore, the re-render
+                           that shows the validation message resets them: the "wrong" box
+                           unticks, the text clears, the field hides. --%>
+                      <div id={"#{@id}-feedback-fields"} phx-update="ignore">
+                        <div class="feedback-checkboxes">
+                          <label>
+                            <input type="checkbox" name="feedback[]" value="like_it" />
+                            I like it
+                          </label>
+                          <label>
+                            <input type="checkbox" name="feedback[]" value="dont_understand" />
+                            I don't understand it
+                          </label>
+                          <label>
+                            <input type="checkbox" name="feedback[]" value="wrong" />
+                            It's wrong, contains errors.
+                          </label>
+                          <label>
+                            <input type="checkbox" name="feedback[]" value="dont_like" />
+                            Why are you using AI? I don't like AI!
+                          </label>
+                          <label>
+                            <input type="checkbox" name="feedback[]" value="why_talking" />
+                            Why is it talking to me? (AI babble instead of summary)
+                          </label>
+                          <label>
+                            <input type="checkbox" name="feedback[]" value="button_pusher" />
+                            I just like to push buttons to see what they do
+                          </label>
+                        </div>
+                        <div class="feedback-details-field" data-for="wrong" style="display: none;">
+                          <textarea
+                            name="wrong_details"
+                            placeholder={"How, specifically, is it wrong?\nWhich publisher are you comparing to?"}
+                            rows="2"
+                            maxlength="250"
+                          ></textarea>
+                        </div>
                       </div>
                       <div class="feedback-form-buttons">
                         <button
@@ -490,7 +496,6 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
       feedback_success: false,
       feedback_completed: false,
       sending_feedback: false,
-      show_wrong_details: false,
       validation_message: nil
     )}
   end
@@ -569,7 +574,6 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
     socket = assign(socket,
       show_feedback: !socket.assigns.show_feedback,
       feedback_success: false,
-      show_wrong_details: false,
       validation_message: nil
     )
     {:noreply, socket}
