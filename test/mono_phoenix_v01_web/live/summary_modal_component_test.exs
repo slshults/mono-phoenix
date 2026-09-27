@@ -35,15 +35,15 @@ defmodule MonoPhoenixV01Web.SummaryModalComponentTest do
   end
 
   describe "update/2 with action \"show_paraphrasing\"" do
-    test "keeps character and location for Retry, so its analytics aren't null" do
+    test "keeps character, location and play_title for Retry, so its analytics aren't null" do
       {:ok, socket} =
         SummaryModalComponent.update(
-          %{action: "show_paraphrasing", monologue_id: "89", monologue_text: "Think not I love him", character: "Phebe", location: "III v 111"},
+          %{action: "show_paraphrasing", monologue_id: "89", monologue_text: "Think not I love him", character: "Phebe", location: "III v 111", play_title: "As You Like It"},
           socket(%{})
         )
 
       assert socket.assigns.generation_params ==
-               %{monologue_id: "89", monologue_text: "Think not I love him", character: "Phebe", location: "III v 111"}
+               %{monologue_id: "89", monologue_text: "Think not I love him", character: "Phebe", location: "III v 111", play_title: "As You Like It"}
     end
   end
 

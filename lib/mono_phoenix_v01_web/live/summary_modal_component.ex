@@ -673,13 +673,14 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
       title: "Modern Paraphrasing: #{character}",
       content_type: "Paraphrasing",
       error: nil,
-      # Retry re-sends these, so keep what the host's analytics read. Only the
-      # play pages pass location.
+      # Retry re-sends these, so keep what the host's analytics read. Only some
+      # hosts pass location (the play pages) and play_title (the search bars).
       generation_params: %{
         monologue_id: monologue_id,
         monologue_text: monologue_text,
         character: character,
-        location: Map.get(assigns, :location)
+        location: Map.get(assigns, :location),
+        play_title: Map.get(assigns, :play_title)
       },
       canceled: false,
       feedback_success: false,
