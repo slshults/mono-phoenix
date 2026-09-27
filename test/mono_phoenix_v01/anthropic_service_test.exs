@@ -155,4 +155,43 @@ defmodule MonoPhoenixV01.AnthropicServiceTest do
                AnthropicService.get_scene_summary("Hamlet", "II i 234-250")
     end
   end
+
+  # The review alert shows these details, so readers of #shakesmonos see which
+  # monologue or scene was flagged instead of an id like "mono_66".
+  describe "a flagged generation" do
+    setup do
+      play_fixture(%{id: 7, title: "Hamlet"})
+
+      %{id: id} =
+        monologue_fixture(%{
+          play_id: 7,
+          character: "Ghost",
+          location: "I v 9",
+          first_line: "I am thy father's spirit",
+          body: "Doomed for a certain term to walk the night"
+        })
+
+      mock_anthropic("end_turn", "Original: Doomed
+Modern: It's <b>bad</b>")
+      %{id: id}
+    end
+
+    test "names the monologue for a paraphrase", %{id: id} do
+      log = ExUnit.CaptureLog.capture_log(fn -> AnthropicService.get_monologue_paraphrasing(id) end)
+
+      assert log =~ "flagged for review"
+      assert log =~ ~s(play_title: "Hamlet")
+      assert log =~ ~s(character_name: "Ghost")
+      assert log =~ ~s(location: "I v 9")
+      assert log =~ ~s(first_line: "I am thy father's spirit")
+    end
+
+    test "names the play and scene for a scene summary" do
+      log = ExUnit.CaptureLog.capture_log(fn -> AnthropicService.get_scene_summary("Hamlet", "I v 9") end)
+
+      assert log =~ "flagged for review"
+      assert log =~ ~s(play_title: "Hamlet")
+      assert log =~ ~s(location: "I v 9")
+    end
+  end
 end

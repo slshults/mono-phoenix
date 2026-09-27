@@ -131,7 +131,7 @@ defmodule MonoPhoenixV01Web.SummaryAnalyticsTest do
         assert_push_event(lv, "posthog_capture", %{event: "paraphrasing_displayed", properties: displayed})
         assert Map.take(displayed, Map.keys(@monologue_1)) == @monologue_1
         assert %{source: "db", record_id: record_id} = displayed
-        assert record_id == ids["paraphrasing"]
+        assert record_id == to_string(ids["paraphrasing"])
 
         # The first refute waits out the window; the second needn't wait again.
         refute_push_event(lv, "posthog_capture", %{event: "paraphrasing_generated"})
@@ -152,7 +152,7 @@ defmodule MonoPhoenixV01Web.SummaryAnalyticsTest do
 
         assert_push_event(lv, "posthog_capture", %{event: "scene_summary_displayed", properties: displayed})
         assert %{play_title: "Hamlet", location: "I v 9", source: "db"} = displayed
-        assert displayed.record_id == ids["scene_summary"]
+        assert displayed.record_id == to_string(ids["scene_summary"])
 
         refute_push_event(lv, "posthog_capture", %{event: "scene_summary_generated"})
         refute_push_event(lv, "posthog_capture", %{event: "scene_summary_displayed"}, 0)
@@ -169,7 +169,7 @@ defmodule MonoPhoenixV01Web.SummaryAnalyticsTest do
 
         assert_push_event(lv, "posthog_capture", %{event: "play_summary_displayed", properties: displayed})
         assert %{play_title: "Hamlet", source: "db"} = displayed
-        assert displayed.record_id == ids["play_summary"]
+        assert displayed.record_id == to_string(ids["play_summary"])
 
         refute_push_event(lv, "posthog_capture", %{event: "play_summary_generated"})
         refute_push_event(lv, "posthog_capture", %{event: "play_summary_displayed"}, 0)
@@ -216,7 +216,7 @@ defmodule MonoPhoenixV01Web.SummaryAnalyticsTest do
         assert_push_event(lv, "posthog_capture", %{event: "paraphrasing_displayed", properties: displayed})
         assert Map.take(displayed, Map.keys(@monologue_1)) == @monologue_1
         assert %{source: "db", record_id: record_id} = displayed
-        assert record_id == ids["paraphrasing"]
+        assert record_id == to_string(ids["paraphrasing"])
 
         refute_push_event(lv, "posthog_capture", %{event: "paraphrasing_generated"})
         refute_push_event(lv, "posthog_capture", %{event: "paraphrasing_displayed"}, 0)
