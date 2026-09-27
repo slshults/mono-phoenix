@@ -383,10 +383,17 @@ Hooks.FeedbackForm = {
     let character_name = null;
     let play_title = null;
     let location = null;
+    let monologue_id = null;
 
     if (titleText.startsWith('Modern Paraphrasing: ')) {
       content_type = 'Paraphrasing';
       character_name = titleText.replace('Modern Paraphrasing: ', '').trim();
+      // The paraphrase title names no play, and the modal sits outside the
+      // monologue table, so find the row it was opened from by monologue id.
+      monologue_id = modal.dataset.monologueId || null;
+      const icon = monologue_id &&
+        document.querySelector(`.summary-icon[phx-value-monologue-id="${CSS.escape(monologue_id)}"]`);
+      play_title = icon?.closest('tr')?.querySelector('.monologue-playname')?.textContent.trim() || null;
     } else if (titleText.startsWith('Play Summary: ')) {
       content_type = 'Play Summary';
       play_title = titleText.replace('Play Summary: ', '').trim();
@@ -409,6 +416,7 @@ Hooks.FeedbackForm = {
     };
 
     if (character_name) properties.character_name = character_name;
+    if (monologue_id) properties.monologue_id = monologue_id;
     if (play_title) properties.play_title = play_title;
     if (location) properties.location = location;
 

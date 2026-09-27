@@ -146,12 +146,6 @@ scroll up to read from the top of the scene."
 />
 
 <script>
-  if (typeof posthog !== 'undefined') {
-    posthog.register({ play_title: '<%= if length(@rows) > 0, do: hd(@rows).play, else: "" %>' });
-  }
-</script>
-
-<script>
   const toggleButton = document.getElementById('toggle-button');
   const toggleImage = document.getElementById('toggle-image');
 

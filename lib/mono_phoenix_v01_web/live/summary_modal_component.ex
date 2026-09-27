@@ -15,6 +15,7 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
       phx-hook="ModalClickHandler"
       phx-target={@myself}
       data-record-id={@record_id}
+      data-monologue-id={@generation_params[:monologue_id]}
       data-loading={@loading}
     >
       <!-- Confirmation Dialog -->
