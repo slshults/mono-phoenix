@@ -272,6 +272,11 @@ function deriveFeedbackType(options) {
 // Feedback Form Hook
 Hooks.FeedbackForm = {
   mounted() {
+    // Elements this hook has already wired up. This used to be a data-* flag on
+    // each element, but LiveView's DOM patch resets attributes to what the
+    // server rendered, so the flag vanished on every re-render and updated()
+    // added another listener: one thumbs click fired once per render so far.
+    this.handled = new WeakSet();
     this.setupFeedbackInteractions();
     this.setupAutoHideSuccess();
   },
@@ -281,31 +286,29 @@ Hooks.FeedbackForm = {
     this.setupAutoHideSuccess();
   },
 
+  listenOnce(el, type, handler) {
+    if (!el || this.handled.has(el)) return;
+    this.handled.add(el);
+    el.addEventListener(type, handler);
+  },
+
   setupFeedbackInteractions() {
     // Fire on the initial thumbs click so we capture intent even when the user
     // never completes the form. The thumbs button lives in the modal footer,
     // a sibling of this hook's overlay element.
     const modal = this.el.closest('.summary-modal-overlay');
-    const thumbsBtn = modal?.querySelector('.feedback-thumbs-btn');
-    if (thumbsBtn && !thumbsBtn.dataset.phTracked) {
-      thumbsBtn.dataset.phTracked = 'true';
-      thumbsBtn.addEventListener('click', () => {
-        this.trackPostHogFeedback([], 'opened');
-      });
-    }
+    this.listenOnce(modal?.querySelector('.feedback-thumbs-btn'), 'click', () => {
+      this.trackPostHogFeedback([], 'opened');
+    });
 
     // Remember which options were checked at submit time. The form is removed
     // from the DOM once feedback_success flips, so we can't read it later when
     // the "Thanks!" message tracks the completed submission.
-    const form = this.el.querySelector('form');
-    if (form && !form.dataset.feedbackBound) {
-      form.dataset.feedbackBound = 'true';
-      form.addEventListener('submit', () => {
-        this.pendingFeedback = Array.from(
-          this.el.querySelectorAll('input[name="feedback[]"]:checked')
-        ).map(input => input.value);
-      });
-    }
+    this.listenOnce(this.el.querySelector('form'), 'submit', () => {
+      this.pendingFeedback = Array.from(
+        this.el.querySelectorAll('input[name="feedback[]"]:checked')
+      ).map(input => input.value);
+    });
 
     // Handle checkboxes that have associated details fields
     const toggles = ['wrong'];
@@ -313,7 +316,7 @@ Hooks.FeedbackForm = {
       const checkbox = this.el.querySelector(`input[value="${value}"]`);
       const detailsDiv = this.el.querySelector(`.feedback-details-field[data-for="${value}"]`);
       if (checkbox && detailsDiv) {
-        checkbox.addEventListener('change', (e) => {
+        this.listenOnce(checkbox, 'change', (e) => {
           if (e.target.checked) {
             detailsDiv.style.display = 'block';
             detailsDiv.querySelector('textarea')?.focus();
@@ -327,31 +330,29 @@ Hooks.FeedbackForm = {
     });
 
     // "I don't like AI" — track and jump to FAQ#Q8 immediately, no Send required
-    const dontLikeCheckbox = this.el.querySelector('input[value="dont_like"]');
-    if (dontLikeCheckbox && !dontLikeCheckbox.dataset.navBound) {
-      dontLikeCheckbox.dataset.navBound = 'true';
-      dontLikeCheckbox.addEventListener('change', (e) => {
-        if (!e.target.checked) return;
-        if (typeof posthog !== 'undefined') {
-          this.trackPostHogFeedback(['dont_like'], 'submitted');
-        }
-        // Brief delay so PostHog's XHR has a chance to leave before nav cancels it
-        setTimeout(() => { window.location.href = '/faq#Q8'; }, 150);
-      });
-    }
+    this.listenOnce(this.el.querySelector('input[value="dont_like"]'), 'change', (e) => {
+      if (!e.target.checked) return;
+      if (typeof posthog !== 'undefined') {
+        this.trackPostHogFeedback(['dont_like'], 'submitted');
+      }
+      // Brief delay so PostHog's XHR has a chance to leave before nav cancels it
+      setTimeout(() => { window.location.href = '/faq#Q8'; }, 150);
+    });
   },
 
   setupAutoHideSuccess() {
-    const thanksDiv = document.querySelector('.feedback-thanks');
-    if (thanksDiv && thanksDiv.textContent.trim() === 'Thanks!' && !thanksDiv.dataset.tracked) {
+    // Look only inside this hook's modal: `handled` is per hook, and a play page
+    // also carries the search bar's modal, whose hook must not track ours.
+    const thanksDiv = this.el.closest('.summary-modal-overlay')?.querySelector('.feedback-thanks');
+    if (thanksDiv && thanksDiv.textContent.trim() === 'Thanks!' && !this.handled.has(thanksDiv)) {
       // Track PostHog event when success is shown, using the options captured
       // at submit time so feedback_type reflects the user's actual choice.
       this.trackPostHogFeedback(this.pendingFeedback || [], 'submitted');
       this.pendingFeedback = null;
 
       // Mark as tracked to prevent double-tracking
-      thanksDiv.dataset.tracked = 'true';
-      
+      this.handled.add(thanksDiv);
+
       // Auto-hide after 3 seconds
       setTimeout(() => {
         // Reset the feedback success state
