@@ -546,6 +546,12 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
   @impl true
   def handle_event("retry_generation", _, %{assigns: %{loading: true}} = socket), do: {:noreply, socket}
 
+  # Only a modal showing one of these can retry. A crafted event against a modal
+  # that was never shown (content_type "") would otherwise reach the host.
+  def handle_event("retry_generation", _, %{assigns: %{content_type: content_type}} = socket)
+      when content_type not in ["Play Summary", "Scene Summary", "Paraphrasing"],
+      do: {:noreply, socket}
+
   def handle_event("retry_generation", _, socket) do
     params = socket.assigns.generation_params
     content_type = socket.assigns.content_type
@@ -557,7 +563,6 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
       "Play Summary" -> "play_summary"
       "Scene Summary" -> "scene_summary"
       "Paraphrasing" -> "paraphrasing"
-      _ -> String.downcase(content_type)
     end
 
     # A component runs in its parent LiveView's process, so self() is that

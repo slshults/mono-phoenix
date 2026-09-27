@@ -96,5 +96,17 @@ defmodule MonoPhoenixV01Web.SummaryModalComponentTest do
 
       refute_received {:generate_summary, _, _, _, _}
     end
+
+    test "ignores a retry from a modal that was never shown" do
+      {:noreply, socket} =
+        SummaryModalComponent.handle_event(
+          "retry_generation",
+          %{},
+          socket(%{id: "summary-modal", content_type: "", generation_params: %{}, loading: false, error: nil})
+        )
+
+      refute socket.assigns.loading
+      refute_received {:generate_summary, _, _, _, _}
+    end
   end
 end

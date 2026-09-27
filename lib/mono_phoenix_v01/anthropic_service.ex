@@ -78,22 +78,23 @@ defmodule MonoPhoenixV01.AnthropicService do
     end
   end
 
-  # Private functions
-
   # Integer ids keep the cache key canonical ("042" and "42" are one monologue).
   # monologues.id is a Postgres integer, so anything larger can't be a real id.
+  # Public so SummaryAnalytics accepts exactly the ids this module does.
   @max_monologue_id 2_147_483_647
 
-  defp parse_monologue_id(id) when is_integer(id) and id > 0 and id <= @max_monologue_id, do: {:ok, id}
+  def parse_monologue_id(id) when is_integer(id) and id > 0 and id <= @max_monologue_id, do: {:ok, id}
 
-  defp parse_monologue_id(id) when is_binary(id) do
+  def parse_monologue_id(id) when is_binary(id) do
     case Integer.parse(id) do
       {n, ""} when n > 0 and n <= @max_monologue_id -> {:ok, n}
       _ -> :error
     end
   end
 
-  defp parse_monologue_id(_), do: :error
+  def parse_monologue_id(_), do: :error
+
+  # Private functions
 
   defp scene_exists?(play_title, location) do
     Repo.exists?(
