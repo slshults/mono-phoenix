@@ -106,30 +106,7 @@ defmodule MonoPhoenixV01Web.MenplayPageLive do
   # Handle summary generation events using async processing to avoid blocking
   @impl true
   def handle_info({:generate_summary, content_type, params, component_id, request_key}, socket) do
-    # Push PostHog event for generation started
-    event_name = case content_type do
-      "play_summary" -> "play_summary_generated"
-      "scene_summary" -> "scene_summary_generated" 
-      "paraphrasing" -> "paraphrasing_generated"
-    end
-    
-    event_properties = case content_type do
-      "play_summary" -> 
-        %{play_title: params.play_title, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
-      "scene_summary" -> 
-        %{play_title: params.play_title, location: params.location, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
-      "paraphrasing" ->
-        # Get first line from monologue text if available
-        first_line = case params.monologue_text do
-          text when is_binary(text) and byte_size(text) > 0 ->
-            text |> String.split("\n") |> List.first() |> String.slice(0, 100)
-          _ -> nil
-        end
-        # Map.get: on a retry these params come from the modal, not this LiveView.
-        %{monologue_id: params.monologue_id, play_title: page_play_title(socket), character_name: Map.get(params, :character), location: Map.get(params, :location), first_line: first_line, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
-    end
-
-    socket = push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
+    socket = MonoPhoenixV01Web.SummaryAnalytics.push_generated(socket, content_type, params)
 
     # Start async task to avoid blocking the LiveView process
     socket = start_async(socket, request_key, fn ->
@@ -165,30 +142,7 @@ defmodule MonoPhoenixV01Web.MenplayPageLive do
     
     {socket, _result} = case api_result do
       {:ok, %{content: content, id: record_id, source: source}} ->
-        # Push PostHog event for content displayed
-        event_name = case metadata.content_type do
-          "play_summary" -> "play_summary_displayed"
-          "scene_summary" -> "scene_summary_displayed"
-          "paraphrasing" -> "paraphrasing_displayed"
-        end
-
-        event_properties = case metadata.content_type do
-          "play_summary" ->
-            %{play_title: metadata.params.play_title, record_id: record_id, source: source, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
-          "scene_summary" ->
-            %{play_title: metadata.params.play_title, location: metadata.params.location, record_id: record_id, source: source, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
-          "paraphrasing" ->
-            # Get first line from monologue text if available
-            first_line = case metadata.params.monologue_text do
-              text when is_binary(text) and byte_size(text) > 0 ->
-                text |> String.split("\n") |> List.first() |> String.slice(0, 100)
-              _ -> nil
-            end
-            # Map.get: on a retry these params come from the modal, not this LiveView.
-            %{monologue_id: metadata.params.monologue_id, play_title: page_play_title(socket), character_name: Map.get(metadata.params, :character), location: Map.get(metadata.params, :location), first_line: first_line, record_id: record_id, source: source, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
-        end
-
-        socket = push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
+        socket = MonoPhoenixV01Web.SummaryAnalytics.push_displayed(socket, metadata.content_type, metadata.params, record_id, source)
 
         send_update(MonoPhoenixV01Web.SummaryModalComponent,
           id: metadata.component_id,
@@ -259,11 +213,6 @@ defmodule MonoPhoenixV01Web.MenplayPageLive do
     
     {:noreply, socket}
   end
-
-  # Every row on this page is from the same play. The paraphrase params don't
-  # carry its title, and a Retry re-sends the modal's params, which never do.
-  defp page_play_title(%{assigns: %{rows: [%{play: play} | _]}}), do: play
-  defp page_play_title(_socket), do: nil
 
   # Update fetch_monologues/1 to fetch_monologues/2 and add search_value as an argument
   defp fetch_monologues(nil, _search_value), do: []

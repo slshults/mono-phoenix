@@ -4,7 +4,7 @@ defmodule MonoPhoenixV01.AnthropicService do
   Handles caching of responses in the database to avoid repeated API calls.
   """
 
-  alias MonoPhoenixV01.{Repo, Summary}
+  alias MonoPhoenixV01.{MonologueExtras, Repo, Summary}
   import Ecto.Query
   require Logger
 
@@ -34,7 +34,7 @@ defmodule MonoPhoenixV01.AnthropicService do
   Gets or generates a play summary for the given play title.
   """
   def get_play_summary(play_title) do
-    get_or_generate_content("play_summary", play_title, fn _ ->
+    get_or_generate_content("play_summary", play_title, fn -> %{play_title: play_title} end, fn _ ->
       if Repo.exists?(from p in "plays", where: p.title == ^play_title) do
         generate_play_summary(play_title)
       else
@@ -48,7 +48,9 @@ defmodule MonoPhoenixV01.AnthropicService do
   """
   def get_scene_summary(play_title, location) do
     identifier = "#{play_title}-#{location}"
-    get_or_generate_content("scene_summary", identifier, fn _ ->
+    details = fn -> %{play_title: play_title, location: location} end
+
+    get_or_generate_content("scene_summary", identifier, details, fn _ ->
       # The identifier alone can't tell "Play-II i 234" + "250" from "Play" +
       # "II i 234-250", so the exact (play, location) pair must exist.
       if scene_exists?(play_title, location) do
@@ -66,7 +68,9 @@ defmodule MonoPhoenixV01.AnthropicService do
   def get_monologue_paraphrasing(monologue_id) do
     case parse_monologue_id(monologue_id) do
       {:ok, id} ->
-        get_or_generate_content("paraphrasing", "mono_#{id}", fn _ ->
+        details = fn -> MonologueExtras.details(id) || %{} end
+
+        get_or_generate_content("paraphrasing", "mono_#{id}", details, fn _ ->
           case Repo.one(from m in "monologues", where: m.id == ^id, select: m.body) do
             body when is_binary(body) -> generate_paraphrasing(body)
             nil -> {:error, "Unknown monologue: #{id}"}
@@ -78,22 +82,23 @@ defmodule MonoPhoenixV01.AnthropicService do
     end
   end
 
-  # Private functions
-
   # Integer ids keep the cache key canonical ("042" and "42" are one monologue).
   # monologues.id is a Postgres integer, so anything larger can't be a real id.
+  # Public so SummaryAnalytics accepts exactly the ids this module does.
   @max_monologue_id 2_147_483_647
 
-  defp parse_monologue_id(id) when is_integer(id) and id > 0 and id <= @max_monologue_id, do: {:ok, id}
+  def parse_monologue_id(id) when is_integer(id) and id > 0 and id <= @max_monologue_id, do: {:ok, id}
 
-  defp parse_monologue_id(id) when is_binary(id) do
+  def parse_monologue_id(id) when is_binary(id) do
     case Integer.parse(id) do
       {n, ""} when n > 0 and n <= @max_monologue_id -> {:ok, n}
       _ -> :error
     end
   end
 
-  defp parse_monologue_id(_), do: :error
+  def parse_monologue_id(_), do: :error
+
+  # Private functions
 
   defp scene_exists?(play_title, location) do
     Repo.exists?(
@@ -125,13 +130,15 @@ defmodule MonoPhoenixV01.AnthropicService do
     end
   end
 
-  defp get_or_generate_content(content_type, identifier, generator_fn) do
+  # `details` returns a readable description (play, location, and so on) for the
+  # review alert. It's a function so it only runs when something is flagged.
+  defp get_or_generate_content(content_type, identifier, details, generator_fn) do
     case get_cached_content(content_type, identifier) do
       nil ->
         case generator_fn.(identifier) do
           {:ok, content} ->
             record = cache_content(content_type, identifier, content)
-            flag_for_review(record.id, content_type, identifier, content)
+            flag_for_review(record.id, content_type, identifier, content, details)
             {:ok, %{content: content, id: record.id, source: "claude"}}
           error ->
             error
@@ -145,17 +152,29 @@ defmodule MonoPhoenixV01.AnthropicService do
   # Generated content is rendered as raw HTML, and as of 2026-09 none of the
   # cached rows contains an angle bracket. Flag any that does so Steven can
   # look at it: a PostHog alert on this event (prod only) posts to #shakesmonos.
-  defp flag_for_review(summary_id, content_type, identifier, content) do
+  defp flag_for_review(summary_id, content_type, identifier, content, details) do
     if is_binary(content) and String.contains?(content, ["<", ">"]) do
-      Logger.warning("Generated #{content_type} contains < or > (summaries id #{summary_id}); flagged for review")
+      # The row is already cached, and cache hits never re-flag it, so a DB error
+      # here must not lose the flag: send it with fewer details instead.
+      details =
+        try do
+          details.()
+        rescue
+          _ in [DBConnection.ConnectionError, Postgrex.Error] -> %{}
+        end
 
-      properties = %{
-        summary_id: summary_id,
-        content_type: content_type,
-        identifier: identifier,
-        model: Application.get_env(:mono_phoenix_v01, :anthropic)[:model],
-        environment: Application.get_env(:mono_phoenix_v01, :environment)
-      }
+      Logger.warning(
+        "Generated #{content_type} #{inspect(details)} contains < or > (summaries id #{summary_id}); flagged for review"
+      )
+
+      properties =
+        Map.merge(details, %{
+          summary_id: summary_id,
+          content_type: content_type,
+          identifier: identifier,
+          model: Application.get_env(:mono_phoenix_v01, :anthropic)[:model],
+          environment: Application.get_env(:mono_phoenix_v01, :environment)
+        })
 
       # Unlinked, so the event still goes out if the reader cancels or leaves
       # (which kills this generation task) right after the row was cached.

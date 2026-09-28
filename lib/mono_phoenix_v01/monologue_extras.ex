@@ -11,6 +11,8 @@ defmodule MonoPhoenixV01.MonologueExtras do
   The cache keys mirror what `SummaryModalComponent` writes to the `summaries`
   table: paraphrases are keyed `mono_{id}`, play summaries by the play title,
   and scene summaries by `"{play title}-{location}"`.
+
+  `details/1` also describes a monologue for analytics and review alerts.
   """
   import Ecto.Query, only: [from: 2]
   alias MonoPhoenixV01.Repo
@@ -26,6 +28,26 @@ defmodule MonoPhoenixV01.MonologueExtras do
           character: m.character,
           firstline: m.first_line,
           location: m.location
+        }
+      )
+    )
+  end
+
+  @doc """
+  A monologue's play title, character, location and (clean) first line, or nil
+  if there's no such monologue. `id` must already be a valid integer id.
+  """
+  def details(id) do
+    Repo.one(
+      from(m in "monologues",
+        join: p in "plays",
+        on: p.id == m.play_id,
+        where: m.id == ^id,
+        select: %{
+          play_title: p.title,
+          character_name: m.character,
+          location: m.location,
+          first_line: m.first_line
         }
       )
     )

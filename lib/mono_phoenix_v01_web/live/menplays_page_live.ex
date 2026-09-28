@@ -110,6 +110,8 @@ defmodule MonoPhoenixV01Web.MenplaysPageLive do
   # Handle summary generation events using async processing to avoid blocking
   @impl true
   def handle_info({:generate_summary, content_type, params, component_id, request_key}, socket) do
+    socket = MonoPhoenixV01Web.SummaryAnalytics.push_generated(socket, content_type, params)
+
     # Start async task to avoid blocking the LiveView process
     socket = start_async(socket, request_key, fn ->
       case content_type do
@@ -127,7 +129,8 @@ defmodule MonoPhoenixV01Web.MenplaysPageLive do
       async_metadata: Map.put(socket.assigns[:async_metadata] || %{}, request_key, %{
         content_type: content_type,
         component_id: component_id,
-        request_key: request_key
+        request_key: request_key,
+        params: params
       })
     )
     
@@ -137,19 +140,25 @@ defmodule MonoPhoenixV01Web.MenplaysPageLive do
   # Handle async results
   @impl true
   def handle_async(request_key, {:ok, api_result}, socket) do
-    case api_result do
-      {:ok, %{content: content, id: record_id}} ->
-        send_update(MonoPhoenixV01Web.SummaryModalComponent,
-          id: "summary-modal",
-          action: "content_generated",
-          content: content,
-          record_id: record_id
-        )
+    metadata = socket.assigns.async_metadata[request_key]
 
-      {:error, _reason} ->
-        # AnthropicService has already logged the cause.
-        send_update(MonoPhoenixV01Web.SummaryModalComponent, id: "summary-modal", action: "error_occurred")
-    end
+    socket =
+      case api_result do
+        {:ok, %{content: content, id: record_id, source: source}} ->
+          send_update(MonoPhoenixV01Web.SummaryModalComponent,
+            id: "summary-modal",
+            action: "content_generated",
+            content: content,
+            record_id: record_id
+          )
+
+          MonoPhoenixV01Web.SummaryAnalytics.push_displayed(socket, metadata.content_type, metadata.params, record_id, source)
+
+        {:error, _reason} ->
+          # AnthropicService has already logged the cause.
+          send_update(MonoPhoenixV01Web.SummaryModalComponent, id: "summary-modal", action: "error_occurred")
+          socket
+      end
 
     # Clean up tracking
     active_requests = MapSet.delete(socket.assigns.active_requests, request_key)
