@@ -24,7 +24,9 @@ defmodule MonoPhoenixV01Web.Endpoint do
 
   # Drop fleets that rotate across too many IPs to blocklist by CIDR
   # but share one distinctive spoofed user agent (e.g. the St. Louis
-  # Android 13 / Chrome 109 cluster). Same 403, same edge placement.
+  # Android 13 / Chrome 109 cluster). Same 403, same edge placement,
+  # except GET/HEAD /robots.txt passes through so crawlers that honour
+  # robots.txt (e.g. meta-externalagent) can read their Disallow.
   plug(MonoPhoenixV01Web.Plugs.BlockBotUserAgent)
 
   # Serve at "/" the static files from "priv/static" directory.

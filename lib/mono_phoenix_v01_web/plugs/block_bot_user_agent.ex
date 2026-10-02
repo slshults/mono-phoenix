@@ -16,6 +16,14 @@ defmodule MonoPhoenixV01Web.Plugs.BlockBotUserAgent do
 
   def init(opts), do: opts
 
+  # robots.txt stays reachable for blocked UAs. RFC 9309 treats a 4xx on
+  # robots.txt as "no rules", so a 403 here would tell a well-behaved
+  # crawler it may fetch everything; serving the file lets it read its
+  # Disallow and stop asking.
+  def call(%Plug.Conn{request_path: "/robots.txt", method: method} = conn, _opts)
+      when method in ["GET", "HEAD"],
+      do: conn
+
   def call(conn, _opts) do
     user_agent = conn |> get_req_header("user-agent") |> List.first()
 
