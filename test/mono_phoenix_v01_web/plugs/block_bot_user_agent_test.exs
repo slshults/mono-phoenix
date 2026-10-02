@@ -32,6 +32,33 @@ defmodule MonoPhoenixV01Web.Plugs.BlockBotUserAgentTest do
     refute conn.halted
   end
 
+  test "lets a blocked user agent fetch robots.txt" do
+    conn =
+      conn(:get, "/robots.txt")
+      |> put_req_header("user-agent", @spoofed_ua)
+      |> run()
+
+    refute conn.halted
+    assert conn.status == nil
+  end
+
+  test "still blocks a blocked user agent on robots.txt look-alikes and non-GET methods" do
+    for {method, path} <- [
+          {:get, "/ROBOTS.TXT"},
+          {:get, "/robots.txt/../plays"},
+          {:get, "//robots.txt"},
+          {:post, "/robots.txt"}
+        ] do
+      conn =
+        conn(method, path)
+        |> put_req_header("user-agent", @spoofed_ua)
+        |> run()
+
+      assert conn.status == 403, "expected 403 for #{method} #{path}"
+      assert conn.halted
+    end
+  end
+
   test "allows a request with no user-agent header" do
     conn =
       conn(:get, "/plays")

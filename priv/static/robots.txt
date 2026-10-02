@@ -5,3 +5,7 @@
 # Disallow: /
 
 Sitemap: https://www.shakespeare-monologues.org/sitemap.xml
+
+# Meta AI-training crawler.
+User-agent: meta-externalagent
+Disallow: /

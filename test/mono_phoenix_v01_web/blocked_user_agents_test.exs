@@ -20,6 +20,22 @@ defmodule MonoPhoenixV01Web.BlockedUserAgentsTest do
       assert BlockedUserAgents.blocked?(@ashburn_linux_ua)
     end
 
+    test "blocks Meta's AI-training crawler on any browser base" do
+      assert BlockedUserAgents.blocked?(
+               "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 (compatible; meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler))"
+             )
+
+      assert BlockedUserAgents.blocked?(
+               "meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler)"
+             )
+    end
+
+    test "allows Facebook's link-preview fetcher" do
+      refute BlockedUserAgents.blocked?(
+               "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)"
+             )
+    end
+
     test "matches case-insensitively" do
       assert BlockedUserAgents.blocked?(String.downcase(@spoofed_ua))
       assert BlockedUserAgents.blocked?(String.upcase(@spoofed_ua))
