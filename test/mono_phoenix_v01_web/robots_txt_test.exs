@@ -10,8 +10,13 @@ defmodule MonoPhoenixV01Web.RobotsTxtTest do
       |> get("/robots.txt")
 
     body = response(conn, 200)
-    assert body =~ "User-agent: meta-externalagent"
-    assert body =~ "Disallow: /"
+    # Whole group as one string: the header comment also contains
+    # "Disallow: /", so a bare match on that would pin nothing.
+    assert body =~
+             "User-agent: meta-externalagent\nUser-agent: meta-webindexer\n" <>
+               "User-agent: meta-externalads\nUser-agent: meta-externalfetcher\nDisallow: /\n"
+
+    refute body =~ "User-agent: facebookexternalhit"
   end
 
   test "the same crawler is still blocked everywhere else", %{conn: conn} do
