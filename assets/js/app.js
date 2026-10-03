@@ -315,13 +315,15 @@ Hooks.FeedbackForm = {
       this.trackPostHogFeedback([], 'opened');
     });
 
-    // Remember which options were checked at submit time. The form is removed
-    // from the DOM once feedback_success flips, so we can't read it later when
-    // the "Thanks!" message tracks the completed submission.
+    // Capture the completed submission when the user clicks Send, using the
+    // options checked at that moment. This does not wait for the server to
+    // confirm the feedback email, so a positive rating is recorded even when
+    // the email send fails. dont_like is handled above and never submits.
     this.listenOnce(this.el.querySelector('form'), 'submit', () => {
-      this.pendingFeedback = Array.from(
+      const options = Array.from(
         this.el.querySelectorAll('input[name="feedback[]"]:checked')
       ).map(input => input.value);
+      this.trackPostHogFeedback(options, 'submitted');
     });
 
     // Handle checkboxes that have associated details fields
@@ -356,15 +358,11 @@ Hooks.FeedbackForm = {
 
   setupAutoHideSuccess() {
     // Look only inside this hook's modal: `handled` is per hook, and a play page
-    // also carries the search bar's modal, whose hook must not track ours.
+    // also carries the search bar's modal, whose hook must not handle ours.
     const thanksDiv = this.el.closest('.summary-modal-overlay')?.querySelector('.feedback-thanks');
     if (thanksDiv && thanksDiv.textContent.trim() === 'Thanks!' && !this.handled.has(thanksDiv)) {
-      // Track PostHog event when success is shown, using the options captured
-      // at submit time so feedback_type reflects the user's actual choice.
-      this.trackPostHogFeedback(this.pendingFeedback || [], 'submitted');
-      this.pendingFeedback = null;
-
-      // Mark as tracked to prevent double-tracking
+      // The submission is captured in the form submit listener, so the "Thanks!"
+      // message only needs to schedule the auto-hide reset once.
       this.handled.add(thanksDiv);
 
       // Auto-hide after 3 seconds
