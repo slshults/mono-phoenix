@@ -17,6 +17,12 @@ defmodule MonoPhoenixV01Web.BlockedUserAgents do
   Chrome 145 UAs, each cycling six unrelated AWS IPs with zero
   engagement events, so again the UA is the only safe lever.
 
+  Also blocks Meta's AI-training crawler, `meta-externalagent`, by its
+  self-declared token (October 2026), so the block holds
+  whatever browser base Meta puts in front of it. Not to be confused with
+  `facebookexternalhit`, the link-preview fetcher the daily Facebook posts
+  rely on, which must stay allowed.
+
   Each signature is a list of substrings that must **all** appear in
   the user agent (case-insensitively) for it to be blocked. To add or
   remove a signature, edit `@signatures` here. The `BlockBotUserAgent`
@@ -32,7 +38,9 @@ defmodule MonoPhoenixV01Web.BlockedUserAgents do
     # this cluster ran — auto-update makes real pinned-145 traffic a rarity.
     [
       "X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
-    ]
+    ],
+    # Meta AI-training crawler. Also disallowed in robots.txt.
+    ["meta-externalagent"]
   ]
 
   @doc "The blocked user-agent signatures as lists of required substrings."
