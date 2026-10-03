@@ -5,3 +5,12 @@
 # Disallow: /
 
 Sitemap: https://www.shakespeare-monologues.org/sitemap.xml
+
+# Meta's AI crawlers: training, AI search, ads, and AI-agent fetches.
+# facebookexternalhit (link previews for the daily FB posts) is
+# deliberately not listed.
+User-agent: meta-externalagent
+User-agent: meta-webindexer
+User-agent: meta-externalads
+User-agent: meta-externalfetcher
+Disallow: /

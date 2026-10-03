@@ -272,13 +272,38 @@ function deriveFeedbackType(options) {
 // Feedback Form Hook
 Hooks.FeedbackForm = {
   mounted() {
+    // Elements this hook has already wired up. This used to be a data-* flag on
+    // each element, but LiveView's DOM patch resets attributes to what the
+    // server rendered, so the flag vanished on every re-render and updated()
+    // added another listener: one thumbs click fired once per render so far.
+    this.handled = new WeakSet();
     this.setupFeedbackInteractions();
     this.setupAutoHideSuccess();
   },
 
   updated() {
+    // The fields are phx-update="ignore", so a re-render no longer clears them.
+    // Clear them here whenever the overlay is closed (Cancel, or the thumbs
+    // button toggling it shut), so reopening starts from a blank form.
+    if (this.el.style.display === 'none') this.resetFields();
     this.setupFeedbackInteractions();
     this.setupAutoHideSuccess();
+  },
+
+  resetFields() {
+    this.el.querySelector('form')?.reset();
+    this.el.querySelectorAll('.feedback-details-field').forEach(div => {
+      div.style.display = 'none';
+    });
+  },
+
+  // One listener per element: keyed by element, not event type, so a second
+  // call for the same element is ignored whatever its type. `handled` also
+  // records the "Thanks!" element once it has been tracked.
+  listenOnce(el, type, handler) {
+    if (!el || this.handled.has(el)) return;
+    this.handled.add(el);
+    el.addEventListener(type, handler);
   },
 
   setupFeedbackInteractions() {
@@ -286,69 +311,59 @@ Hooks.FeedbackForm = {
     // never completes the form. The thumbs button lives in the modal footer,
     // a sibling of this hook's overlay element.
     const modal = this.el.closest('.summary-modal-overlay');
-    const thumbsBtn = modal?.querySelector('.feedback-thumbs-btn');
-    if (thumbsBtn && !thumbsBtn.dataset.phTracked) {
-      thumbsBtn.dataset.phTracked = 'true';
-      thumbsBtn.addEventListener('click', () => {
-        this.trackPostHogFeedback([], 'opened');
-      });
-    }
+    this.listenOnce(modal?.querySelector('.feedback-thumbs-btn'), 'click', () => {
+      this.trackPostHogFeedback([], 'opened');
+    });
 
     // Capture the completed submission when the user clicks Send, using the
     // options checked at that moment. This does not wait for the server to
     // confirm the feedback email, so a positive rating is recorded even when
     // the email send fails. dont_like is handled above and never submits.
-    const form = this.el.querySelector('form');
-    if (form && !form.dataset.feedbackBound) {
-      form.dataset.feedbackBound = 'true';
-      form.addEventListener('submit', () => {
-        const options = Array.from(
-          this.el.querySelectorAll('input[name="feedback[]"]:checked')
-        ).map(input => input.value);
-        this.trackPostHogFeedback(options, 'submitted');
-      });
-    }
+    this.listenOnce(this.el.querySelector('form'), 'submit', () => {
+      const options = Array.from(
+        this.el.querySelectorAll('input[name="feedback[]"]:checked')
+      ).map(input => input.value);
+      this.trackPostHogFeedback(options, 'submitted');
+    });
 
     // Handle checkboxes that have associated details fields
     const toggles = ['wrong'];
     toggles.forEach(value => {
-      const checkbox = this.el.querySelector(`input[value="${value}"]`);
-      const detailsDiv = this.el.querySelector(`.feedback-details-field[data-for="${value}"]`);
-      if (checkbox && detailsDiv) {
-        checkbox.addEventListener('change', (e) => {
-          if (e.target.checked) {
-            detailsDiv.style.display = 'block';
-            detailsDiv.querySelector('textarea')?.focus();
-          } else {
-            detailsDiv.style.display = 'none';
-            const textarea = detailsDiv.querySelector('textarea');
-            if (textarea) textarea.value = '';
-          }
-        });
-      }
+      this.listenOnce(this.el.querySelector(`input[value="${value}"]`), 'change', (e) => {
+        // Looked up per change: this listener outlives re-renders, so a
+        // reference taken at bind time could point at a replaced element.
+        const detailsDiv = this.el.querySelector(`.feedback-details-field[data-for="${value}"]`);
+        if (!detailsDiv) return;
+        if (e.target.checked) {
+          detailsDiv.style.display = 'block';
+          detailsDiv.querySelector('textarea')?.focus();
+        } else {
+          detailsDiv.style.display = 'none';
+          const textarea = detailsDiv.querySelector('textarea');
+          if (textarea) textarea.value = '';
+        }
+      });
     });
 
     // "I don't like AI" — track and jump to FAQ#Q8 immediately, no Send required
-    const dontLikeCheckbox = this.el.querySelector('input[value="dont_like"]');
-    if (dontLikeCheckbox && !dontLikeCheckbox.dataset.navBound) {
-      dontLikeCheckbox.dataset.navBound = 'true';
-      dontLikeCheckbox.addEventListener('change', (e) => {
-        if (!e.target.checked) return;
-        if (typeof posthog !== 'undefined') {
-          this.trackPostHogFeedback(['dont_like'], 'submitted');
-        }
-        // Brief delay so PostHog's XHR has a chance to leave before nav cancels it
-        setTimeout(() => { window.location.href = '/faq#Q8'; }, 150);
-      });
-    }
+    this.listenOnce(this.el.querySelector('input[value="dont_like"]'), 'change', (e) => {
+      if (!e.target.checked) return;
+      if (typeof posthog !== 'undefined') {
+        this.trackPostHogFeedback(['dont_like'], 'submitted');
+      }
+      // Brief delay so PostHog's XHR has a chance to leave before nav cancels it
+      setTimeout(() => { window.location.href = '/faq#Q8'; }, 150);
+    });
   },
 
   setupAutoHideSuccess() {
-    const thanksDiv = document.querySelector('.feedback-thanks');
-    if (thanksDiv && thanksDiv.textContent.trim() === 'Thanks!' && !thanksDiv.dataset.tracked) {
+    // Look only inside this hook's modal: `handled` is per hook, and a play page
+    // also carries the search bar's modal, whose hook must not handle ours.
+    const thanksDiv = this.el.closest('.summary-modal-overlay')?.querySelector('.feedback-thanks');
+    if (thanksDiv && thanksDiv.textContent.trim() === 'Thanks!' && !this.handled.has(thanksDiv)) {
       // The submission is captured in the form submit listener, so the "Thanks!"
       // message only needs to schedule the auto-hide reset once.
-      thanksDiv.dataset.tracked = 'true';
+      this.handled.add(thanksDiv);
 
       // Auto-hide after 3 seconds
       setTimeout(() => {
@@ -381,10 +396,17 @@ Hooks.FeedbackForm = {
     let character_name = null;
     let play_title = null;
     let location = null;
+    let monologue_id = null;
 
     if (titleText.startsWith('Modern Paraphrasing: ')) {
       content_type = 'Paraphrasing';
       character_name = titleText.replace('Modern Paraphrasing: ', '').trim();
+      // The paraphrase title names no play, and the modal sits outside the
+      // monologue table, so find the row it was opened from by monologue id.
+      monologue_id = modal.dataset.monologueId || null;
+      const icon = monologue_id &&
+        document.querySelector(`.summary-icon[phx-value-monologue-id="${CSS.escape(monologue_id)}"]`);
+      play_title = icon?.closest('tr')?.querySelector('.monologue-playname')?.textContent.trim() || null;
     } else if (titleText.startsWith('Play Summary: ')) {
       content_type = 'Play Summary';
       play_title = titleText.replace('Play Summary: ', '').trim();
@@ -407,6 +429,7 @@ Hooks.FeedbackForm = {
     };
 
     if (character_name) properties.character_name = character_name;
+    if (monologue_id) properties.monologue_id = monologue_id;
     if (play_title) properties.play_title = play_title;
     if (location) properties.location = location;
 

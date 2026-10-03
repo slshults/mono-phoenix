@@ -376,6 +376,12 @@
             defaults: '2026-01-30',
             person_profiles: 'identified_only',
             loaded: function (ph) {
+                // The play pages used to posthog.register() a play_title super
+                // property. It persisted in the browser and rode along on every
+                // later event, on any page, so it went stale. Clear it on load.
+                // Added 2026-09-26; removable once old browsers have cycled out.
+                ph.unregister('play_title');
+
                 // Drop a stale identity when the SDK thinks it is identified but
                 // the server says nobody is logged in. Covers three cases:
                 //

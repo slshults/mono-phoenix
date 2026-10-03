@@ -14,9 +14,6 @@ defmodule MonoPhoenixV01Web.PlayPageLive do
 
     rows = fetch_monologues(playid, "")
     
-    # Subscribe to PubSub events for retry functionality
-    Phoenix.PubSub.subscribe(MonoPhoenixV01.PubSub, "play_page_events")
-    
     {:ok, assign(socket, search_bar: %{}, search_value: "", rows: rows, play_id: playid, active_requests: MapSet.new(), async_metadata: %{})}
   end
 
@@ -98,7 +95,8 @@ defmodule MonoPhoenixV01Web.PlayPageLive do
         action: "show_paraphrasing",
         monologue_id: monologue_id,
         monologue_text: monologue_text,
-        character: character
+        character: character,
+        location: location
       )
 
       # Track this request and start the content generation
@@ -122,29 +120,7 @@ defmodule MonoPhoenixV01Web.PlayPageLive do
   # Handle summary generation events using async processing to avoid blocking
   @impl true
   def handle_info({:generate_summary, content_type, params, component_id, request_key}, socket) do
-    # Push PostHog event for generation started
-    event_name = case content_type do
-      "play_summary" -> "play_summary_generated"
-      "scene_summary" -> "scene_summary_generated" 
-      "paraphrasing" -> "paraphrasing_generated"
-    end
-    
-    event_properties = case content_type do
-      "play_summary" -> 
-        %{play_title: params.play_title, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
-      "scene_summary" -> 
-        %{play_title: params.play_title, location: params.location, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
-      "paraphrasing" ->
-        # Get first line from monologue text if available
-        first_line = case params.monologue_text do
-          text when is_binary(text) and byte_size(text) > 0 ->
-            text |> String.split("\n") |> List.first() |> String.slice(0, 100)
-          _ -> nil
-        end
-        %{monologue_id: params.monologue_id, character_name: params.character, location: params.location, first_line: first_line, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
-    end
-
-    socket = push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
+    socket = MonoPhoenixV01Web.SummaryAnalytics.push_generated(socket, content_type, params)
 
     # Start async task to avoid blocking the LiveView process
     socket = start_async(socket, request_key, fn ->
@@ -156,7 +132,7 @@ defmodule MonoPhoenixV01Web.PlayPageLive do
           MonoPhoenixV01.AnthropicService.get_scene_summary(params.play_title, params.location)
 
         "paraphrasing" ->
-          MonoPhoenixV01.AnthropicService.get_monologue_paraphrasing(params.monologue_id, params.monologue_text)
+          MonoPhoenixV01.AnthropicService.get_monologue_paraphrasing(params.monologue_id)
       end
     end)
     
@@ -180,29 +156,7 @@ defmodule MonoPhoenixV01Web.PlayPageLive do
     
     {socket, _result} = case api_result do
       {:ok, %{content: content, id: record_id, source: source}} ->
-        # Push PostHog event for content displayed
-        event_name = case metadata.content_type do
-          "play_summary" -> "play_summary_displayed"
-          "scene_summary" -> "scene_summary_displayed"
-          "paraphrasing" -> "paraphrasing_displayed"
-        end
-
-        event_properties = case metadata.content_type do
-          "play_summary" ->
-            %{play_title: metadata.params.play_title, record_id: record_id, source: source, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
-          "scene_summary" ->
-            %{play_title: metadata.params.play_title, location: metadata.params.location, record_id: record_id, source: source, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
-          "paraphrasing" ->
-            # Get first line from monologue text if available
-            first_line = case metadata.params.monologue_text do
-              text when is_binary(text) and byte_size(text) > 0 ->
-                text |> String.split("\n") |> List.first() |> String.slice(0, 100)
-              _ -> nil
-            end
-            %{monologue_id: metadata.params.monologue_id, character_name: metadata.params.character, location: metadata.params.location, first_line: first_line, record_id: record_id, source: source, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
-        end
-
-        socket = push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
+        socket = MonoPhoenixV01Web.SummaryAnalytics.push_displayed(socket, metadata.content_type, metadata.params, record_id, source)
 
         send_update(MonoPhoenixV01Web.SummaryModalComponent,
           id: metadata.component_id,
@@ -213,46 +167,10 @@ defmodule MonoPhoenixV01Web.PlayPageLive do
         
         {socket, :content_generated}
         
-      {:ok, content} when is_binary(content) ->
-        # Fallback for old format (shouldn't happen with new code) - still track display event
-        event_name = case metadata.content_type do
-          "play_summary" -> "play_summary_displayed"
-          "scene_summary" -> "scene_summary_displayed" 
-          "paraphrasing" -> "paraphrasing_displayed"
-        end
-        
-        event_properties = case metadata.content_type do
-          "play_summary" -> 
-            %{play_title: metadata.params.play_title, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
-          "scene_summary" -> 
-            %{play_title: metadata.params.play_title, location: metadata.params.location, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
-          "paraphrasing" ->
-            first_line = case metadata.params.monologue_text do
-              text when is_binary(text) and byte_size(text) > 0 ->
-                text |> String.split("\n") |> List.first() |> String.slice(0, 100)
-              _ -> nil
-            end
-            %{monologue_id: metadata.params.monologue_id, character_name: metadata.params.character, location: metadata.params.location, first_line: first_line, timestamp: DateTime.utc_now() |> DateTime.to_iso8601()}
-        end
-
-        socket = push_event(socket, "posthog_capture", %{event: event_name, properties: event_properties})
-
-        send_update(MonoPhoenixV01Web.SummaryModalComponent,
-          id: metadata.component_id,
-          action: "content_generated",
-          content: content
-        )
-        
-        {socket, :content_generated}
-        
       {:error, error} ->
         require Logger
         Logger.warning("API call failed for #{metadata.content_type}: #{error}")
-        send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-          id: metadata.component_id, 
-          action: "content_error", 
-          error: "Failed to generate #{metadata.content_type}: #{error}"
-        )
+        send_update(MonoPhoenixV01Web.SummaryModalComponent, id: metadata.component_id, action: "error_occurred")
         
         {socket, :error}
     end
@@ -279,11 +197,7 @@ defmodule MonoPhoenixV01Web.PlayPageLive do
         Logger.error("Async API call failed for #{request_key}: #{inspect(reason)}")
         
         if metadata do
-          send_update(MonoPhoenixV01Web.SummaryModalComponent, 
-            id: metadata.component_id, 
-            action: "content_error", 
-            error: "API call failed unexpectedly"
-          )
+          send_update(MonoPhoenixV01Web.SummaryModalComponent, id: metadata.component_id, action: "error_occurred")
         end
     end
     

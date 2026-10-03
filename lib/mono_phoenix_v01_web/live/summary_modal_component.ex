@@ -1,6 +1,10 @@
 defmodule MonoPhoenixV01Web.SummaryModalComponent do
   use MonoPhoenixV01Web, :live_component
 
+  # Shown for every failed generation. The underlying cause is already in the
+  # server log and in PostHog ($ai_error), so readers get a plain message.
+  @generation_error "Sorry, this couldn't be generated right now. Please try again in a moment."
+
   @impl true
   def render(assigns) do
     ~H"""
@@ -11,6 +15,7 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
       phx-hook="ModalClickHandler"
       phx-target={@myself}
       data-record-id={@record_id}
+      data-monologue-id={@generation_params[:monologue_id]}
       data-loading={@loading}
     >
       <!-- Confirmation Dialog -->
@@ -131,39 +136,45 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
                   <%= unless @feedback_success do %>
                     <h4>Send feedback for this <%= String.downcase(@content_type) %>?</h4>
                     <form phx-submit="submit_feedback" phx-target={@myself}>
-                      <div class="feedback-checkboxes">
-                        <label>
-                          <input type="checkbox" name="feedback[]" value="like_it" />
-                          I like it
-                        </label>
-                        <label>
-                          <input type="checkbox" name="feedback[]" value="dont_understand" />
-                          I don't understand it
-                        </label>
-                        <label>
-                          <input type="checkbox" name="feedback[]" value="wrong" />
-                          It's wrong, contains errors.
-                        </label>
-                        <label>
-                          <input type="checkbox" name="feedback[]" value="dont_like" />
-                          Why are you using AI? I don't like AI!
-                        </label>
-                        <label>
-                          <input type="checkbox" name="feedback[]" value="why_talking" />
-                          Why is it talking to me? (AI babble instead of summary)
-                        </label>
-                        <label>
-                          <input type="checkbox" name="feedback[]" value="button_pusher" />
-                          I just like to push buttons to see what they do
-                        </label>
-                      </div>
-                      <div class="feedback-details-field" data-for="wrong" style="display: none;">
-                        <textarea
-                          name="wrong_details"
-                          placeholder={"How, specifically, is it wrong?\nWhich publisher are you comparing to?"}
-                          rows="2"
-                          maxlength="250"
-                        ></textarea>
+                      <%!-- The reader and the FeedbackForm hook own these fields; the hook
+                           clears them when the overlay closes. Without ignore, the re-render
+                           that shows the validation message resets them: the "wrong" box
+                           unticks, the text clears, the field hides. --%>
+                      <div id={"#{@id}-feedback-fields"} phx-update="ignore">
+                        <div class="feedback-checkboxes">
+                          <label>
+                            <input type="checkbox" name="feedback[]" value="like_it" />
+                            I like it
+                          </label>
+                          <label>
+                            <input type="checkbox" name="feedback[]" value="dont_understand" />
+                            I don't understand it
+                          </label>
+                          <label>
+                            <input type="checkbox" name="feedback[]" value="wrong" />
+                            It's wrong, contains errors.
+                          </label>
+                          <label>
+                            <input type="checkbox" name="feedback[]" value="dont_like" />
+                            Why are you using AI? I don't like AI!
+                          </label>
+                          <label>
+                            <input type="checkbox" name="feedback[]" value="why_talking" />
+                            Why is it talking to me? (AI babble instead of summary)
+                          </label>
+                          <label>
+                            <input type="checkbox" name="feedback[]" value="button_pusher" />
+                            I just like to push buttons to see what they do
+                          </label>
+                        </div>
+                        <div class="feedback-details-field" data-for="wrong" style="display: none;">
+                          <textarea
+                            name="wrong_details"
+                            placeholder={"How, specifically, is it wrong?\nWhich publisher are you comparing to?"}
+                            rows="2"
+                            maxlength="250"
+                          ></textarea>
+                        </div>
                       </div>
                       <div class="feedback-form-buttons">
                         <button
@@ -485,7 +496,6 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
       feedback_success: false,
       feedback_completed: false,
       sending_feedback: false,
-      show_wrong_details: false,
       validation_message: nil
     )}
   end
@@ -531,7 +541,17 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
     {:noreply, socket}
   end
 
+  # A second click can already be queued before the first one sets loading, so
+  # ignore it rather than start a duplicate generation.
   @impl true
+  def handle_event("retry_generation", _, %{assigns: %{loading: true}} = socket), do: {:noreply, socket}
+
+  # Only a modal showing one of these can retry. A crafted event against a modal
+  # that was never shown (content_type "") would otherwise reach the host.
+  def handle_event("retry_generation", _, %{assigns: %{content_type: content_type}} = socket)
+      when content_type not in ["Play Summary", "Scene Summary", "Paraphrasing"],
+      do: {:noreply, socket}
+
   def handle_event("retry_generation", _, socket) do
     params = socket.assigns.generation_params
     content_type = socket.assigns.content_type
@@ -543,15 +563,13 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
       "Play Summary" -> "play_summary"
       "Scene Summary" -> "scene_summary"
       "Paraphrasing" -> "paraphrasing"
-      _ -> String.downcase(content_type)
     end
 
-    # Use PubSub to communicate with parent LiveView
-    Phoenix.PubSub.broadcast(
-      MonoPhoenixV01.PubSub,
-      "play_page_events",
-      {:generate_summary, message_type, params, socket.assigns.id}
-    )
+    # A component runs in its parent LiveView's process, so self() is that
+    # LiveView. Every host handles this 5-tuple. The key is unique so a retry
+    # never collides with a request still in flight.
+    request_key = "retry:#{message_type}:#{System.unique_integer([:positive])}"
+    send(self(), {:generate_summary, message_type, params, socket.assigns.id, request_key})
 
     {:noreply, socket}
   end
@@ -561,7 +579,6 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
     socket = assign(socket,
       show_feedback: !socket.assigns.show_feedback,
       feedback_success: false,
-      show_wrong_details: false,
       validation_message: nil
     )
     {:noreply, socket}
@@ -661,14 +678,22 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
   end
 
   @impl true
-  def update(%{action: "show_paraphrasing", monologue_id: monologue_id, monologue_text: monologue_text, character: character}, socket) do
+  def update(%{action: "show_paraphrasing", monologue_id: monologue_id, monologue_text: monologue_text, character: character} = assigns, socket) do
     socket = assign(socket,
       show: true,
       loading: true,
       title: "Modern Paraphrasing: #{character}",
       content_type: "Paraphrasing",
       error: nil,
-      generation_params: %{monologue_id: monologue_id, monologue_text: monologue_text},
+      # Retry re-sends these, so keep what the host's analytics read. Only some
+      # hosts pass location (the play pages) and play_title (the search bars).
+      generation_params: %{
+        monologue_id: monologue_id,
+        monologue_text: monologue_text,
+        character: character,
+        location: Map.get(assigns, :location),
+        play_title: Map.get(assigns, :play_title)
+      },
       canceled: false,
       feedback_success: false,
       feedback_completed: false,
@@ -689,21 +714,11 @@ defmodule MonoPhoenixV01Web.SummaryModalComponent do
   end
 
   @impl true
-  def update(%{action: "content_generated", content: content}, socket) do
-    # Fallback for updates without record_id (shouldn't happen with new code)
+  def update(%{action: "error_occurred"}, socket) do
     if socket.assigns.canceled do
       {:ok, socket}
     else
-      {:ok, assign(socket, loading: false, content: content)}
-    end
-  end
-
-  @impl true
-  def update(%{action: "content_error", error: error}, socket) do
-    if socket.assigns.canceled do
-      {:ok, socket}
-    else
-      {:ok, assign(socket, loading: false, error: error)}
+      {:ok, assign(socket, loading: false, error: @generation_error)}
     end
   end
 
