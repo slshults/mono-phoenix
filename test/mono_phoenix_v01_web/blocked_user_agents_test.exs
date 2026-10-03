@@ -30,6 +30,14 @@ defmodule MonoPhoenixV01Web.BlockedUserAgentsTest do
              )
     end
 
+    test "blocks Meta's other AI crawlers" do
+      for token <- ~w(meta-webindexer meta-externalads meta-externalfetcher) do
+        assert BlockedUserAgents.blocked?(
+                 "#{token}/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/web-crawlers)"
+               )
+      end
+    end
+
     test "allows Facebook's link-preview fetcher" do
       refute BlockedUserAgents.blocked?(
                "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)"

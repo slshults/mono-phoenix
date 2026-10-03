@@ -17,11 +17,13 @@ defmodule MonoPhoenixV01Web.BlockedUserAgents do
   Chrome 145 UAs, each cycling six unrelated AWS IPs with zero
   engagement events, so again the UA is the only safe lever.
 
-  Also blocks Meta's AI-training crawler, `meta-externalagent`, by its
-  self-declared token (October 2026), so the block holds
-  whatever browser base Meta puts in front of it. Not to be confused with
-  `facebookexternalhit`, the link-preview fetcher the daily Facebook posts
-  rely on, which must stay allowed.
+  Also blocks Meta's AI crawlers by their self-declared tokens (October
+  2026): `meta-externalagent` (model training), `meta-webindexer` (Meta AI
+  search), `meta-externalads` (ads), and `meta-externalfetcher` (user-
+  requested fetches, which Meta says may ignore robots.txt). Matching the
+  token means the block holds whatever browser base Meta puts in front of
+  it. Not to be confused with `facebookexternalhit`, the link-preview
+  fetcher the daily Facebook posts rely on, which must stay allowed.
 
   Each signature is a list of substrings that must **all** appear in
   the user agent (case-insensitively) for it to be blocked. To add or
@@ -39,8 +41,11 @@ defmodule MonoPhoenixV01Web.BlockedUserAgents do
     [
       "X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
     ],
-    # Meta AI-training crawler. Also disallowed in robots.txt.
-    ["meta-externalagent"]
+    # Meta's AI crawlers. Also disallowed in robots.txt.
+    ["meta-externalagent"],
+    ["meta-webindexer"],
+    ["meta-externalads"],
+    ["meta-externalfetcher"]
   ]
 
   @doc "The blocked user-agent signatures as lists of required substrings."
