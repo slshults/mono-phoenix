@@ -213,6 +213,9 @@ if config_env() == :prod do
   # Lifeline — rescues `executing` jobs orphaned by a crashed node
   # Cron — daily MOTD trigger at 13:00 UTC (== 09:00 US Eastern DST,
   #        08:00 EST outside DST). Repo + queues live in config/config.exs.
+  #        Plus the summaries quality check at 12:00 UTC, an hour earlier,
+  #        so its summary_quality_checked event is in PostHog ahead of the
+  #        morning daily-note routine.
   #
   # Notifier - Oban.Notifiers.PG rather than the default Postgres one.
   # The Postgres notifier holds its OWN dedicated connection, outside
@@ -232,7 +235,8 @@ if config_env() == :prod do
       Oban.Plugins.Lifeline,
       {Oban.Plugins.Cron,
        crontab: [
-         {"0 13 * * *", MonoPhoenixV01.DailyMonologue.Scheduler}
+         {"0 13 * * *", MonoPhoenixV01.DailyMonologue.Scheduler},
+         {"0 12 * * *", MonoPhoenixV01.SummaryQualityCheck}
        ]}
     ]
 
