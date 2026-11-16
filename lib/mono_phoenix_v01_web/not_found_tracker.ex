@@ -17,6 +17,13 @@ defmodule MonoPhoenixV01Web.NotFoundTracker do
   `"cold404"` distinct_id instead. Watch `cold404` with its own trends
   alert so a spike (broken deploy, misbehaving crawler) surfaces before
   it becomes an ingestion problem.
+
+  These events are posted from the server, so without help PostHog would
+  geolocate them to the server's own IP and see no user agent. Each event
+  therefore carries the visitor's IP as `$ip` (`conn.remote_ip`, which the
+  `RemoteIp` plug in the endpoint has already resolved from
+  `X-Forwarded-For`) and their `User-Agent` header as `$raw_user_agent`,
+  the property the project's "Filter Bot Events" transformation reads.
   """
 
   @cold_distinct_id "cold404"
@@ -46,11 +53,18 @@ defmodule MonoPhoenixV01Web.NotFoundTracker do
   @doc false
   def properties(conn) do
     %{
-      path: conn.request_path,
-      referrer: conn |> Plug.Conn.get_req_header("referer") |> List.first(),
-      status: conn.status
+      :path => conn.request_path,
+      :referrer => conn |> Plug.Conn.get_req_header("referer") |> List.first(),
+      :status => conn.status,
+      "$ip" => conn.remote_ip |> :inet.ntoa() |> to_string()
     }
+    |> put_user_agent(conn |> Plug.Conn.get_req_header("user-agent") |> List.first())
   end
+
+  defp put_user_agent(properties, ua) when is_binary(ua) and ua != "",
+    do: Map.put(properties, "$raw_user_agent", ua)
+
+  defp put_user_agent(properties, _ua), do: properties
 
   @doc false
   def distinct_id(conn) do
