@@ -18,7 +18,10 @@ defmodule MonoPhoenixV01Web do
   """
 
   def static_paths do
-    ~w(assets fonts images favicon.ico robots.txt ads.txt llms.txt)
+    ~w(assets fonts images favicon.ico robots.txt ads.txt llms.txt opensearch.xml
+       apple-touch-icon.png apple-touch-icon-precomposed.png
+       apple-touch-icon-120x120.png apple-touch-icon-120x120-precomposed.png
+       apple-touch-icon-240x240.png apple-touch-icon-240x240-precomposed.png)
   end
 
   def controller do
