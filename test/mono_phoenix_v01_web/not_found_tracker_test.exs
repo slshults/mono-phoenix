@@ -14,10 +14,41 @@ defmodule MonoPhoenixV01Web.NotFoundTrackerTest do
         |> put_req_header("referer", "https://example.com/search?q=secret")
 
       assert NotFoundTracker.properties(conn) == %{
-               path: "/monologues/999999",
-               referrer: "https://example.com/search?q=secret",
-               status: 404
+               :path => "/monologues/999999",
+               :referrer => "https://example.com/search?q=secret",
+               :status => 404,
+               "$ip" => "127.0.0.1"
              }
+    end
+
+    test "carries the visitor's IP and user agent so PostHog can geolocate and bot-filter" do
+      ua = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15"
+
+      conn =
+        conn(:get, "/apple-touch-icon.png")
+        |> Map.put(:status, 404)
+        |> Map.put(:remote_ip, {203, 0, 113, 7})
+        |> put_req_header("user-agent", ua)
+
+      properties = NotFoundTracker.properties(conn)
+
+      assert properties["$ip"] == "203.0.113.7"
+      assert properties["$raw_user_agent"] == ua
+    end
+
+    test "formats an IPv6 visitor address" do
+      conn =
+        conn(:get, "/nope")
+        |> Map.put(:status, 404)
+        |> Map.put(:remote_ip, {0x2001, 0xDB8, 0, 0, 0, 0, 0, 1})
+
+      assert NotFoundTracker.properties(conn)["$ip"] == "2001:db8::1"
+    end
+
+    test "leaves $raw_user_agent out when the header is absent" do
+      conn = conn(:get, "/nope") |> Map.put(:status, 404)
+
+      refute Map.has_key?(NotFoundTracker.properties(conn), "$raw_user_agent")
     end
 
     test "referrer is nil when the header is absent" do
