@@ -48,7 +48,7 @@ defmodule MonoPhoenixV01.MixProject do
       {:swoosh, "~> 1.3"},
       {:gen_smtp, "~> 1.0"},
       {:certifi, "~> 2.9"},
-      {:telemetry_metrics, "~> 0.6"},
+      {:telemetry_metrics, "~> 1.2"},
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.22.1"},
       {:jason, "~> 1.2"},
