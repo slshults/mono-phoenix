@@ -50,7 +50,7 @@ defmodule MonoPhoenixV01.MixProject do
       {:certifi, "~> 2.9"},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
-      {:gettext, "~> 0.22.1"},
+      {:gettext, "~> 1.0.2"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       # Parses X-Forwarded-For so conn.remote_ip is the real client IP
