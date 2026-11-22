@@ -1,0 +1,30 @@
+# Watch-only Dependabot for the Elixir (mix) packages. It opens PRs so you
+# hear about updates; nothing here merges or deploys them. There's no
+# auto-merge workflow in this repo, so every PR waits for you.
+# https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference
+version: 2
+updates:
+  - package-ecosystem: "mix"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Vancouver"
+    # Wait a week after a release before proposing it, so a bad release has
+    # time to be caught and pulled. Security updates skip this wait.
+    cooldown:
+      default-days: 7
+    # One PR for all minor and patch updates; each major gets its own PR,
+    # since those are the ones that can break things.
+    groups:
+      mix-minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    ignore:
+      # A local stub that replaces the real grpcbox (see vendor/grpcbox_stub).
+      - dependency-name: "grpcbox"
