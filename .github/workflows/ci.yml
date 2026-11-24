@@ -35,7 +35,7 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U postgres"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
@@ -50,14 +50,16 @@ jobs:
         with:
           persist-credentials: false
 
+      # Before setup-beam, which runs mix in this folder and so loads the
+      # test config.
+      - name: Use the CI test config
+        run: cp .github/ci/test.exs config/test.exs
+
       # Same versions Gigalixir builds with (elixir_buildpack.config).
       - uses: erlef/setup-beam@54075bcc5e249e4758d363f27d099f55d843f124  # v1.24.1
         with:
           otp-version: "27.3.4"
           elixir-version: "1.18.4"
-
-      - name: Use the CI test config
-        run: cp .github/ci/test.exs config/test.exs
 
       # --check-locked fails if mix.lock is out of step with mix.exs, so
       # nothing gets resolved fresh, unchecked. The auto-merge relies on it.
