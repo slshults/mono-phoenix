@@ -1,0 +1,414 @@
+# Auto-approve and auto-merge Dependabot's minor and patch updates of the
+# Elixir (Hex) packages, once CI has passed on the PR's exact commit. Majors
+# and anything else are left for a human.
+#
+# Before it merges, this checks the PR's actual files, not just what the PR
+# says about itself:
+#   - the only file changed is mix.lock (a change to mix.exs waits for you);
+#   - every changed or added package is a plain Hex package from hex.pm
+#     (no git, path or other-repo dependencies);
+#   - no package moves to a new major version, to a pre-release or to an
+#     older version, and no package leaves the lock unless an updated
+#     package that needed it explains why;
+#   - hex.pm itself shows the same checksum and the same dependencies, and
+#     the release is at least 7 days old (Dependabot's cooldown covers the
+#     packages it bumps; this covers any it pulls in along the way too);
+#   - no package is retired for security, or becomes retired or picks up a
+#     security advisory that its old version didn't have;
+#   - CI (ci.yml) passed for this PR on its newest commit.
+# dependabot-recheck.yml re-runs this every 6 hours while a PR waits. To
+# recheck sooner, run "Dependabot recheck" from the Actions tab (Run
+# workflow). Don't press "Re-run" on a run of this workflow yourself: a
+# re-run started by a person is refused, so it only withdraws.
+# https://docs.github.com/en/code-security/dependabot/working-with-dependabot/automating-dependabot-with-github-actions
+#
+# Needs two repo settings: Settings > Actions > General > "Allow GitHub
+# Actions to create and approve pull requests", and Settings > General >
+# "Allow auto-merge". Requiring the "test" and "prod-build" checks in
+# branch protection is a good second lock. Keep those job names unique
+# across this repo's workflows.
+#
+# Never checks out or runs the PR's code: it reads mix.lock through the API
+# as data. Merging doesn't deploy; the Monday job on the PC does that.
+
+name: Dependabot auto-merge
+
+on: pull_request
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+# One run per PR at a time, so a withdraw can't race an approve.
+concurrency:
+  group: dependabot-auto-merge-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  dependabot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    # Only on PRs Dependabot opened, from a branch in this repo (not a fork),
+    # and only in this repo itself (not in a fork of it). Who triggered the
+    # event is checked in the first step instead, so that a push by anyone
+    # else still reaches the withdraw step at the end.
+    if: >-
+      github.event.pull_request.user.login == 'dependabot[bot]' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.repository == 'slshults/mono-phoenix'
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@21025c705c08248db411dc16f3619e6b5f9ea21a  # v2.5.0
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Verify it's a Hex update from Dependabot
+        id: verify
+        env:
+          # Passed through env, never interpolated into the script.
+          ECOSYSTEM: ${{ steps.metadata.outputs.package-ecosystem }}
+          UPDATE_TYPE: ${{ steps.metadata.outputs.update-type }}
+          # A manual re-run keeps the original actor, so also check who
+          # started this attempt: Dependabot, or the recheck workflow.
+          ACTOR: ${{ github.actor }}
+          TRIGGERING_ACTOR: ${{ github.triggering_actor }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          ok=true
+          [[ "$ACTOR" == "dependabot[bot]" ]] || ok=false
+          [[ "$TRIGGERING_ACTOR" == "dependabot[bot]" || "$TRIGGERING_ACTOR" == "github-actions[bot]" ]] || ok=false
+          [[ "$ECOSYSTEM" == "hex" ]] || ok=false
+          [[ "$BASE_REF" == "main" ]] || ok=false
+          # The files are checked in the next step too; this is a first cut.
+          [[ "$UPDATE_TYPE" == "version-update:semver-minor" || "$UPDATE_TYPE" == "version-update:semver-patch" ]] || ok=false
+          echo "allowed=$ok" >> "$GITHUB_OUTPUT"
+          [[ "$ok" == true ]] || echo "::warning::Not a minor or patch Hex update from Dependabot - skipping auto-merge"
+
+      # An auto-merge armed by an earlier run must not carry a newer,
+      # unchecked commit into main, so disarm first. The last step arms it
+      # again once every check has passed on this commit.
+      - name: Disarm until this commit is checked
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          set -euo pipefail
+          live=$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq .head.sha)
+          [[ "$live" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::Couldn't read the PR's head"; exit 1; }
+          if [[ "$(gh pr view "$PR_URL" --json autoMergeRequest --jq '.autoMergeRequest != null')" != "false" ]]; then
+            gh pr merge --disable-auto "$PR_URL"
+          fi
+          # Bot approvals of any other commit go too.
+          stale=$(gh api --paginate "repos/$REPO/pulls/$PR_NUMBER/reviews" \
+            | jq -r --arg live "$live" '.[] | select(.user.login == "github-actions[bot]" and .state == "APPROVED" and .commit_id != $live) | .id')
+          for id in $(grep -E '^[0-9]+$' <<< "$stale" || true); do
+            gh api --method PUT "repos/$REPO/pulls/$PR_NUMBER/reviews/$id/dismissals" \
+              -f message="A newer commit hasn't been checked yet" -f event=DISMISS > /dev/null
+          done
+
+      # fetch-metadata only reads the PR's description, so check what the PR
+      # as a whole changes, against the commit it branched from.
+      - name: Verify the diff is only minor or patch Hex updates
+        id: diff
+        if: steps.verify.outputs.allowed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          fail() { echo "::warning::$1 - skipping auto-merge"; echo "ok=false" >> "$GITHUB_OUTPUT"; exit 0; }
+          [[ "$HEAD_SHA" =~ ^[0-9a-f]{40}$ && "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]] || fail "unexpected commit ids"
+
+          gh api "repos/$REPO/compare/$BASE_SHA...$HEAD_SHA" > "$RUNNER_TEMP/compare.json" || fail "couldn't compare the commits"
+          merge_base=$(jq -r '.merge_base_commit.sha' "$RUNNER_TEMP/compare.json")
+          [[ "$merge_base" =~ ^[0-9a-f]{40}$ ]] || fail "couldn't find the merge base"
+
+          # Exactly one file, mix.lock, modified in place (not renamed, added
+          # or removed), as of the commit being checked.
+          jq -e '(.files | length) == 1 and .files[0].filename == "mix.lock"
+                 and .files[0].status == "modified" and (.files[0] | has("previous_filename") | not)' \
+            "$RUNNER_TEMP/compare.json" > /dev/null || fail "PR changes more than mix.lock"
+
+          mkdir -p "$RUNNER_TEMP/v"
+          gh api -H "Accept: application/vnd.github.raw" "repos/$REPO/contents/mix.lock?ref=$merge_base" > "$RUNNER_TEMP/v/base.lock"
+          gh api -H "Accept: application/vnd.github.raw" "repos/$REPO/contents/mix.lock?ref=$HEAD_SHA" > "$RUNNER_TEMP/v/head.lock"
+
+          cat > "$RUNNER_TEMP/v/check.py" <<'PY'
+          import json, re, sys, time, urllib.parse, urllib.request
+          from datetime import datetime, timedelta, timezone
+
+          # BEGIN shared mix.lock check (identical in mono-phoenix's dependabot-auto-merge.yml
+          # and dependabot_deploy.py; test_dd_mix.py checks that they match)
+          NAME = r"[a-z][a-z0-9_]*"
+          VERSION = r"[0-9]+\.[0-9]+\.[0-9]+"
+          # Requirements like "~> 1.0 or >= 2.0.1". No quotes, backslashes or "#{": Mix
+          # evaluates mix.lock as Elixir code, so string interpolation would run.
+          REQ = r'"[0-9A-Za-z .~<>=!+-]*"'
+          DEP = r'\{:' + NAME + r', ' + REQ + r', \[hex: :' + NAME + r', repo: "hexpm", optional: (?:true|false)\]\}'
+          ENTRY = re.compile(
+              r'  "(' + NAME + r')": \{:hex, :(' + NAME + r'), "(' + VERSION + r')", "[0-9a-f]{64}", '
+              r'\[:[a-z0-9_]+(?:, :[a-z0-9_]+)*\], \[((?:' + DEP + r'(?:, ' + DEP + r')*)?)\], '
+              r'"hexpm", "([0-9a-f]{64})"\},')
+          DEP_PARTS = re.compile(r'\{:(' + NAME + r'), "([0-9A-Za-z .~<>=!+-]*)", \[hex: :(' + NAME
+                                 + r'), repo: "hexpm", optional: (true|false)\]\}')
+          MIN_AGE_DAYS = 7
+          MAX_CHANGED = 60
+
+
+          def parse_lock(text):
+              """{package: (line, version, outer_checksum, deps)}; deps is a set of
+              (app, package, optional, requirement). Raises ValueError."""
+              lines = text.split("\n")
+              if lines[:1] != ["%{"] or lines[-2:] != ["}", ""]:
+                  raise ValueError("mix.lock isn't in the usual shape")
+              out = {}
+              for line in lines[1:-2]:
+                  m = ENTRY.fullmatch(line)
+                  if not m or m.group(1) != m.group(2) or m.group(1) in out:
+                      raise ValueError("mix.lock has an entry that isn't a plain hex.pm package")
+                  deps = set((a, p, o == "true", r) for a, r, p, o in DEP_PARTS.findall(m.group(4)))
+                  out[m.group(1)] = (line, m.group(3), m.group(5), deps)
+              return out
+
+
+          def vtuple(v):
+              return tuple(int(x) for x in v.split("."))
+
+
+          def missing_needed(lock):
+              """Packages that a locked package needs (not optionally) but the lock lacks."""
+              return set(p for e in lock.values() for (_, p, opt, _) in e[3] if not opt and p not in lock)
+
+
+          def _advisories(rel):
+              """Live advisories, each as the set of its id and aliases (hex.pm lists
+              some vulnerabilities under two ids that alias each other)."""
+              adv = rel.get("security_advisories")
+              if not isinstance(adv, list):
+                  raise ValueError("hex.pm gave an odd advisory list")
+              out = []
+              for x in adv:
+                  aliases = x.get("aliases") if isinstance(x, dict) else None
+                  if (not isinstance(x, dict) or not isinstance(x.get("id"), str) or not x["id"]
+                          or not isinstance(aliases or [], list) or not all(isinstance(y, str) for y in aliases or [])):
+                      raise ValueError("hex.pm gave an odd advisory list")
+                  if not x.get("withdrawn_at"):
+                      out.append(frozenset([x["id"]] + list(aliases or [])))
+              return out
+
+
+          def _retire_reason(rel):
+              ret = rel.get("retirement")
+              if ret is None:
+                  return None
+              reason = ret.get("reason") if isinstance(ret, dict) else None
+              return reason if isinstance(reason, str) else "other"
+
+
+          def check_locks(base_text, head_text, hex_lookup, now):
+              """Returns (updates, too_new). too_new is None or the first package that
+              is under MIN_AGE_DAYS old. Raises ValueError for anything that must stop.
+              hex_lookup(name, version) returns hex.pm's release record (or None); pass
+              hex_lookup=None to check only the shape of the change."""
+              a, b = parse_lock(base_text), parse_lock(head_text)
+              # A package the lock no longer has but something still needs would be
+              # resolved fresh at build time, with no checks at all.
+              if not missing_needed(b) <= missing_needed(a):
+                  raise ValueError("mix.lock leaves out a package that another package needs")
+              # A package may leave the lock only because a package that needed it was
+              # updated or removed. Otherwise it may be one that mix.exs needs directly.
+              for gone in set(a) - set(b):
+                  if not any(gone in (p for _, p, _, _ in e[3]) and b.get(k, (None,))[0] != e[0]
+                             for k, e in a.items()):
+                      raise ValueError("mix.lock drops %s, which no updated package explains" % gone)
+              changed = sorted(k for k in b if a.get(k, (None,))[0] != b[k][0])
+              if not changed:
+                  raise ValueError("mix.lock changes no package")
+              if len(changed) > MAX_CHANGED:
+                  raise ValueError("mix.lock changes too many packages")
+              updates = []
+              for name in changed:
+                  version = b[name][1]
+                  if name in a:
+                      old = a[name][1]
+                      if vtuple(version)[0] != vtuple(old)[0]:
+                          raise ValueError("%s moves to a new major version" % name)
+                      if vtuple(version) <= vtuple(old):
+                          raise ValueError("%s doesn't move to a newer version" % name)
+                      updates.append("%s %s -> %s" % (name, old, version))
+                  else:
+                      updates.append("%s %s (new)" % (name, version))
+              if hex_lookup is None:
+                  return updates, None
+              too_new = None
+              for name in changed:
+                  _, version, checksum, deps = b[name]
+                  rel = hex_lookup(name, version)
+                  if not isinstance(rel, dict) or rel.get("version") != version:
+                      raise ValueError("hex.pm has no record of %s %s" % (name, version))
+                  if rel.get("checksum") != checksum:
+                      raise ValueError("WARNING: %s %s doesn't match hex.pm's checksum" % (name, version))
+                  reqs = rel.get("requirements")
+                  if not isinstance(reqs, dict):
+                      raise ValueError("hex.pm gave no requirements for %s %s" % (name, version))
+                  # Which packages it needs, and whether optionally. (Requirement strings
+                  # aren't compared: hex.pm and Mix spell some of them differently.)
+                  try:
+                      want = set((r["app"], p, r["optional"] is True) for p, r in reqs.items())
+                  except (KeyError, TypeError):
+                      raise ValueError("hex.pm gave odd requirements for %s %s" % (name, version))
+                  if want != set((ap, p, o) for ap, p, o, _ in deps):
+                      raise ValueError("%s %s's dependencies in mix.lock differ from hex.pm's" % (name, version))
+                  # Retirement and advisories block only when they're new: an update that
+                  # doesn't make things worse shouldn't hold back the rest of the group.
+                  # A retirement for security or any other reason the old version
+                  # didn't have still blocks.
+                  reason = _retire_reason(rel)
+                  bad_retired = reason is not None
+                  bad_adv = _advisories(rel)
+                  if (bad_retired or bad_adv) and name in a:
+                      old_rel = hex_lookup(name, a[name][1])
+                      if not isinstance(old_rel, dict) or old_rel.get("version") != a[name][1]:
+                          raise ValueError("hex.pm has no record of %s %s" % (name, a[name][1]))
+                      old_reason = _retire_reason(old_rel)
+                      bad_retired = bad_retired and (old_reason is None or reason == "security" or (
+                          reason != old_reason and reason not in ("deprecated", "renamed")))
+                      old_ids = frozenset().union(*_advisories(old_rel))
+                      bad_adv = [x for x in bad_adv if not (x & old_ids)]
+                  if bad_retired:
+                      raise ValueError("%s %s is retired on hex.pm" % (name, version))
+                  if bad_adv:
+                      raise ValueError("%s %s has a security advisory on hex.pm" % (name, version))
+                  published = datetime.fromisoformat(str(rel.get("inserted_at")).replace("Z", "+00:00"))
+                  if published.tzinfo is None:
+                      raise ValueError("hex.pm gave an odd date for %s %s" % (name, version))
+                  if now - published < timedelta(days=MIN_AGE_DAYS):
+                      too_new = too_new or "%s %s was published under %d days ago" % (name, version, MIN_AGE_DAYS)
+              return updates, too_new
+          # END shared mix.lock check
+
+
+          def hex_lookup(name, version):
+              time.sleep(0.4)  # stay well under hex.pm's rate limit
+              url = "https://hex.pm/api/packages/%s/releases/%s" % (name, version)  # both matched the lock pattern
+              req = urllib.request.Request(url, headers={"Accept": "application/json",
+                                                         "User-Agent": "dependabot-auto-merge"})
+              with urllib.request.urlopen(req, timeout=30) as r:
+                  return json.load(r)
+
+          if __name__ == "__main__":
+              try:
+                  with open(sys.argv[1], "rb") as f:
+                      base_text = f.read().decode("utf-8")
+                  with open(sys.argv[2], "rb") as f:
+                      head_text = f.read().decode("utf-8")
+                  updates, too_new = check_locks(base_text, head_text, hex_lookup, datetime.now(timezone.utc))
+                  if too_new:
+                      raise ValueError(too_new)
+              except (ValueError, OSError, TypeError) as e:
+                  print("NOT OK: %s" % e)
+                  sys.exit(1)
+              print("OK: " + "; ".join(updates))
+          PY
+
+          python3 -I "$RUNNER_TEMP/v/check.py" "$RUNNER_TEMP/v/base.lock" "$RUNNER_TEMP/v/head.lock" > "$RUNNER_TEMP/v/result.txt" \
+            || fail "$(head -c 300 "$RUNNER_TEMP/v/result.txt" | tr -d '\r\n')"
+          cat "$RUNNER_TEMP/v/result.txt"
+          echo "ok=true" >> "$GITHUB_OUTPUT"
+
+      # Merge only what CI has built and tested: the newest run of ci.yml
+      # (this repo's own CI workflow, from main's branch protection's point of
+      # view) for this PR and this exact commit. Waits up to 45 minutes; if it
+      # hasn't passed by then, the recheck tries again later.
+      - name: Wait for CI to pass on this commit
+        id: ci
+        if: steps.verify.outputs.allowed == 'true' && steps.diff.outputs.ok == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -uo pipefail
+          for i in $(seq 1 90); do
+            state=$(gh api "repos/$REPO/actions/workflows/ci.yml/runs?event=pull_request&head_sha=$HEAD_SHA&per_page=50" \
+              | jq -r --arg repo "$REPO" --argjson pr "$PR_NUMBER" '[.workflow_runs[]
+                  | select(.path == ".github/workflows/ci.yml" and .head_repository.full_name == $repo
+                           and any(.pull_requests[]?; .number == $pr and .base.ref == "main"))]
+                | max_by(.id) // empty | .status + "/" + (.conclusion // "")') \
+              || { echo "::warning::couldn't read CI's runs"; state=""; }
+            if [[ "$state" == "completed/success" ]]; then
+              echo "passed=true" >> "$GITHUB_OUTPUT"; exit 0
+            fi
+            if [[ "$state" == completed/* ]]; then
+              echo "::warning::CI didn't pass ($state) - skipping auto-merge"
+              echo "passed=false" >> "$GITHUB_OUTPUT"; exit 0
+            fi
+            sleep 30
+          done
+          echo "::warning::CI hadn't finished after 45 minutes - skipping for now"
+          echo "passed=false" >> "$GITHUB_OUTPUT"
+
+      # Approve and merge only the exact commit this run checked, so a later
+      # push to the branch can't ride along on this approval.
+      - name: Auto-approve PR
+        if: steps.verify.outputs.allowed == 'true' && steps.diff.outputs.ok == 'true' && steps.ci.outputs.passed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          # A re-run carries the old event; don't approve if the PR has moved on.
+          live=$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq '.head.sha')
+          [[ "$live" == "$HEAD_SHA" ]] || { echo "::warning::the PR has a newer commit - not approving"; exit 1; }
+          gh api --method POST "repos/$REPO/pulls/$PR_NUMBER/reviews" \
+            -f event=APPROVE -f commit_id="$HEAD_SHA" > /dev/null
+
+      - name: Auto-merge PR
+        if: steps.verify.outputs.allowed == 'true' && steps.diff.outputs.ok == 'true' && steps.ci.outputs.passed == 'true'
+        run: gh pr merge --auto --squash --match-head-commit "$HEAD_SHA" "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # If this run didn't pass its checks, take back anything an earlier run
+      # did for an older commit on this PR: auto-merge stays armed across
+      # Dependabot's force-pushes, and an approval may too.
+      - name: Withdraw earlier approval and auto-merge
+        if: always() && (failure() || steps.verify.outputs.allowed != 'true' || steps.diff.outputs.ok != 'true' || steps.ci.outputs.passed != 'true')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          approvals() {
+            local out
+            out=$(gh api --paginate "repos/$REPO/pulls/$PR_NUMBER/reviews" \
+              --jq '.[] | select(.user.login == "github-actions[bot]" and .state == "APPROVED") | .id') \
+              || { echo "::error::Couldn't read the PR's reviews"; exit 1; }
+            grep -E '^[0-9]+$' <<< "$out" || true
+          }
+          gh pr merge --disable-auto "$PR_URL" 2>/dev/null || true
+          for id in $(approvals); do
+            gh api --method PUT "repos/$REPO/pulls/$PR_NUMBER/reviews/$id/dismissals" \
+              -f message="Checks didn't pass on the newest commit" -f event=DISMISS > /dev/null \
+              || echo "::warning::couldn't dismiss review $id"
+          done
+          # Fail loudly if anything is still armed, so the run shows red.
+          left=""
+          [[ "$(gh pr view "$PR_URL" --json autoMergeRequest --jq '.autoMergeRequest != null')" == "false" ]] \
+            || left="auto-merge is still on"
+          remaining=$(approvals) || remaining="couldn't check"
+          [[ -z "$remaining" ]] || left="${left:+$left, }a bot approval may still be there"
+          if [[ -n "$left" ]]; then echo "::error::Couldn't withdraw: $left"; exit 1; fi

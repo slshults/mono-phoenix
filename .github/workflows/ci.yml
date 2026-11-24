@@ -1,0 +1,107 @@
+# Builds and tests the app on every PR and every push to main. The
+# Dependabot auto-merge workflow merges an update only once this has passed
+# on the PR's exact commit (it checks for itself, and branch protection can
+# require it too: the check is called "CI / test").
+#
+# Runs with a read-only token and no secrets. The database is a throwaway
+# Postgres service container. config/test.exs is gitignored, so the job
+# copies .github/ci/test.exs into its place first.
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      MIX_ENV: test
+      PGHOST: localhost
+      PGPORT: "5432"
+      PGUSER: postgres
+      PGPASSWORD: postgres
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+
+      # Before setup-beam, which runs mix in this folder and so loads the
+      # test config.
+      - name: Use the CI test config
+        run: cp .github/ci/test.exs config/test.exs
+
+      # Same versions Gigalixir builds with (elixir_buildpack.config).
+      - uses: erlef/setup-beam@54075bcc5e249e4758d363f27d099f55d843f124  # v1.24.1
+        with:
+          otp-version: "27.3.4"
+          elixir-version: "1.18.4"
+
+      # --check-locked fails if mix.lock is out of step with mix.exs, so
+      # nothing gets resolved fresh, unchecked. The auto-merge relies on it.
+      - name: Fetch dependencies
+        run: mix deps.get --check-locked
+
+      - name: Compile (warnings shown, not fatal)
+        run: mix compile
+
+      # The test alias drops, creates and loads both databases first
+      # (see mix.exs). ecto.load needs psql, which the runner has.
+      - name: Run tests
+        run: mix test
+
+  # A dependency update can break the production build without failing a
+  # test: the Elixir release refuses duplicated modules (the reason for
+  # vendor/grpcbox_stub), and the JS bundle imports Phoenix's own JS from
+  # deps/. This builds both the way Gigalixir does, minus the source-map
+  # upload, which needs a key CI doesn't have.
+  prod-build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      MIX_ENV: prod
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+
+      - uses: erlef/setup-beam@54075bcc5e249e4758d363f27d099f55d843f124  # v1.24.1
+        with:
+          otp-version: "27.3.4"
+          elixir-version: "1.18.4"
+
+      - name: Fetch dependencies
+        run: mix deps.get --only prod --check-locked
+
+      - name: Compile
+        run: mix compile
+
+      - name: Build the JS bundle
+        run: mix esbuild default --minify
+
+      - name: Build the release
+        run: mix release --overwrite
