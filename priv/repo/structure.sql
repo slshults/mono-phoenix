@@ -2,10 +2,10 @@
 -- PostgreSQL database dump
 --
 
-\restrict loqGd1aFs00FU8V2U5OVWQVV5vkUuiPsgE6kDe6ft163xSmMgxrhLZ37KdnGkfi
+\restrict aiOGgus05ZQokQXXl9bBxq0KYtVhVUG6dNlEvcinIwvAfHS1IVBmkS321PMTwLD
 
 -- Dumped from database version 14.20 (Ubuntu 14.20-1.pgdg22.04+1)
--- Dumped by pg_dump version 14.23 (Ubuntu 14.23-0ubuntu0.22.04.1)
+-- Dumped by pg_dump version 14.24 (Ubuntu 14.24-0ubuntu0.22.04.1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -238,7 +238,7 @@ CREATE TABLE public.oban_jobs (
 -- Name: TABLE oban_jobs; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON TABLE public.oban_jobs IS '12';
+COMMENT ON TABLE public.oban_jobs IS '14';
 
 
 --
@@ -596,6 +596,20 @@ CREATE INDEX oban_jobs_meta_index ON public.oban_jobs USING gin (meta);
 
 
 --
+-- Name: oban_jobs_state_cancelled_at_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX oban_jobs_state_cancelled_at_index ON public.oban_jobs USING btree (state, cancelled_at);
+
+
+--
+-- Name: oban_jobs_state_discarded_at_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX oban_jobs_state_discarded_at_index ON public.oban_jobs USING btree (state, discarded_at);
+
+
+--
 -- Name: oban_jobs_state_queue_priority_scheduled_at_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -648,5 +662,5 @@ CREATE UNIQUE INDEX unique_schema_migrations ON public.schema_migrations USING b
 -- PostgreSQL database dump complete
 --
 
-\unrestrict loqGd1aFs00FU8V2U5OVWQVV5vkUuiPsgE6kDe6ft163xSmMgxrhLZ37KdnGkfi
+\unrestrict aiOGgus05ZQokQXXl9bBxq0KYtVhVUG6dNlEvcinIwvAfHS1IVBmkS321PMTwLD
 
